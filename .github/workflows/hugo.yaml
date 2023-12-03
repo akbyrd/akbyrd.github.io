@@ -1,4 +1,4 @@
-name: Deploy Site
+name: Build and Deploy Site
 
 on:
   push:
@@ -39,9 +39,6 @@ jobs:
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v3
-        # TODO: Why do we need npm?
-      - name: Install Node.js dependencies
-        run: "[[ -f package-lock.json || -f npm-shrinkwrap.json ]] && npm ci || true"
       - name: Build with Hugo
         env:
           HUGO_ENVIRONMENT: production
