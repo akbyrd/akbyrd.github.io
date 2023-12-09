@@ -1,0 +1,49 @@
+{
+	"version": "2.0.0",
+	"problemMatcher": {
+		"fileLocation": "absolute",
+		"source": " ",
+		"owner": "hugo",
+		"pattern": {
+			"regexp": "^([^ ]*):? [^:]*: ([^:]*): \"([^\"]*):(\\d+):(\\d+)\": unmarshal failed: (.*)$",
+			"severity": 1,
+			"code": 2,
+			"file": 3,
+			"line": 4,
+			// BUG: vscode will change column if it's a word break character
+			"column": 5,
+			"message": 6,
+		},
+		"background": {
+			"activeOnStart": true,
+			"beginsPattern": "^Source changed",
+			"endsPattern": "^Total in [0-9]+",
+		},
+	},
+	"presentation": {
+		"echo": false,
+		"showReuseMessage": false,
+		"clear": true,
+		"revealProblems": "onProblem",
+	},
+	"tasks": [
+		{
+			"label": "hugo build",
+			"group": {
+				"kind": "build",
+				"isDefault": true,
+			},
+			"type": "shell",
+			"command": "hugo",
+		},
+		{
+			"label": "hugo test",
+			"group": {
+				"kind": "test",
+				"isDefault": true,
+			},
+			"type": "shell",
+			"command": "hugo && Start-Process http://localhost:1313/ && hugo server --buildDrafts",
+		},
+	],
+}
