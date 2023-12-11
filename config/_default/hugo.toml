@@ -12,3 +12,5 @@ markup.goldmark.renderer.hardWraps = true
 markup.highlight.anchorLineNos = true
 markup.highlight.lineNos = true
 markup.highlight.lineNumbersInTable = false
+
+permalinks.posts = '/:slug/'
