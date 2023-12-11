@@ -81,7 +81,6 @@ inline u32 IndexToHandle(u32 index, u8 generation)
 1   2   3   4
 ```
 ### Mermaid
-- [ ] TODO: Implement
 ```mermaid
 flowchart LR
    A -- text --> B -- text2 --> C
