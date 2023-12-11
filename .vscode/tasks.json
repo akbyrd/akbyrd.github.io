@@ -5,14 +5,14 @@
 		"source": " ",
 		"owner": "hugo",
 		"pattern": {
-			"regexp": "^([^ ]*):? [^:]*: ([^:]*): \"([^\"]*):(\\d+):(\\d+)\": unmarshal failed: (.*)$",
+			// severity [msg1: ]*"file[:line:column]": [msg2: ]msg3
+			"regexp": "^(\\w+):? [^\"]* \"((?:\\w:)?[^:\"]*)(?::(\\d+):(\\d+))?\": (?:.*: unmarshal failed: )?(.*)",
 			"severity": 1,
-			"code": 2,
-			"file": 3,
-			"line": 4,
+			"file": 2,
+			"line": 3,
 			// BUG: vscode will change column if it's a word break character
-			"column": 5,
-			"message": 6,
+			"column": 4,
+			"message": 5,
 		},
 		"background": {
 			"activeOnStart": true,
@@ -28,22 +28,20 @@
 	},
 	"tasks": [
 		{
-			"label": "hugo build",
-			"group": {
-				"kind": "build",
-				"isDefault": true,
-			},
+			"label": "vcs",
+			"dependsOn": "vcs-git"
+		},
+		{
+			"label": "build-solution",
+			"detail": "hugo build",
 			"type": "shell",
 			"command": "hugo",
 		},
 		{
-			"label": "hugo test",
-			"group": {
-				"kind": "test",
-				"isDefault": true,
-			},
+			"label": "test-solution",
+			"detail": "hugo test",
 			"type": "shell",
-			"command": "hugo && Start-Process http://localhost:1313/ && hugo server --buildDrafts",
+			"command": "hugo && Start-Process http://localhost:1313/ && hugo server --navigateToChanged",
 		},
 	],
 }

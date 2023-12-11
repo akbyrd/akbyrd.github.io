@@ -1,0 +1,3 @@
+buildDrafts = true
+buildExpired = true
+buildFuture = true

@@ -1,0 +1,11 @@
+ERROR Rebuild failed: assemble: "D:\site\foo.md:4:33": unmarshal failed: toml: expected newline but got U+0061 'a'
+ERROR Rebuild failed: assemble: "~/site/foo.md:4:33": unmarshal failed: toml: expected newline but got U+0061 'a'
+
+ERROR Failed to reload config: failed to load config: failed to unmarshal config for path "D:\\site\\hugo.toml": "_stream.toml:1:1": unmarshal failed: toml: table markup already exists
+ERROR Failed to reload config: failed to load config: failed to unmarshal config for path "~/site/hugo.toml": "_stream.toml:1:1": unmarshal failed: toml: table markup already exists
+
+ERROR Rebuild failed: "D:\site\foo.md:56:8": failed to parse Markdown attributes; you may need to quote the values
+ERROR Rebuild failed: "~/site\foo.md:56:8": failed to parse Markdown attributes; you may need to quote the values
+
+Error: error building site: "D:\site\foo.md:56:8": failed to parse Markdown attributes; you may need to quote the values
+Error: error building site: "~/site/foo.md:56:8": failed to parse Markdown attributes; you may need to quote the values
