@@ -1,0 +1,53 @@
+about blog
+	building my happy place
+	building a c++ environment
+	maybe building an engine
+
+profit as the metric
+	quote from Gone Away World ~chapter 14
+
+software searches
+	window manager
+	text editor
+	version control
+	language
+	build system
+	tests
+	profiler
+	debugger
+
+software setup
+	hugo
+	dotfiles / bootstrap
+	vscode tasks
+	power toys run (workspaces)
+	keybindings (keyboard, vscode)
+
+fixing software
+	vscode range highlights
+	vscode fuzzy search
+	vscode multiline handling
+	vscode textmate themes
+	c++ textmate
+	c# textmate
+	fancy zones keybindings
+	fanzy zones restore
+	mouse trail
+
+home server
+	backups
+	vpn
+	pi hole
+
+replacing youtube
+	brilliant
+	nebula
+
+replacing windows
+
+replacing social media
+	rss
+	lobste.rs
+	mastodon
+	handmade discord
+	local meetups

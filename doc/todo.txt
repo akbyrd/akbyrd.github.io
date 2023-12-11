@@ -1,0 +1,29 @@
+TODO: Hugo documentation
+TODO: Goldmark documentation
+TODO: Require dates if non-draft
+TODO: Continuation for md lists
+TODO: Home page is a feed wiht no post text (maybe one line description)
+TODO: RSS / Atom
+TODO: Search
+TODO: Tags
+TODO: Permalinks?
+TODO: Section links
+TODO: Check mobile layout
+	Scroll bars
+TODO: Syntax highlighting
+TODO: Smooth dark/light mode changes
+TODO: Copy all
+TODO: Typo fixes / pull requests
+TODO: Math formatting
+TODO: Test search engine results
+TODO: Hook up discussions as comments
+	Custom
+	Giscus
+	Staticman
+TODO: Write an about page
+TODO: Consider other markup languages
+	Markdown
+	Djot
+	Markdeep
+	AsciiDoc
+	Custom
