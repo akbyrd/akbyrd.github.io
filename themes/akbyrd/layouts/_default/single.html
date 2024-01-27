@@ -6,7 +6,6 @@
 	<time datetime="{{ $dateMachine }}">{{ $dateHuman }}</time>
 
 	{{ .Content }}
-	{{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
 
 	{{ if .Page.Store.Get "hasMermaid" }}
 		<script type="module">
