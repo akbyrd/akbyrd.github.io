@@ -6,11 +6,38 @@ theme = 'akbyrd'
 cleanDestinationDir = true
 enableEmoji = true
 enableGitInfo = true
-#enableInlineShortcodes = true
-
+enableInlineShortcodes = true
 markup.goldmark.renderer.hardWraps = true
 markup.highlight.anchorLineNos = true
 markup.highlight.lineNos = true
-markup.highlight.lineNumbersInTable = false
 
+# Disable unnecessary RSS files
+outputs.home = ['html']
+outputs.taxonomy = ['html']
+outputs.term = ['html']
+
+params.social.twitter = 'abyrd89'
+
+# TODO: This renders html to the root of public (without numeric prefix)
+# Remove the posts/ folder and numeric prefix from post URLs
 permalinks.posts = '/:slug/'
+
+# Disable potential tracking and cookies
+privacy.disqus.disable = true
+privacy.googleAnalytics.anonymizeIP = true
+privacy.googleAnalytics.disable = true
+privacy.googleAnalytics.respectDoNotTrack = true
+privacy.instagram.disable = true
+privacy.instagram.simple = true
+privacy.twitter.disable = true
+privacy.twitter.simple = true
+privacy.twitter.enableDNT = true
+privacy.vimeo.disable = true
+privacy.vimeo.enableDNT = true
+privacy.youtube.disable = true
+privacy.youtube.privacyEnhanced = true
+
+services.rss.limit = -1
+
+# Disable default taxonomies (category, series, and tag)
+taxonomies = {}
