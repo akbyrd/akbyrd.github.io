@@ -1,0 +1,69 @@
+Commands
+--------
+Publish      - hugo
+Start server - huge server --buildDrafts
+New site     - hugo new site <name>
+New page     - hugo new content posts/<name>
+New theme    - hugo new theme <name>
+Measure Perf - hugo --templateMetrics --templateMetricsHints
+
+
+
+Shortcodes
+----------
+{{% shortcode %}} contains markdown
+{{< shortcode >}} doesn't contain markdown
+
+
+
+Directories
+-----------
+Content templates      - archetypes
+Images, js, etc        - assets
+Site config (optional) - config
+Web pages (markdown)   - content
+Content config         - data
+Translations           - i18n
+Transform templates    - layouts
+Published site         - public
+Compiled assets        - resources
+Non-compiled assets    - static
+Themes                 - themes
+
+
+
+Content Classification
+----------------------
+Type     - Defaults to first folder in path. Determines which layout template will be used
+Kind     - { home, page, section, taxonomy, term, robotsTXT, RSS, sitemap, 404 }
+Layout   - Overrides which layout template will be used
+Taxonomy -
+Term     -
+Tag      - Built- in taxonomy
+Category - Built- in taxonomy
+
+
+
+
+Files
+-----
+RSS feed - public/**/index.xml
+
+
+
+Resources
+---------
+https://gohugo.io/documentation/
+https://vendelin.org/geeky/hugo/
+https://www.youtube.com/playlist?list=PLLAZ4kZ9dFpOnyRlyS-liKL5ReHDcj4G3
+https://www.ii.com/hugo-tutorial/
+https://digitaldrummerj.me/series/blogging-with-hugo/
+https://medium.com/pragmatic-programmers/table-of-contents-3c4a7575cb92
+https://janert.me/guides/hugo-survival-guide/
+
+
+
+Misc
+----
+The following methods on a Page object trigger content rendering:
+Content, FuzzyWordCount, Len, Plain, PlainWords, ReadingTime, Summary, Truncated, WordCount

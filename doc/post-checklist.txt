@@ -1,0 +1,5 @@
+Disable draft
+Add summary
+Add number to file name
+Add alias for post number
+Ensure url is short

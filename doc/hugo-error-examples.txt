@@ -1,0 +1,7 @@
+ERROR Rebuild failed: assemble: "~/site/foo.md:4:33": unmarshal failed: toml: expected newline but got U+0061 'a'
+ERROR Rebuild failed: assemble: "D:\site\foo.md:4:33": unmarshal failed: toml: expected newline but got U+0061 'a'
+ERROR Rebuild failed: "D:\site\foo.md:56:8": failed to parse Markdown attributes; you may need to quote the values
+Error: error building site: assemble: "D:\site\foo.md:16:1": failed to extract shortcode: shortcode "bar" does not evaluate .Inner or .InnerDeindent, yet a closing tag was provided
+Error: error building site: "D:\site\foo.md:56:8": failed to parse Markdown attributes; you may need to quote the values
+ERROR [en] REF_NOT_FOUND: Ref "bar": "D:\site\foo.md:16:1": page not found
+ERROR Failed to reload config: failed to load config: failed to unmarshal config for path "D:\\site\\hugo.toml": "_stream.toml:1:1": unmarshal failed: toml: table markup already exists

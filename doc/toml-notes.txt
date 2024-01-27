@@ -1,0 +1,5 @@
+https://taplo.tamasfe.dev/configuration/using-schemas.html
+taplo check --schema https://example.com/foo-schema.json foo.toml
+
+hl_inline
+https://github.com/gohugoio/hugo/releases/tag/v0.101.0
