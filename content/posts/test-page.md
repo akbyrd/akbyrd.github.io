@@ -2,6 +2,7 @@
 title = 'Test Page'
 pubdate = 2023-12-10T15:15:21-08:00
 moddate = 2023-12-11T16:15:21-08:00
+draft = true
 +++
 
 
@@ -18,8 +19,10 @@ moddate = 2023-12-11T16:15:21-08:00
 
 
 ## General
-- [ ] TODO: Number posts and strip in front matter
-- [ ] TODO: Short description
+- [ ] TODO: Show all posts the same way on home page
+- [ ] TODO: Add date to posts on home page
+- [ ] TODO: Don't animate posts on home page
+- [ ] TODO: Disable summary in theme
 - [ ] TODO: Move anchors to left side
 - [ ] TODO: Math blocks don't auto close
 - [ ] TODO: Math blocks don't auto surround
@@ -29,6 +32,12 @@ moddate = 2023-12-11T16:15:21-08:00
 - [ ] TODO: Underline doesn't auto close
 - [ ] TODO: Bold doesn't auto close
 - [ ] TODO: Markdown comments don't auto close
+- [ ] TODO: Require summary if draft is not true
+- [ ] TODO: Add my rss list
+- [ ] TODO: Pick either categories or tags for organization
+- [ ] TODO: github 404 page
+- [ ] TODO: Run site audit as part of deployment
+- [ ] TODO: Add search support
 
 <!-- comment text -->
 
@@ -40,7 +49,6 @@ moddate = 2023-12-11T16:15:21-08:00
 
 
 ## Syntax highlighting
-
 - [ ] TODO: Fix line number color
 - [ ] TODO: Fix missing colors
 - [ ] TODO: Try to match editor theme [ref](https://gohugo.io/content-management/syntax-highlighting/#generate-syntax-highlighter-css)
@@ -65,6 +73,7 @@ inline u32 IndexToHandle(u32 index, u8 generation)
 	return handle;
 }
 ```
+
 
 
 ## Diagrams
@@ -93,7 +102,12 @@ flowchart LR
 
 
 
+## Home
+- [ ] TODO: About link
+- [ ] TODO: RSS subscribe button
+
+
+
 ## Footer
-- [ ] TODO: Remove existing
 - [ ] TODO: Fix a typo button
 - [ ] TODO: Report a bug button
