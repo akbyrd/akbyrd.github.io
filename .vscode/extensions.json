@@ -1,0 +1,7 @@
+{
+	"recommendations": [
+		"tamasfe.even-better-toml",
+		"budparr.language-hugo-vscode",
+		"kaellarkin.hugo-shortcode-syntax"
+	]
+}

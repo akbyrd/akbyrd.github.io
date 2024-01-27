@@ -6,7 +6,7 @@
 		"owner": "hugo",
 		"pattern": {
 			// severity [msg1: ]*"file[:line:column]": [msg2: ]msg3
-			"regexp": "^(\\w+):? [^\"]* \"((?:\\w:)?[^:\"]*)(?::(\\d+):(\\d+))?\": (?:.*: unmarshal failed: )?(.*)",
+			"regexp": "^(\\w+):? (?:\\[\\w+\\] REF_NOT_FOUND: Ref \"[^\"]*\":|[^\"]*) \"((?:\\w:)?[^:\"]*)(?::(\\d+):(\\d+))?\": (?:.*unmarshal failed: )?(.*)",
 			"severity": 1,
 			"file": 2,
 			"line": 3,
@@ -32,16 +32,52 @@
 			"dependsOn": "vcs-git"
 		},
 		{
-			"label": "build-solution",
-			"detail": "hugo build",
+			"label": "build-file",
+			"detail": "hugo build (development)",
 			"type": "shell",
-			"command": "hugo",
+			"command": "hugo -e development --cleanDestinationDir --printPathWarnings",
+		},
+		{
+			"label": "build-project",
+			"detail": "hugo build (staging)",
+			"type": "shell",
+			"command": "hugo -e staging --cleanDestinationDir --printPathWarnings",
+		},
+		{
+			"label": "build-solution",
+			"detail": "hugo build (production)",
+			"type": "shell",
+			"command": "hugo -e production --cleanDestinationDir --printPathWarnings",
+		},
+		{
+			"label": "clean-solution",
+			"detail": "hugo clean",
+			"type": "shell",
+			"command": "Remove-Item -Recurse public/",
+		},
+		{
+			"label": "test-file",
+			"detail": "hugo test (development)",
+			"type": "shell",
+			"command": "hugo server -e development --cleanDestinationDir --printPathWarnings --disableFastRender --renderToDisk --noHTTPCache",
+		},
+		{
+			"label": "test-project",
+			"detail": "hugo test (staging)",
+			"type": "shell",
+			"command": "hugo server -e staging --cleanDestinationDir --printPathWarnings --disableFastRender --renderToDisk --noHTTPCache",
 		},
 		{
 			"label": "test-solution",
-			"detail": "hugo test",
+			"detail": "hugo test (production)",
 			"type": "shell",
-			"command": "hugo && Start-Process http://localhost:1313/ && hugo server --navigateToChanged",
+			"command": "hugo server -e production --cleanDestinationDir --printPathWarnings --disableFastRender --renderToDisk --noHTTPCache",
+		},
+		{
+			"label": "profile-solution",
+			"detail": "hugo site",
+			"type": "shell",
+			"command": "Start-Process http://localhost:1313/",
 		},
 	],
 }
