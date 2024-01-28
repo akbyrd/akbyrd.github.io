@@ -1,26 +1,12 @@
-Requirements
-------------
-Dark and Light themes
-	Instaneous switching
-	Remembered between visits
-
-RSS / Atom
-Search
-Tags
-Mobile
-Syntax highlighting
+Palette
+-------
+Usage      | Dark             | Light
+Background | Gray 700 #616161 | Gray 300 #E0E0E0
 
 
 
-Candidates
-----------
+Inspiration
+-----------
 PaperMod https://themes.gohugo.io/themes/hugo-papermod/
 Bootstrap https://themes.gohugo.io/themes/hugo-theme-bootstrap/
 Nightfall https://themes.gohugo.io/themes/hugo-theme-nightfall/
-
-
-
-Choice
-------
-Start with PaperMod
-Fork it and add missing features as necessary

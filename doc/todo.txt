@@ -1,29 +1,58 @@
-TODO: Hugo documentation
-TODO: Goldmark documentation
-TODO: Require dates if non-draft
-TODO: Continuation for md lists
-TODO: Home page is a feed wiht no post text (maybe one line description)
-TODO: RSS / Atom
-TODO: Search
-TODO: Tags
+Theme
+TODO: Read about meterial design https://m3.material.io/
+TODO: Background color
+
+Header
+TODO: Dark/light button (smooth, saved)
+
+Footer
+TODO: Fix a typo button
+TODO: Report a bug button
+
+Home
+TODO: About link
+TODO: Post list
+TODO: RSS subscribe button
+
+Posts
+TODO: Set up modified date
+TODO: Implement comments (Github, Giscus, Staticman, Custom)
 TODO: Permalinks?
-TODO: Section links
-TODO: Check mobile layout
-	Scroll bars
-TODO: Syntax highlighting
-TODO: Smooth dark/light mode changes
-TODO: Copy all
 TODO: Typo fixes / pull requests
-TODO: Math formatting
+TODO: Consider other markup languages (Djot, Markdeep, AsciiDoc, Custom)
+TODO: Headers as hyperlinks (as opposed to showing an anchor icon)
+
+General
+TODO: github 404 page
+TODO: Add search support
+TODO: RSS / Atom
+TODO: Math formatting (load only when used)
 TODO: Test search engine results
-TODO: Hook up discussions as comments
-	Custom
-	Giscus
-	Staticman
-TODO: Write an about page
-TODO: Consider other markup languages
-	Markdown
-	Djot
-	Markdeep
-	AsciiDoc
-	Custom
+TODO: Tooltip for emoji (dev only?)
+
+Validation
+TODO: Run site audit as part of deployment
+TODO: Require summary if draft is not true
+TODO: Require dates if non-draft
+
+Syntax highlighting
+TODO: Fix line number color
+TODO: Fix missing colors
+TODO: Copy all button
+TODO: Try to match editor theme https://gohugo.io/content-management/syntax-highlighting/#generate-syntax-highlighter-css
+TODO: Ids for code blocks
+TODO: Can't set lineAnchors https://discourse.gohugo.io/t/anchorlinenos-true-attribute-doesnt-work-when-using-code-fences/36564/3
+
+Content
+TODO: Add my rss list
+
+Markdown
+TODO: Goldmark documentation
+TODO: Math blocks don't auto close
+TODO: Math blocks don't auto surround
+TODO: Strikethrough doesn't auto close
+TODO: Strikethrough doesn't auto surround
+TODO: Italic doesn't auto close
+TODO: Underline doesn't auto close
+TODO: Bold doesn't auto close
+TODO: Markdown comments don't auto close
