@@ -2,7 +2,8 @@
 title = 'Test Page'
 pubdate = 2023-12-10T15:15:21-08:00
 draft = true
-_build.list = "never"
+#_build.list = "never"
+weight = 1
 +++
 
 
@@ -10,6 +11,10 @@ _build.list = "never"
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus in mollis tortor. Pellentesque velit nisi, interdum id porta a, cursus a libero. Aliquam congue dui augue, sit amet ornare libero varius eget. Praesent eu condimentum est. Integer lectus dolor, auctor in convallis dictum, vestibulum a sem. Etiam gravida, turpis sagittis mattis imperdiet, magna felis placerat ante, fringilla dapibus neque libero vitae felis. Vestibulum congue auctor odio eu pretium. Vivamus pharetra enim id diam feugiat, id rhoncus ligula mattis. Etiam pulvinar nisl tortor. Duis eu magna feugiat elit scelerisque auctor vel in mauris. Fusce nec ex a erat interdum eleifend. Pellentesque bibendum elit sem, at accumsan risus pharetra eget. Nunc eu auctor erat. Mauris pretium consectetur enim, quis porta sapien condimentum eu. Vivamus posuere faucibus risus, eu facilisis velit commodo vitae.
 
 Aliquam rutrum tortor id ante suscipit ullamcorper a vitae leo. Ut pulvinar imperdiet mauris, interdum aliquam justo maximus eget. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Pellentesque ut consectetur lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce porttitor accumsan efficitur. Fusce ultricies placerat purus, ut congue urna imperdiet nec. Integer sodales non massa ac mollis. Aliquam erat volutpat. Integer a metus at dolor mollis pulvinar. Curabitur elementum at augue id placerat. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed quis mattis neque.
+
+[Link](http://example.com)
+
+
 
 ## Code
 ### JSON
@@ -53,28 +58,10 @@ flowchart LR
 
 
 
-## Lists
-### Checklist
-- [x] One
-- [ ] Two
-- [ ] Three
-	- [ ] Three.One
-
-### Unordered
-* One
-* Two
-* Three
-	* Three.One
-
-### Ordered
-1. One
-1. Two
-1. Three
-	a. Three.One
-
-
-
 ## Math
+$a^*=x-b^*$
+$$a^*=x-b^*$$
+
 $$
 \begin{aligned}
 KL(\hat{y} || y) &= \sum_{c=1}^{M}\hat{y}_c \log{\frac{\hat{y}_c}{y_c}} \\
@@ -82,11 +69,76 @@ JS(\hat{y} || y) &= \frac{1}{2}(KL(y||\frac{y+\hat{y}}{2}) + KL(\hat{y}||\frac{y
 \end{aligned}
 $$
 
-$a^*=x-b^*$
 
-$$
-a^*=x-b^*
-$$
+
+## Markdown
+### h3 Heading
+#### h4 Heading
+##### h5 Heading
+###### h6 Heading
+
+### Horizontal Rules
+Underscores
+___
+Hyphens
+
+---
+Asterisks
+***
+
+### Typographic replacements
+(c) (C) (r) (R) (tm) (TM) (p) (P) +-
+"Smartypants, double quotes" and 'single quotes'
+
+### Emphasis
+**This is bold text** (__alternate__)
+*This is italic text* (_alternate_)
+~~Strikethrough~~
+
+### Subscript / Superscript
+19^th^
+H~2~O
+
+### Blockquotes
+> Quote 1
+>> Quote 2
+>>> Quote 3
+
+### Lists
+#### Checklist
+- [x] A
+- [ ] B
+	- [ ] Sub
+
+#### Unordered
+* One
+* Two
+	* Sub
+
+#### Ordered
+3. Three
+1. Four
+	a. Sub
+
+### Tables
+| Number | Text  |
+| ------ | ----- |
+| 1      | One   |
+| 2      | Two   |
+
+| Number | Text |
+| -----: | ---: |
+| 1      | One  |
+| 2      | Two  |
+
+### Footnotes
+Footnote [^footnote]
+Inline footnote^[inline footnote]
+[^footnote]: Footnote
+
+### Definitions
+Term
+:   Definition
 
 
 

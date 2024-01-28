@@ -4,8 +4,6 @@ aliases = [ '1' ]
 draft = true
 +++
 
-[foo](http://bar.com)
-
 ## Things Hugo gets right
 - Single executable with no dependencies
 - Layered config
@@ -40,6 +38,7 @@ draft = true
 - Confusing naming
 	_index.md vs index.md
 	OrderedTaxonomy/WeightedPages .Page vs .Pages https://gohugo.io/templates/taxonomy-templates/#orderedtaxonomy
+- https://commaok.xyz/post/on_hugo/
 
 ## Misc
 - Even Better TOML supports Hugo out of the box (but doesn't say it does)
@@ -48,6 +47,8 @@ draft = true
 ## Why Hugo?
 - Jekyll
 	- Instructions - Install all prerequisites - Ruby, RubyGems, gcc, make
+- Sphinx?
+- Custom?
 
 ## The rabbit hole
 Want to make a site
