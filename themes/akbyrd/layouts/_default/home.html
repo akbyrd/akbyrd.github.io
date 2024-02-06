@@ -1,7 +1,22 @@
 {{ define "main" }}
-	{{ .Content }}
-	{{ range site.RegularPages }}
-		<h2><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
-		{{ .Summary }}
-	{{ end }}
+		<ul class="post-list">
+			{{ $posts := (.GetPage "posts").RegularPagesRecursive }}
+			{{ $tests := (.GetPage "tests").RegularPagesRecursive }}
+			{{ range (append $posts $tests) }}
+			{{ $devOnly := .Draft }}
+			{{ with .Date        }}{{ $devOnly = or $devOnly (ge . time.Now) }}{{ end }}
+			{{ with .PublishDate }}{{ $devOnly = or $devOnly (ge . time.Now) }}{{ end }}
+			{{ with .ExpiryDate  }}{{ $devOnly = or $devOnly (le . time.Now) }}{{ end }}
+			<li class="post{{if $devOnly }} draft{{ end }}">
+				<h1>
+					<a class="post-title" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+					{{ with .Date }}
+					<time class="post-time" datetime="{{ .Format "2006-01-02" }}">{{ .Format "Jan 2, 2006" }}</time>
+					{{ else }}
+					<div class="post-time">&zwnj;</div>
+					{{ end }}
+				</h1>
+			</li>
+			{{ end }}
+		</ul>
 {{ end }}

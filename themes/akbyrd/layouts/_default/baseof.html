@@ -1,24 +1,47 @@
 <!DOCTYPE html>
-<html
-	lang="{{ or site.Language.LanguageCode site.Language.Lang }}"
-	dir="{{ or site.Language.LanguageDirection `ltr` }}">
+
+<html lang="{{ or site.Language.LanguageCode site.Language.Lang }}" dir="{{ or site.Language.LanguageDirection `ltr` }}">
 
 <head>
-	{{ partial "head.html" . }}
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>{{ .Title }}</title>
+
+	{{- with resources.Get "css/main.css" }}
+		{{- if eq hugo.Environment "development" }}
+	<link rel="stylesheet" href="{{ .RelPermalink }}">
+		{{- else }}
+			{{- with . | minify | fingerprint }}
+	<link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous">
+			{{- end }}
+		{{- end }}
+	{{- end }}
+
+	{{- with resources.Get "js/main.js" }}
+		{{- if eq hugo.Environment "development" }}
+			{{- with . | js.Build }}
+	<script src="{{ .RelPermalink }}"></script>
+			{{- end }}
+		{{- else }}
+			{{- $opts := dict "minify" true }}
+			{{- with . | js.Build $opts | fingerprint }}
+	<script src="{{ .RelPermalink }}" integrity="{{- .Data.Integrity }}" crossorigin="anonymous"></script>
+			{{- end }}
+		{{- end }}
+	{{- end }}
 </head>
 
 <body>
 	<header>
-		{{ partial "header.html" . }}
+		<nav class="header">
+			<a class="header-title" href="{{ site.Home.RelPermalink}} ">{{ site.Title }}</a>
+			<a class="header-about" href="{{ (site.GetPage "about").RelPermalink }}">About</a>
+		</nav>
 	</header>
 
 	<main>
 		{{ block "main" . }}{{ end }}
 	</main>
-
-	<footer>
-		{{ partial "footer.html" . }}
-	</footer>
 </body>
 
 </html>
