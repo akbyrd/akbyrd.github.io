@@ -1,7 +1,10 @@
 Palette
 -------
 Usage      | Dark             | Light
-Background | Gray 700 #616161 | Gray 300 #E0E0E0
+Background | Gray 000 #212121 |
+Blog Title |
+Post Title |
+Post Date  |
 
 
 

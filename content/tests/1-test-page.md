@@ -1,10 +1,9 @@
 +++
 title = 'Test Page'
-pubdate = 2023-12-10T15:15:21-08:00
+date = 2023-12-10
 draft = true
-#_build.list = "never"
-weight = 1
 +++
+
 
 
 ## Text

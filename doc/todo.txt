@@ -1,28 +1,29 @@
 Theme
 TODO: Read about meterial design https://m3.material.io/
-TODO: Background color
 
 Header
-TODO: Dark/light button (smooth, saved)
-
-Footer
-TODO: Fix a typo button
-TODO: Report a bug button
+TODO: Dark/light button (smooth, saved, respect OS/browser default)
 
 Home
-TODO: About link
 TODO: Post list
+	Sans serif for titles, dates, headers
 TODO: RSS subscribe button
+TODO: Icon
 
 Posts
+TODO: Automatically calculate title
+TODO: Automatically calculate alias from numeric prefix
 TODO: Set up modified date
 TODO: Implement comments (Github, Giscus, Staticman, Custom)
-TODO: Permalinks?
-TODO: Typo fixes / pull requests
-TODO: Consider other markup languages (Djot, Markdeep, AsciiDoc, Custom)
-TODO: Headers as hyperlinks (as opposed to showing an anchor icon)
+TODO: Fix typo / pull request button
+TODO: Edit this page button https://www.ii.com/vscode-uri-scheme-and-hugo/
+TODO: Consider other markup languages (Djot, Markdeep, AsciiDoc, rST, Custom)
+TODO: Headers as hyperlinks (as opposed to showing an anchor icon) https://www.ii.com/linkified-section-headings-in-hugo-generated-web-pages/
 
 General
+TODO: Don't use h1 for title. Reduce h for all posts
+TODO: Add favicon (all browsers, desktop + mobile)
+TODO: Read about html tags
 TODO: github 404 page
 TODO: Add search support
 TODO: RSS / Atom
@@ -34,6 +35,7 @@ Validation
 TODO: Run site audit as part of deployment
 TODO: Require summary if draft is not true
 TODO: Require dates if non-draft
+TODO: Try https://jigsaw.w3.org/css-validator/
 
 Syntax highlighting
 TODO: Fix line number color
@@ -45,14 +47,3 @@ TODO: Can't set lineAnchors https://discourse.gohugo.io/t/anchorlinenos-true-att
 
 Content
 TODO: Add my rss list
-
-Markdown
-TODO: Goldmark documentation
-TODO: Math blocks don't auto close
-TODO: Math blocks don't auto surround
-TODO: Strikethrough doesn't auto close
-TODO: Strikethrough doesn't auto surround
-TODO: Italic doesn't auto close
-TODO: Underline doesn't auto close
-TODO: Bold doesn't auto close
-TODO: Markdown comments don't auto close

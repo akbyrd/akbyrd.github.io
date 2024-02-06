@@ -4,6 +4,8 @@ aliases = [ '1' ]
 draft = true
 +++
 
+
+
 ## Things Hugo gets right
 - Single executable with no dependencies
 - Layered config
@@ -14,7 +16,7 @@ draft = true
 ## Things Hugo gets wrong
 - Documentation
 	- Doesn't explain that attributes are parameters to shortcodes. Doesn't explain what they do and leads to confusion until you make that connection yourself.
-	- Doesn't teach you about hte relationship between markup and shortcodes. Does not explain shortcodes early enough.
+	- Doesn't teach you about the relationship between markup and shortcodes. Does not explain shortcodes early enough.
 	- 5 years old "The bundle documentation is a work in progress. We will publish more comprehensive docs about this soon." [ref](https://gohugo.io/content-management/organization/)
 	- Ditto https://gohugo.io/hugo-modules/theme-components/
 	- Inaccurate

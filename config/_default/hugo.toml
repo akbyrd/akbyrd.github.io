@@ -4,10 +4,12 @@ title = 'akbyrd'
 theme = 'akbyrd'
 
 cleanDestinationDir = true
+disableHugoGeneratorInject = true
 enableEmoji = true
 enableGitInfo = true
 enableInlineShortcodes = true
 markup.goldmark.renderer.hardWraps = true
+markup.goldmark.renderer.unsafe = true # allow html
 markup.highlight.anchorLineNos = true
 markup.highlight.lineNos = true
 
