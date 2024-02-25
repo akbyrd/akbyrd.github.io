@@ -1,14 +1,17 @@
 Theme
 TODO: Read about meterial design https://m3.material.io/
 
-Header
-TODO: Dark/light button (smooth, saved, respect OS/browser default)
-
 Home
-TODO: Post list
-	Sans serif for titles, dates, headers
-TODO: RSS subscribe button
+TODO: Pick a serif font (titles)
+TODO: Pick a sans font (posts)
+TODO: Pick a color scheme
+TODO: Responsive layout
 TODO: Icon
+
+About
+TODO: Fill in links
+TODO: Reserve image space
+TODO: Responsive image size?
 
 Posts
 TODO: Automatically calculate title
@@ -21,15 +24,16 @@ TODO: Consider other markup languages (Djot, Markdeep, AsciiDoc, rST, Custom)
 TODO: Headers as hyperlinks (as opposed to showing an anchor icon) https://www.ii.com/linkified-section-headings-in-hugo-generated-web-pages/
 
 General
-TODO: Don't use h1 for title. Reduce h for all posts
+TODO: Dark/light mode (smooth, saved, respect OS/browser default)
 TODO: Add favicon (all browsers, desktop + mobile)
-TODO: Read about html tags
+TODO: Sitemap
+TODO: RSS / Atom
 TODO: github 404 page
 TODO: Add search support
-TODO: RSS / Atom
 TODO: Math formatting (load only when used)
-TODO: Test search engine results
 TODO: Tooltip for emoji (dev only?)
+TODO: Test search engine results
+TODO: Read about html tags
 
 Validation
 TODO: Run site audit as part of deployment

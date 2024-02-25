@@ -7,7 +7,7 @@
 	<meta name="viewport" content="width=device-width">
 	<title>{{ .Title }}</title>
 
-	{{- with resources.Get "css/main.css" }}
+	{{- with resources.Get "main.css" }}
 		{{- if eq hugo.Environment "development" }}
 	<link rel="stylesheet" href="{{ .RelPermalink }}">
 		{{- else }}
@@ -17,7 +17,7 @@
 		{{- end }}
 	{{- end }}
 
-	{{- with resources.Get "js/main.js" }}
+	{{- with resources.Get "main.js" }}
 		{{- if eq hugo.Environment "development" }}
 			{{- with . | js.Build }}
 	<script src="{{ .RelPermalink }}"></script>

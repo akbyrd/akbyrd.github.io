@@ -1,0 +1,113 @@
+/* TODO: Date on bottom (so it matches post pages) */
+/* TODO: Should links extend horizontally? */
+
+* { all: unset; }
+
+*:focus {
+	outline-style: solid;
+	outline-color: #007fd4;
+}
+
+html {
+	background-color: #212121;
+	color: #BDBDBD;
+	font-family: serif;
+	text-shadow: 1px 1px 6px #000a;
+	margin: 6px 20px 12px 20px;
+}
+
+head {
+	display: none;
+}
+
+body {
+	display: block;
+	margin: 0 auto;
+	max-width: 800px;
+}
+
+header {
+	display: block;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: sans-serif;
+	font-weight: bold;
+}
+
+h1 { font-size: 30pt; }
+h2 { font-size: 28pt; }
+h3 { font-size: 26pt; }
+h4 { font-size: 24pt; }
+h5 { font-size: 22pt; }
+h6 { font-size: 20pt; }
+
+a {
+	cursor: pointer;
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* Header */
+
+.header {
+	align-items: center;
+	display: block flex;
+	font-family: sans-serif;
+	font-weight: bold;
+	justify-content: space-between;
+}
+
+.header-title {
+	font-size: 18pt;
+	line-height: 22pt;
+	padding: 8px;
+	margin: -8px;
+	margin-top: 0;
+}
+
+.header-about {
+	font-size: 14pt;
+	line-height: 22pt;
+	padding: 8px;
+	margin: -8px;
+	margin-top: 0;
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* Home - Post List */
+
+.post-list {
+	display: block;
+	list-style: none;
+	margin: 50px 0;
+}
+
+.post {
+	display: block;
+	margin: 30px 0;
+}
+
+.post.draft {
+	background: repeating-linear-gradient(
+		35deg,
+		#00000000,
+		#00000000 10px,
+		#FFFFFF0C 10px,
+		#FFFFFF0C 20px
+	);
+}
+
+.post-time {
+	color: #616161;
+	display: block;
+	font-size: 11pt;
+}
+
+.post-title {
+	color: #007fd4;
+	display: block;
+}
+
+.post-title:hover {
+	text-decoration: underline;
+}
