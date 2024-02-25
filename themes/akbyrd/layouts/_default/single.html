@@ -5,6 +5,10 @@
 	{{ $dateHuman := .Date | time.Format ":date_long" }}
 	<time datetime="{{ $dateMachine }}">{{ $dateHuman }}</time>
 
+	{{ if not (or .Draft .Date) }}
+		{{ errorf "Non-draft posts must have a date. File: %s" .File.Path }}
+	{{ end }}
+
 	{{ .Content }}
 
 	{{ if .Page.Store.Get "hasMermaid" }}
