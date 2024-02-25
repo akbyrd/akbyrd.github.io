@@ -1,8 +1,7 @@
 {{ define "main" }}
 		<ul class="post-list">
 			{{ $posts := (.GetPage "posts").RegularPagesRecursive }}
-			{{ $tests := (.GetPage "tests").RegularPagesRecursive }}
-			{{ range (append $posts $tests) }}
+			{{ range $posts }}
 			{{ $devOnly := .Draft }}
 			{{ with .Date        }}{{ $devOnly = or $devOnly (ge . time.Now) }}{{ end }}
 			{{ with .PublishDate }}{{ $devOnly = or $devOnly (ge . time.Now) }}{{ end }}

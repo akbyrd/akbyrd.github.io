@@ -1,7 +1,7 @@
 +++
 title = 'Test Page'
 date = 2023-12-10
-draft = true
+slug = 'test-page'
 +++
 
 

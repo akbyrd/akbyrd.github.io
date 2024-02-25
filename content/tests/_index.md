@@ -1,0 +1,4 @@
++++
+# Disable rss
+outputs = [ 'html' ]
++++
