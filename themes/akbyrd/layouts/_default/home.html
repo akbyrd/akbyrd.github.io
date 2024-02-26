@@ -7,14 +7,14 @@
 			{{ with .PublishDate }}{{ $devOnly = or $devOnly (ge . time.Now) }}{{ end }}
 			{{ with .ExpiryDate  }}{{ $devOnly = or $devOnly (le . time.Now) }}{{ end }}
 			<li class="post{{if $devOnly }} draft{{ end }}">
-				<h1>
-					<a class="post-title" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+				<a class="post-link" href="{{ .RelPermalink }}">
+					<h1 class="post-title">{{ .LinkTitle }}</h1>
 					{{ with .Date }}
 					<time class="post-time" datetime="{{ .Format "2006-01-02" }}">{{ .Format "Jan 2, 2006" }}</time>
 					{{ else }}
 					<div class="post-time">&zwnj;</div>
 					{{ end }}
-				</h1>
+				</a>
 			</li>
 			{{ end }}
 		</ul>
