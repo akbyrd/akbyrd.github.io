@@ -7,6 +7,11 @@ TODO: Pick a sans font (posts)
 TODO: Pick a color scheme
 TODO: Responsive layout
 TODO: Icon
+	Add Inkscape to repo
+	cache-busting
+	Try a gradient
+TODO: Focus handling
+	https://www.deque.com/blog/give-site-focus-tips-designing-usable-focus-indicators/
 
 About
 TODO: Fill in links
@@ -26,7 +31,7 @@ TODO: Headers as hyperlinks (as opposed to showing an anchor icon) https://www.i
 General
 TODO: Dark/light mode (smooth, saved, respect OS/browser default)
 TODO: Add favicon (all browsers, desktop + mobile)
-TODO: Sitemap
+TODO: Sitemap (remove posts and tests)
 TODO: RSS / Atom
 TODO: github 404 page
 TODO: Add search support
@@ -51,3 +56,6 @@ TODO: Can't set lineAnchors https://discourse.gohugo.io/t/anchorlinenos-true-att
 
 Content
 TODO: Add my rss list
+
+Testing
+TODO: Apple touch icon

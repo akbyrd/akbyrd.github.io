@@ -1,2 +1,38 @@
 Embedding a page with a seamless iframe
 https://stackoverflow.com/a/1118715/986007
+
+
+
+Favicons
+--------
+Store as /favicon.ico as a fallback
+Widely supported formats: ico, png, gif, jpeg, svg
+Preferred sizes
+	Multiples of 48px (google)
+	16, 32, 48, 64px (spec)
+	48px (android)
+	152, 167, 180px png (apple)
+	192px (google recommendation)
+Actual sizes and formats
+	32px ico, favicon.ico
+	svg with light and dark
+	180px png for apple
+Link rel
+	icon
+	apple-touch-icon
+Include type and sizes attributes
+Update process
+	Start with an svg
+	Add svg styles to switch between light and dark mode
+	Create ico from svg
+	Create png from svg
+	Compress/optimize each
+Generators
+	https://favicon.io/
+	https://www.favicon-generator.org/
+Resources
+	https://developer.mozilla.org/en-US/docs/Glossary/Favicon
+	https://developers.google.com/search/docs/appearance/favicon-in-search
+	https://en.wikipedia.org/wiki/Favicon
+	https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html
+	https://evilmartians.com/chronicles/how-to-favicon-in-2021-six-files-that-fit-most-needs

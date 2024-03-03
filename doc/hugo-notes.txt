@@ -57,6 +57,7 @@ https://gohugo.io/documentation/
 https://vendelin.org/geeky/hugo/
 https://www.youtube.com/playlist?list=PLLAZ4kZ9dFpOnyRlyS-liKL5ReHDcj4G3
 https://www.ii.com/hugo-tutorial/
+https://github.com/infiniteink/themeless-gitless-intro-hugo
 https://digitaldrummerj.me/series/blogging-with-hugo/
 https://medium.com/pragmatic-programmers/table-of-contents-3c4a7575cb92
 https://janert.me/guides/hugo-survival-guide/

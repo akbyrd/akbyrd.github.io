@@ -7,6 +7,20 @@
 	<meta name="viewport" content="width=device-width,initial-scale=1" />
 	<title>{{ .Title }}</title>
 
+	<link rel="icon" sizes="32x32" href="{{ (resources.Get "favicon.ico").RelPermalink }}">
+	<link rel="icon" type="image/svg+xml" href="{{ (resources.Get "favicon.svg").RelPermalink }}">
+	<link rel="apple-touch-icon" href="{{ (resources.Get "apple-touch-icon.png").RelPermalink }}">
+
+	{{ with resources.Get "favicon.ico" }}
+	<link rel="icon" href="{{ .RelPermalink }}" sizes="32x32">
+	{{ end }}
+	{{ with resources.Get "favicon.svg" }}
+	<link rel="icon" href="{{ .RelPermalink }}" type="image/svg+xml">
+	{{ end }}
+	{{ with resources.Get "apple-touch-icon.png" }}
+	<link rel="apple-touch-icon" href="{{ .RelPermalink }}">
+	{{ end }}
+
 	{{ with resources.Get "main.css" }}
 		{{ if eq hugo.Environment "development" }}
 	<link rel="stylesheet" href="{{ .RelPermalink }}">

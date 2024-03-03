@@ -50,12 +50,6 @@
 			"command": "hugo -e production --cleanDestinationDir --printPathWarnings",
 		},
 		{
-			"label": "clean-solution",
-			"detail": "hugo clean",
-			"type": "shell",
-			"command": "Remove-Item -Recurse public/",
-		},
-		{
 			"label": "test-file",
 			"detail": "hugo test (development)",
 			"type": "shell",
@@ -78,6 +72,12 @@
 			"detail": "hugo site",
 			"type": "shell",
 			"command": "Start-Process http://localhost:1313/",
+		},
+		{
+			"label": "build-favicon",
+			"detail": "build favicon variants",
+			"type": "shell",
+			"command": "tools/favicon.ps1",
 		},
 	],
 }
