@@ -72,6 +72,6 @@ function Generate-Inkscape
 		$output
 }
 
-#Convert-ImageMagick
+Convert-ImageMagick
 #Convert-Inkscape
-Generate-Inkscape
+#Generate-Inkscape

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 
-	<!-- NOTE: The filter is a workaround to remove a default applied by Edge -->
 	<style type="text/css">
 		svg {
 			fill: #888;
@@ -18,5 +17,9 @@
 	<!--<text id="lb" font-size="40px" x="-6%" y="59.3%" font-family="inconsolata nerd font">{</text>-->
 	<!--<text id="lb" font-size="37px" x="-5%" y="52.4%" font-family="segoe ui">{</text>-->
 
-	<use href="#lb" transform="scale(-1,1) translate(-32,0)" />
+	<use xlink:href="#lb" transform="scale(-1,1) translate(-32,0)" />
 </svg>
+
+<!-- NOTE: Filter is needed to remove default applied by Edge -->
+<!-- NOTE: MSVG is needed because default doesn't handle <use> -->
+<!-- NOTE: Fill is needed because MSVG doesn't handle styles -->

@@ -5,6 +5,8 @@ TODO: Pick a color scheme
 TODO: Responsive layout
 TODO: Icon
 	Compression
+		Compress ico
+		Compress png
 TODO: Focus handling
 	https://www.deque.com/blog/give-site-focus-tips-designing-usable-focus-indicators/
 TODO: Test apple touch icon
