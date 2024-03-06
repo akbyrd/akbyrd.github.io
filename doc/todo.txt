@@ -26,6 +26,7 @@ TODO: Headers as hyperlinks (as opposed to showing an anchor icon) https://www.i
 
 General
 TODO: Remove custom theme
+TODO: Minify html in production builds (vscode tasks and github actions)
 TODO: Read about meterial design https://m3.material.io/
 TODO: Dark/light mode (smooth, saved, respect OS/browser default)
 TODO: Sitemap (remove posts and tests)

@@ -1,30 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
 
 	<!-- NOTE: The filter is a workaround to remove a default applied by Edge -->
 	<style type="text/css">
-		text {
+		svg {
 			fill: #888;
 			dominant-baseline: middle;
-			filter: url(#non-existent);
+			text-anchor: start;
 		}
-
 		@media (prefers-color-scheme: light) {
-			text { fill: #666; }
+			svg { fill: #666; }
 		}
 	</style>
 
-	<!--<text font-size="37px" x="-5%"  y="52.4%" text-anchor="start" font-family="segoe ui" >{</text>-->
-	<!--<text font-size="37px" x="105%" y="52.4%" text-anchor="end"   font-family="segoe ui" >}</text>-->
+	<text id="lb" font-size="33px" x="-2%" y="50.0%" font-family="arial">{</text>
+	<!--<text id="lb" font-size="35px" x="-8%" y="51.0%" font-family="consolas">{</text>-->
+	<!--<text id="lb" font-size="40px" x="-6%" y="59.3%" font-family="inconsolata nerd font">{</text>-->
+	<!--<text id="lb" font-size="37px" x="-5%" y="52.4%" font-family="segoe ui">{</text>-->
 
-	<!--<text font-size="34px" x="-2%"  y="50%" text-anchor="start" font-family="arial" >{</text>-->
-	<!--<text font-size="34px" x="102%" y="50%" text-anchor="end"   font-family="arial" >}</text>-->
-
-	<!--<text font-size="35px" x="-8%"  y="51%" text-anchor="start" font-family="consolas" >{</text>-->
-	<!--<text font-size="35px" x="108%" y="51%" text-anchor="end"   font-family="consolas" >}</text>-->
-
-	<text font-size="40px" x="-6%"     y="59.25%" text-anchor="start" font-family="inconsolata nerd font" >{</text>
-	<text font-size="40px" x="110.75%" y="59.25%" text-anchor="end"   font-family="inconsolata nerd font" >}</text>
-
+	<use href="#lb" transform="scale(-1,1) translate(-32,0)" />
 </svg>
