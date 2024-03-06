@@ -7,41 +7,20 @@
 	<meta name="viewport" content="width=device-width,initial-scale=1" />
 	<title>{{ .Title }}</title>
 
-	<link rel="icon" sizes="32x32" href="{{ (resources.Get "favicon.ico").RelPermalink }}">
-	<link rel="icon" type="image/svg+xml" href="{{ (resources.Get "favicon.svg").RelPermalink }}">
-	<link rel="apple-touch-icon" href="{{ (resources.Get "apple-touch-icon.png").RelPermalink }}">
-
-	{{ with resources.Get "favicon.ico" }}
-	<link rel="icon" href="{{ .RelPermalink }}" sizes="32x32">
+	{{ with partial "resource.html" (dict "Name" "favicon.ico" "Rename" false) }}
+	<link rel="icon" href="{{ .RelPermalink }}" sizes="32x32" {{ .Integrity }}>
 	{{ end }}
-	{{ with resources.Get "favicon.svg" }}
-	<link rel="icon" href="{{ .RelPermalink }}" type="image/svg+xml">
+	{{ with partial "resource.html" "favicon.svg" }}
+	<link rel="icon" href="{{ .RelPermalink }}" type="image/svg+xml" {{ .Integrity }}>
 	{{ end }}
-	{{ with resources.Get "apple-touch-icon.png" }}
-	<link rel="apple-touch-icon" href="{{ .RelPermalink }}">
+	{{ with partial "resource.html" "apple-touch-icon.png" }}
+	<link rel="apple-touch-icon" href="{{ .RelPermalink }}" {{ .Integrity }}>
 	{{ end }}
-
-	{{ with resources.Get "main.css" }}
-		{{ if eq hugo.Environment "development" }}
-	<link rel="stylesheet" href="{{ .RelPermalink }}">
-		{{ else }}
-			{{ with . | minify | fingerprint }}
-	<link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous">
-			{{ end }}
-		{{ end }}
+	{{ with partial "resource.html" "main.css" }}
+	<link rel="stylesheet" href="{{ .RelPermalink }}" {{ .Integrity }}>
 	{{ end }}
-
-	{{ with resources.Get "main.js" }}
-		{{ if eq hugo.Environment "development" }}
-			{{ with . | js.Build }}
-	<script src="{{ .RelPermalink }}"></script>
-			{{ end }}
-		{{ else }}
-			{{ $opts := dict "minify" true }}
-			{{ with . | js.Build $opts | fingerprint }}
-	<script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
-			{{ end }}
-		{{ end }}
+	{{ with partial "resource.html" "main.js" }}
+	<script src="{{ .RelPermalink }}" {{ .Integrity }}></script>
 	{{ end }}
 </head>
 

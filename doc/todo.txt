@@ -1,13 +1,10 @@
-Theme
-TODO: Read about meterial design https://m3.material.io/
-
 Home
 TODO: Pick a serif font (titles)
 TODO: Pick a sans font (posts)
 TODO: Pick a color scheme
 TODO: Responsive layout
 TODO: Icon
-	cache-busting
+	Compression
 TODO: Focus handling
 	https://www.deque.com/blog/give-site-focus-tips-designing-usable-focus-indicators/
 TODO: Test apple touch icon
@@ -28,8 +25,9 @@ TODO: Consider other markup languages (Djot, Markdeep, AsciiDoc, rST, Custom)
 TODO: Headers as hyperlinks (as opposed to showing an anchor icon) https://www.ii.com/linkified-section-headings-in-hugo-generated-web-pages/
 
 General
+TODO: Remove custom theme
+TODO: Read about meterial design https://m3.material.io/
 TODO: Dark/light mode (smooth, saved, respect OS/browser default)
-TODO: Add favicon (all browsers, desktop + mobile)
 TODO: Sitemap (remove posts and tests)
 TODO: RSS / Atom
 TODO: github 404 page

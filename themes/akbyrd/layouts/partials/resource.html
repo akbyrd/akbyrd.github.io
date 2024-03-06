@@ -1,0 +1,55 @@
+{{ $ret := dict }}
+
+{{ $name := . }}
+{{ $rename := true }}
+
+{{ if reflect.IsMap . }}
+	{{ $name = .Name }}
+	{{ $rename = .Rename }}
+{{ end }}
+
+{{ with resources.Get $name }}
+	{{ $resource := . }}
+	{{ $fingerprint := "" }}
+	{{ $type := .MediaType.SubType }}
+
+	{{ if ne hugo.Environment "development" }}
+		{{ range slice "css" "json" "html" "svg" "xml" }}
+			{{ if strings.Contains $type . }}
+				{{ $resource = $resource | minify }}
+				{{ break }}
+			{{ end }}
+		{{ end }}
+	{{ end }}
+
+	{{ if eq $type "javascript" }}
+		{{ if ne hugo.Environment "development" }}
+			{{ $opts := dict "minify" true }}
+			{{ $resource = $resource | js.Build $opts }}
+		{{ else }}
+			{{ $resource = $resource | js.Build }}
+		{{ end }}
+	{{ end }}
+
+	{{ $resource = $resource | fingerprint }}
+	{{ $fingerprint = $resource.Data.Integrity }}
+
+	{{ $hash := index (index (findRESubmatch `sha\d*-(.*)` $fingerprint) 0) 1 }}
+	{{ $long := $hash }}
+	{{ $short := $hash | first 6 }}
+
+	{{ if $rename }}
+		{{ $name = replaceRE `\.([^.]*\z)` (printf "-%s.$1" $short) $name }}
+		{{ $name = replace $name "+" "p" }}
+		{{ $name = replace $name "/" "f" }}
+		{{ $name = replace $name "=" "e" }}
+	{{ end }}
+	{{ $resource = $resource.Content | resources.FromString $name }}
+
+	{{ $integrity := printf `integrity=%q crossorigin="anonymous"` ($fingerprint | htmlEscape) | safeHTMLAttr }}
+	{{ $permalink := $resource.RelPermalink }}
+
+	{{ $ret = dict "Short" $short "Long" $long "Integrity" $integrity "RelPermalink" $permalink }}
+{{ end }}
+
+{{ return $ret }}

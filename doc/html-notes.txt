@@ -36,3 +36,9 @@ Resources
 	https://en.wikipedia.org/wiki/Favicon
 	https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html
 	https://evilmartians.com/chronicles/how-to-favicon-in-2021-six-files-that-fit-most-needs
+
+
+
+Performance
+-----------
+https://developer.yahoo.com/performance/rules.html

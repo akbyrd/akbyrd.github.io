@@ -13,6 +13,7 @@ Shortcodes
 ----------
 {{% shortcode %}} contains markdown
 {{< shortcode >}} doesn't contain markdown
+https://www.jalview.org/editor-guide/partials_and_shortcodes/
 
 
 
