@@ -78,7 +78,7 @@
 			"detail": "build favicon variants",
 			"type": "shell",
 			"command": "tools/favicon.ps1",
-			"args": [ "themes/akbyrd/assets/icons/arial.svg" ]
+			"args": [ "themes/akbyrd/assets/favicon-source.svg" ]
 		},
 	],
 }
