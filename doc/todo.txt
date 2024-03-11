@@ -7,7 +7,6 @@ TODO: Icon
 	Compression
 		Try a symbol + instance for the text
 		Compress ico
-		Compress png
 TODO: Focus handling
 	https://www.deque.com/blog/give-site-focus-tips-designing-usable-focus-indicators/
 TODO: Test apple touch icon

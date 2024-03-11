@@ -33,10 +33,16 @@ function Generate-Favicons
 
 	& $magick -size 32x32 -background none $output_svg $output_ico
 
-	& $magick -background none `
+	& $magick `
 		-size 400x400 "radial-gradient:white-#70809080" `
-		-gravity center -crop "180x180+0+0" `
-		-size 140x140 -gravity center $output_svg `
+		-gravity Center -crop "180x180+0+0" `
+		`
+		-background none `
+		-size 140x140 $output_svg `
+		`
+		-background white `
+		-quality 91 `
+		-depth 8 `
 		-composite $output_apple
 
 	# NOTE: Manually clean up the final svg
