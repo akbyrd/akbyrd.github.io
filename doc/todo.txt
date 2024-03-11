@@ -3,10 +3,6 @@ TODO: Pick a serif font (titles)
 TODO: Pick a sans font (posts)
 TODO: Pick a color scheme
 TODO: Responsive layout
-TODO: Icon
-	Compression
-		Try a symbol + instance for the text
-		Compress ico
 TODO: Focus handling
 	https://www.deque.com/blog/give-site-focus-tips-designing-usable-focus-indicators/
 TODO: Test apple touch icon
@@ -38,7 +34,7 @@ TODO: Add search support
 TODO: Math formatting (load only when used)
 TODO: Tooltip for emoji (dev only?)
 TODO: Test search engine results
-TODO: Read about html tags
+TODO: Test theme-color on android
 
 Validation
 TODO: Run site audit as part of deployment

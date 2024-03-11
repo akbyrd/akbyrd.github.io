@@ -5,22 +5,24 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<meta name="theme-color" content="#212121" />
+	<meta name="theme-color" media="(prefers-color-scheme: light)" content="#bdbdbd" />
 	<title>{{ .Title }}</title>
 
 	{{ with partial "resource.html" (dict "Name" "favicon.ico" "Rename" false) }}
-	<link rel="icon" href="{{ .RelPermalink }}" sizes="32x32" {{ .Integrity }}>
+	<link rel="icon" href="{{ .RelPermalink }}" sizes="32x32"{{ .Integrity }}>
 	{{ end }}
 	{{ with partial "resource.html" "favicon.svg" }}
-	<link rel="icon" href="{{ .RelPermalink }}" type="image/svg+xml" {{ .Integrity }}>
+	<link rel="icon" href="{{ .RelPermalink }}" size="any" type="image/svg+xml"{{ .Integrity }}>
 	{{ end }}
 	{{ with partial "resource.html" "apple-touch-icon.png" }}
-	<link rel="apple-touch-icon" href="{{ .RelPermalink }}" {{ .Integrity }}>
+	<link rel="apple-touch-icon" href="{{ .RelPermalink }}"{{ .Integrity }}>
 	{{ end }}
 	{{ with partial "resource.html" "main.css" }}
-	<link rel="stylesheet" href="{{ .RelPermalink }}" {{ .Integrity }}>
+	<link rel="stylesheet" href="{{ .RelPermalink }}"{{ .Integrity }}>
 	{{ end }}
 	{{ with partial "resource.html" "main.js" }}
-	<script src="{{ .RelPermalink }}" {{ .Integrity }}></script>
+	<script src="{{ .RelPermalink }}"{{ .Integrity }}></script>
 	{{ end }}
 </head>
 

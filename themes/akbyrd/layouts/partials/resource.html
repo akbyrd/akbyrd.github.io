@@ -46,7 +46,11 @@
 	{{ end }}
 	{{ $resource = $resource.Content | resources.FromString $name }}
 
-	{{ $integrity := printf `integrity=%q crossorigin="anonymous"` ($fingerprint | htmlEscape) | safeHTMLAttr }}
+	{{ $integrity := "" | safeHTMLAttr }}
+	{{ if ne hugo.Environment "development" }}
+		{{ $integrity = printf ` integrity=%q crossorigin="anonymous"` ($fingerprint | htmlEscape) | safeHTMLAttr }}
+	{{ end }}
+
 	{{ $permalink := $resource.RelPermalink }}
 
 	{{ $ret = dict "Short" $short "Long" $long "Integrity" $integrity "RelPermalink" $permalink }}

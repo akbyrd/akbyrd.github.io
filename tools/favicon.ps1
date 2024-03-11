@@ -43,6 +43,9 @@ function Generate-Favicons
 		-background white `
 		-quality 91 `
 		-depth 8 `
+		+set date:timestamp `
+		+set date:create `
+		+set date:modify `
 		-composite $output_apple
 
 	# NOTE: Manually clean up the final svg
