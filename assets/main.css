@@ -1,12 +1,37 @@
-/* TODO: Date on bottom (so it matches post pages) */
-/* TODO: Should links extend horizontally? */
+/* ---------------------------------------------------------------------------------------------- */
+/* Reset */
 
 * { all: unset; }
 
-*:focus {
-	outline-style: solid;
-	outline-color: #007fd4;
+/* ---------------------------------------------------------------------------------------------- */
+/* Focus */
+
+* {
+	outline-color: #007fd4a0;
+	outline-offset: 4px;
+	outline-width: 3px;
 }
+
+:focus-visible {
+	outline-color: #007fd4;
+	outline-offset: 0px;
+	outline-style: solid;
+	transition-duration: 200ms;
+	transition-property: outline-offset, outline-color;
+}
+
+@supports not selector(:focus-visible) {
+	:focus:not(:active) {
+		outline-color: #007fd4;
+		outline-offset: 0px;
+		outline-style: solid;
+		transition-duration: 200ms;
+		transition-property: outline-offset, outline-color;
+	}
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* Standard Elements */
 
 html {
 	background-color: #212121;
@@ -84,7 +109,7 @@ a {
 
 .post {
 	display: block;
-	margin: 30px 0;
+	margin: 20px 0;
 }
 
 .post.draft {
@@ -99,6 +124,7 @@ a {
 
 .post-link {
 	display: block;
+	padding: 6px
 }
 
 .post-link:hover > .post-title {

@@ -1,15 +1,12 @@
-Home
-TODO: Responsive layout
-TODO: Focus handling
-	https://www.deque.com/blog/give-site-focus-tips-designing-usable-focus-indicators/
-TODO: Test apple touch icon
-
 About
+TODO: Fix nav offset compared to home
 TODO: Fill in links
 TODO: Reserve image space
 TODO: Responsive image size?
+TODO: Confirm focus handling
 
 Posts
+TODO: Fix nav offset compared to home
 TODO: Automatically calculate title
 TODO: Automatically calculate alias from numeric prefix
 TODO: Set up modified date
@@ -18,10 +15,10 @@ TODO: Fix typo / pull request button
 TODO: Edit this page button https://www.ii.com/vscode-uri-scheme-and-hugo/
 TODO: Consider other markup languages (Djot, Markdeep, AsciiDoc, rST, Custom)
 TODO: Headers as hyperlinks (as opposed to showing an anchor icon) https://www.ii.com/linkified-section-headings-in-hugo-generated-web-pages/
+TODO: Confirm focus handling
 
 General
 TODO: Minify html in production builds (vscode tasks and github actions)
-TODO: Read about meterial design https://m3.material.io/
 TODO: Dark/light mode (smooth, saved, respect OS/browser default)
 TODO: Sitemap (remove posts and tests)
 TODO: RSS / Atom
@@ -49,8 +46,12 @@ TODO: Can't set lineAnchors https://discourse.gohugo.io/t/anchorlinenos-true-att
 Content
 TODO: Add my rss list
 
+Testing
+TODO: Test apple touch icon
+
 Theme
 TODO: Pay a UI designer for a review and recommendations
+TODO: Read about meterial design https://m3.material.io/
 TODO: Pick a serif font (titles)
 TODO: Pick a sans font (posts)
 TODO: Pick a color scheme
