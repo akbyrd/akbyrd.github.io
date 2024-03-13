@@ -1,7 +1,6 @@
 baseURL = 'https://akbyrd.dev'
 languageCode = 'en-us'
 title = 'akbyrd'
-theme = 'akbyrd'
 
 cleanDestinationDir = true
 disableHugoGeneratorInject = true
