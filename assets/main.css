@@ -1,4 +1,27 @@
 /* ---------------------------------------------------------------------------------------------- */
+/* Colors */
+
+:root {
+	--accent: #007fd4;
+	--accent-fade: #007fd4a0;
+	--background: #212121;
+	--draft-stripe: #2c2c2c;
+	--text: #bdbdbd;
+	--text-detail: #616161;
+	--text-shadow: #000000a0;
+}
+
+@media (prefers-color-scheme: light) {
+	:root {
+		--background: #bdbdbd;
+		--draft-stripe: #a0a0a0;
+		--text: #212121;
+		--text-detail: #404040;
+		--text-shadow: #00000020;
+	}
+}
+
+/* ---------------------------------------------------------------------------------------------- */
 /* Reset */
 
 * { all: unset; }
@@ -7,13 +30,13 @@
 /* Focus */
 
 * {
-	outline-color: #007fd4a0;
+	outline-color: var(--accent-fade);
 	outline-offset: 4px;
 	outline-width: 3px;
 }
 
 :focus-visible {
-	outline-color: #007fd4;
+	outline-color: var(--accent);
 	outline-offset: 0px;
 	outline-style: solid;
 	transition-duration: 200ms;
@@ -22,7 +45,7 @@
 
 @supports not selector(:focus-visible) {
 	:focus:not(:active) {
-		outline-color: #007fd4;
+		outline-color: var(--accent);
 		outline-offset: 0px;
 		outline-style: solid;
 		transition-duration: 200ms;
@@ -34,10 +57,10 @@
 /* Standard Elements */
 
 html {
-	background-color: #212121;
-	color: #bdbdbd;
+	background-color: var(--background);
+	color: var(--text);
 	font-family: serif;
-	text-shadow: 1px 1px 6px #000a;
+	text-shadow: 1px 1px 6px var(--text-shadow);
 	margin: 6px 20px 12px 20px;
 }
 
@@ -115,10 +138,10 @@ a {
 .post.draft {
 	background: repeating-linear-gradient(
 		35deg,
-		#00000000,
-		#00000000 10px,
-		#FFFFFF0C 10px,
-		#FFFFFF0C 20px
+		transparent,
+		transparent 10px,
+		var(--draft-stripe) 10px,
+		var(--draft-stripe) 20px
 	);
 }
 
@@ -132,12 +155,12 @@ a {
 }
 
 .post-title {
-	color: #007fd4;
+	color: var(--accent);
 	display: block;
 }
 
 .post-time {
-	color: #616161;
+	color: var(--text-detail);
 	display: block;
 	font-size: 11pt;
 }

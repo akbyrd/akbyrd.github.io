@@ -26,8 +26,6 @@ TODO: github 404 page
 TODO: Add search support
 TODO: Math formatting (load only when used)
 TODO: Tooltip for emoji (dev only?)
-TODO: Test search engine results
-TODO: Test theme-color on android
 
 Validation
 TODO: Run site audit as part of deployment
@@ -48,6 +46,8 @@ TODO: Add my rss list
 
 Testing
 TODO: Test apple touch icon
+TODO: Test theme-color on android
+TODO: Test search engine results
 
 Theme
 TODO: Pay a UI designer for a review and recommendations
