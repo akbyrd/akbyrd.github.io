@@ -21,7 +21,7 @@
 	{{ with partial "resource.html" "main.css" }}
 	<link rel="stylesheet" href="{{ .RelPermalink }}"{{ .Integrity }}>
 	{{ end }}
-	{{ with partial "resource.html" "main.js" }}
+	{{ with partial "resource.html" "main.ts" }}
 	<script src="{{ .RelPermalink }}" async{{ .Integrity }}></script>
 	{{ end }}
 

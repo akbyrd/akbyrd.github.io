@@ -15,14 +15,15 @@
 // [x] TODO: button icons (inline svg?)
 // [-] TODO: Fix pop when clicking quickly
 // [x] TODO: Fix firefox animation
+// [x] TODO: Use typescript
 //
-// [ ] TODO: Move svg to file
-// [ ] TODO: Ensure file is loaded before javascript runs
+// [ ] TODO: Make text unselectable
 // [ ] TODO: Add hover text
 // [ ] TODO: Add hover transition
+// [ ] TODO: Move svg to file
+// [ ] TODO: Ensure file is loaded before javascript runs
 // [ ] TODO: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_transitions/Using_CSS_transitions
 // [ ] TODO: https://m2.material.io/design/color/dark-theme.html
-// [ ] TODO: Use typescript?
 
 const theme = {
 	current: 0,
@@ -48,12 +49,12 @@ function CycleTheme()
 	html.classList.remove(prevClass)
 	html.classList.add(currClass)
 
-	localStorage.setItem(theme.key, theme.current)
+	localStorage.setItem(theme.key, theme.current.toString())
 }
 
 function Initialize()
 {
-	theme.current = localStorage.getItem(theme.key)
+	theme.current = +(localStorage.getItem(theme.key) || 0)
 
 	const buttons = document.getElementsByClassName("header-theme-button");
 	for (const button of buttons)

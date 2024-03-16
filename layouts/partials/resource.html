@@ -28,13 +28,9 @@
 		{{ end }}
 	{{ end }}
 
-	{{ if eq $type "javascript" }}
-		{{ if $minify }}
-			{{ $opts := dict "minify" true }}
-			{{ $resource = $resource | js.Build $opts }}
-		{{ else }}
-			{{ $resource = $resource | js.Build }}
-		{{ end }}
+	{{ if (eq $type "typescript") }}
+		{{ $opts := dict "minify" $minify }}
+		{{ $resource = $resource | js.Build $opts }}
 	{{ end }}
 
 	{{ $resource = $resource | fingerprint }}
@@ -45,21 +41,23 @@
 	{{ $short := $hash | first 6 }}
 
 	{{ if $rename }}
-		{{ $name = replaceRE `\.([^.]*\z)` (printf "-%s.$1" $short) $name }}
-		{{ $name = replace $name "+" "p" }}
-		{{ $name = replace $name "/" "f" }}
-		{{ $name = replace $name "=" "e" }}
+		{{ $safe := $short }}
+		{{ $safe = replace $safe "+" "p" }}
+		{{ $safe = replace $safe "/" "f" }}
+		{{ $safe = replace $safe "=" "e" }}
+		{{ $name = replaceRE `\.([^.]*\z)` (printf "-%s.$1" $safe) $name }}
 	{{ end }}
+
+	{{ $name = replaceRE `\.ts\z` ".js" $name }}
 	{{ $resource = $resource.Content | resources.FromString $name }}
 
 	{{ $integrity := "" | safeHTMLAttr }}
 	{{ if ne hugo.Environment "development" }}
-		{{ $integrity = printf ` integrity=%q crossorigin="anonymous"` ($fingerprint | htmlEscape) | safeHTMLAttr }}
+	{{ $integrity = printf ` integrity=%q crossorigin="anonymous"` ($fingerprint | htmlEscape) | safeHTMLAttr }}
 	{{ end }}
 
-	{{ $permalink := $resource.RelPermalink }}
-
-	{{ $ret = dict "Short" $short "Long" $long "Integrity" $integrity "RelPermalink" $permalink }}
+	{{ $relPermalink := $resource.RelPermalink }}
+	{{ $ret = dict "Short" $short "Long" $long "Integrity" $integrity "RelPermalink" $relPermalink }}
 {{ end }}
 
 {{ return $ret }}

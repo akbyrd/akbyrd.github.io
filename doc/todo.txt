@@ -21,9 +21,10 @@ TODO: Headers as hyperlinks (as opposed to showing an anchor icon) https://www.i
 TODO: Confirm focus handling
 
 General
+TODO: Move assets to res folder (css, js, svg, apple)
+TODO: Should partialCached be used with resource.html?
 TODO: Figure out why firefox requests apple-touch-icon
 TODO: Minify html in production builds (vscode tasks and github actions)
-TODO: Dark/light mode (smooth, saved, respect OS/browser default)
 TODO: Sitemap (remove posts and tests)
 TODO: RSS / Atom
 TODO: github 404 page
