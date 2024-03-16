@@ -2,6 +2,12 @@
 
 {{ $name := . }}
 {{ $rename := true }}
+{{ $minify := true }}
+
+{{ if eq hugo.Environment "development" }}
+	{{ $rename = false }}
+	{{ $minify = false }}
+{{ end }}
 
 {{ if reflect.IsMap . }}
 	{{ $name = .Name }}
@@ -13,7 +19,7 @@
 	{{ $fingerprint := "" }}
 	{{ $type := .MediaType.SubType }}
 
-	{{ if ne hugo.Environment "development" }}
+	{{ if $minify }}
 		{{ range slice "css" "json" "html" "svg" "xml" }}
 			{{ if strings.Contains $type . }}
 				{{ $resource = $resource | minify }}
@@ -23,7 +29,7 @@
 	{{ end }}
 
 	{{ if eq $type "javascript" }}
-		{{ if ne hugo.Environment "development" }}
+		{{ if $minify }}
 			{{ $opts := dict "minify" true }}
 			{{ $resource = $resource | js.Build $opts }}
 		{{ else }}

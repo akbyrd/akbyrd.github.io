@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="{{ or site.Language.LanguageCode site.Language.Lang }}" dir="{{ or site.Language.LanguageDirection `ltr` }}">
+<html class="theme-system" lang="{{ or site.Language.LanguageCode site.Language.Lang }}" dir="{{ or site.Language.LanguageDirection `ltr` }}">
 
 <head>
 	<meta charset="utf-8">
@@ -22,14 +22,37 @@
 	<link rel="stylesheet" href="{{ .RelPermalink }}"{{ .Integrity }}>
 	{{ end }}
 	{{ with partial "resource.html" "main.js" }}
-	<script src="{{ .RelPermalink }}"{{ .Integrity }}></script>
+	<script src="{{ .RelPermalink }}" async{{ .Integrity }}></script>
 	{{ end }}
+
+	<script>
+		const theme = localStorage.getItem("theme") ?? 0
+		const classes = [ "theme-system", "theme-light", "theme-dark" ]
+		const html = document.getElementsByTagName("html")[0]
+		html.classList.remove("theme-system")
+		html.classList.add(classes[theme])
+	</script>
 </head>
 
 <body>
+	<noscript>
+		<style>
+			.require-js { display: none; }
+		</style>
+	</noscript>
+
 	<header>
 		<nav class="header">
-			<a class="header-title" href="{{ site.Home.RelPermalink}} ">{{ site.Title }}</a>
+			<a class="header-title" href="{{ site.Home.RelPermalink}}">{{ site.Title }}</a>
+			<button class="header-theme-button require-js" type="button" aria-label="Toggle Theme">
+				<svg class="header-theme-icon" viewBox="0 0 100 100">
+					<mask id="mask">
+						<rect class="header-theme-icon-mask" style="fill: white; height: 100%;" />
+					</mask>
+					<circle class="header-theme-icon-one" style="stroke-width: 8px; cx: 50%; cy: 50%; r: 50px;"/>
+					<circle class="header-theme-icon-two" style="stroke-width: 8px; cx: 50%; cy: 50%; r: 50px; mask: url(#mask);" />
+				</svg>
+			</button>
 			<a class="header-about" href="{{ (site.GetPage "about").RelPermalink }}">About</a>
 		</nav>
 	</header>

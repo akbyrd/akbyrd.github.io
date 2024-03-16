@@ -1,3 +1,6 @@
+Home
+TODO: Improve vertical alignment between header and posts (and post time)
+
 About
 TODO: Fix nav offset compared to home
 TODO: Fill in links
@@ -18,6 +21,7 @@ TODO: Headers as hyperlinks (as opposed to showing an anchor icon) https://www.i
 TODO: Confirm focus handling
 
 General
+TODO: Figure out why firefox requests apple-touch-icon
 TODO: Minify html in production builds (vscode tasks and github actions)
 TODO: Dark/light mode (smooth, saved, respect OS/browser default)
 TODO: Sitemap (remove posts and tests)
@@ -55,3 +59,4 @@ TODO: Read about meterial design https://m3.material.io/
 TODO: Pick a serif font (titles)
 TODO: Pick a sans font (posts)
 TODO: Pick a color scheme
+TODO: Add text selection color

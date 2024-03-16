@@ -13,3 +13,20 @@ Inspiration
 PaperMod https://themes.gohugo.io/themes/hugo-papermod/
 Bootstrap https://themes.gohugo.io/themes/hugo-theme-bootstrap/
 Nightfall https://themes.gohugo.io/themes/hugo-theme-nightfall/
+
+
+
+Reduce Contrast
+---------------
+@media (prefers-color-scheme: dark) {
+	img { filter: brightness(.8) contrast(1.2); }
+}
+
+
+
+Transitions
+-----------
+Parent transitions reset child transitions in chromium based browsers. This causes transitions to execute in sequence rather than parallel and looks bad. Theme transitions should be implemented with html { transition-duration: inherit; } but this triggers the bug. Putting transition-duration on the body is an acceptable workaround. Most of the affected colors are inherited, which means the colors are transitioned once then inherited, instead of being re-transitioned at each level of the html hierarchy. transition-duration: 200ms can be sprinkled in select location where the lack of inherited transition is noticeable.
+https://issues.chromium.org/issues/40709392
+https://codepen.io/meirkoen/pen/mdVGRYj?editors=1100
+https://stackoverflow.com/questions/74392650/css-transitions-why-do-some-of-my-element-transitions-take-longer-than-others-w
