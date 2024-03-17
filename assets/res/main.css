@@ -118,7 +118,7 @@ a, button {
 /* Header */
 
 .header {
-	align-items: center;
+	align-items: stretch;
 	display: block flex;
 	font-family: sans-serif;
 	font-size: 14pt;
@@ -133,8 +133,21 @@ a, button {
 	padding: 8px;
 }
 
+.header-theme-label {
+	font-size: 10pt;
+	padding: 8px;
+	opacity: 0%;
+	scale: 0%;
+	transition-duration: 100ms;
+	transition-timing-function: ease-out;
+
+	&:has(+ .header-theme-button:hover) {
+		opacity: 50%;
+		scale: 100%;
+	}
+}
+
 .header-theme-button {
-	align-self: stretch;
 	padding: 8px;
 }
 
@@ -154,23 +167,25 @@ a, button {
 	fill: var(--dark-text);
 }
 
-.theme-system .header-theme-icon-mask {
-	rx: 0%;
-	transition-duration: 200ms;
-	transition-property: rx, width;
-	width: 50%;
-}
+.header-theme-icon-mask {
+	.theme-system & {
+		rx: 0%;
+		transition-duration: 200ms;
+		transition-property: rx, width;
+		width: 50%;
+	}
 
-.theme-light .header-theme-icon-mask {
-	transition-duration: 200ms;
-	width: 100%;
-}
+	.theme-light & {
+		transition-duration: 200ms;
+		width: 100%;
+	}
 
-.theme-dark .header-theme-icon-mask {
-	rx: 1%;
-	transition-duration: 400ms;
-	width: 0%;
-	x: 100%;
+	.theme-dark & {
+		rx: 1%;
+		transition-duration: 400ms;
+		width: 0%;
+		x: 100%;
+	}
 }
 
 .header-about {
@@ -206,13 +221,13 @@ a, button {
 	padding: 6px
 }
 
-.post-link:hover > .post-title {
-	text-decoration: underline;
-}
-
 .post-title {
 	color: var(--accent);
 	display: block;
+
+	.post-link:hover & {
+		text-decoration: underline;
+	}
 }
 
 .post-time {

@@ -9,9 +9,9 @@ function Generate-Favicons
 	$scour       = "$inkscapeDir\share\inkscape\extensions\output_scour.py"
 
 	$assets       = "themes\akbyrd\assets"
-	$output_svg   = "$assets\favicon.svg"
+	$output_svg   = "$assets\res\favicon.svg"
 	$output_ico   = "$assets\favicon.ico"
-	$output_apple = "$assets\apple-touch-icon.png"
+	$output_apple = "$assets\res\apple-touch-icon.png"
 
 	Remove-Item -ErrorAction SilentlyContinue $output_svg
 	Remove-Item -ErrorAction SilentlyContinue $output_ico

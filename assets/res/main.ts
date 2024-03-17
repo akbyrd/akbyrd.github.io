@@ -17,37 +17,40 @@
 // [x] TODO: Fix firefox animation
 // [x] TODO: Use typescript
 // [x] TODO: Make text unselectable
+// [x] TODO: Add hover text
+// [x] TODO: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_transitions/Using_CSS_transitions
+// [x] TODO: https://m2.material.io/design/color/dark-theme.html
 //
-// [ ] TODO: Add hover text
-// [ ] TODO: Add hover transition
 // [ ] TODO: Move svg to file
 // [ ] TODO: Ensure file is loaded before javascript runs
-// [ ] TODO: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_transitions/Using_CSS_transitions
-// [ ] TODO: https://m2.material.io/design/color/dark-theme.html
 
 const theme = {
 	current: 0,
+	labels: null as HTMLCollection | null,
 
 	// Stored. Do not change
 	key: "theme",
-	classes: [
-		"theme-system",
-		"theme-light",
-		"theme-dark",
+	values: [
+		{ class: "theme-system", label: "Auto" },
+		{ class: "theme-light", label: "Light" },
+		{ class: "theme-dark", label: "Dark" },
 	],
 }
 
 function CycleTheme()
 {
 	const previous = theme.current
-	theme.current = (theme.current + 1) % theme.classes.length
+	theme.current = (theme.current + 1) % theme.values.length
 
-	const prevClass = theme.classes[previous]
-	const currClass = theme.classes[theme.current]
+	const prevClass = theme.values[previous].class
+	const currClass = theme.values[theme.current].class
 
 	const html = document.getElementsByTagName("html")[0]
 	html.classList.remove(prevClass)
 	html.classList.add(currClass)
+
+	for (const label of theme.labels!)
+		label.innerHTML = theme.values[theme.current].label
 
 	localStorage.setItem(theme.key, theme.current.toString())
 }
@@ -56,9 +59,13 @@ function Initialize()
 {
 	theme.current = +(localStorage.getItem(theme.key) || 0)
 
-	const buttons = document.getElementsByClassName("header-theme-button");
+	const buttons = document.getElementsByClassName("header-theme-button")
 	for (const button of buttons)
 		button.addEventListener("click", CycleTheme)
+
+	theme.labels = document.getElementsByClassName("header-theme-label")
+	for (const label of theme.labels)
+		label.innerHTML = theme.values[theme.current].label
 }
 
 document.readyState === 'loading'
