@@ -6,8 +6,8 @@
 			{{ with .Date        }}{{ $devOnly = or $devOnly (ge . time.Now) }}{{ end }}
 			{{ with .PublishDate }}{{ $devOnly = or $devOnly (ge . time.Now) }}{{ end }}
 			{{ with .ExpiryDate  }}{{ $devOnly = or $devOnly (le . time.Now) }}{{ end }}
-			<li class="post{{if $devOnly }} draft{{ end }}">
-				<a class="post-link" href="{{ .RelPermalink }}">
+			<li>
+				<a class="post{{if $devOnly }} draft{{ end }}" href="{{ .RelPermalink }}">
 					<h1 class="post-title">{{ .LinkTitle }}</h1>
 					{{ with .Date }}
 					<time class="post-time" datetime="{{ .Format "2006-01-02" }}">{{ .Format "Jan 2, 2006" }}</time>

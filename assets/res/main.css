@@ -54,13 +54,13 @@ html {
 
 * {
 	outline-color: var(--accent-fade);
-	outline-offset: 4px;
+	outline-offset: 3px;
 	outline-width: 3px;
 }
 
 :focus-visible {
 	outline-color: var(--accent);
-	outline-offset: 0px;
+	outline-offset: -3px;
 	outline-style: solid;
 	transition-duration: 200ms;
 	transition-property: outline-offset, outline-color;
@@ -170,7 +170,7 @@ a, button {
 
 .header-about {
 	padding: 20px;
-	padding-left: 10px
+	padding-left: 10px;
 }
 
 /* ---------------------------------------------------------------------------------------------- */
@@ -184,22 +184,18 @@ a, button {
 .post {
 	display: block;
 	font-family: sans-serif;
-	margin-bottom: 20px;
-}
+	margin-bottom: 10px;
+	padding: 10px 20px;
 
-.post.draft {
-	background: repeating-linear-gradient(
-		35deg,
-		transparent,
-		transparent 10px,
-		var(--draft-stripe) 10px,
-		var(--draft-stripe) 20px
-	);
-}
-
-.post-link {
-	display: block;
-	padding: 0 20px;
+	&.draft {
+		background: repeating-linear-gradient(
+			35deg,
+			transparent,
+			transparent 10px,
+			var(--draft-stripe) 10px,
+			var(--draft-stripe) 20px
+		);
+	}
 }
 
 .post-title {

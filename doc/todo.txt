@@ -1,5 +1,4 @@
 Home
-TODO: Improve vertical alignment between header and posts (and post time)
 TODO: Hover sticks on theme button after tapping in on mobile
 TODO: Ensure theme button and label move together
 
