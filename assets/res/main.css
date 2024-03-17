@@ -97,6 +97,7 @@ body {
 
 header {
 	display: block;
+	margin-bottom: 40px;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -124,20 +125,19 @@ a, button {
 	font-family: sans-serif;
 	font-size: 14pt;
 	font-weight: bold;
-	line-height: 22pt;
-	margin: 8px -8px;
+	line-height: 28px;
 }
 
 .header-title {
 	font-size: 18pt;
 	margin-right: auto;
-	padding: 8px;
+	padding: 20px;
 }
 
 .header-theme-label {
 	font-size: 10pt;
-	padding: 8px;
 	opacity: 0%;
+	padding: 20px 10px;
 	scale: 0%;
 	transition-duration: 100ms;
 	transition-timing-function: ease-out;
@@ -149,7 +149,7 @@ a, button {
 }
 
 .header-theme-button {
-	padding: 8px;
+	padding: 20px 10px;
 }
 
 .header-theme-icon {
@@ -169,7 +169,8 @@ a, button {
 }
 
 .header-about {
-	padding: 8px;
+	padding: 20px;
+	padding-left: 10px
 }
 
 /* ---------------------------------------------------------------------------------------------- */
@@ -178,12 +179,12 @@ a, button {
 .post-list {
 	display: block;
 	list-style: none;
-	margin: 50px 0;
 }
 
 .post {
 	display: block;
-	margin: 20px 0;
+	font-family: sans-serif;
+	margin-bottom: 20px;
 }
 
 .post.draft {
@@ -198,7 +199,7 @@ a, button {
 
 .post-link {
 	display: block;
-	padding: 6px
+	padding: 0 20px;
 }
 
 .post-title {
