@@ -46,13 +46,14 @@
 			<a class="header-title" href="{{ site.Home.RelPermalink}}">{{ site.Title }}</a>
 			<p class="header-theme-label" for="header-theme-button"></p>
 			<button class="header-theme-button require-js" id="header-theme-button" type="button" aria-label="Toggle Theme">
-				<svg class="header-theme-icon" viewBox="0 0 100 100">
-					<mask id="mask">
-						<rect class="header-theme-icon-mask" style="fill: white; height: 100%;" />
-					</mask>
-					<circle class="header-theme-icon-one" style="stroke-width: 8px; cx: 50%; cy: 50%; r: 50px;"/>
-					<circle class="header-theme-icon-two" style="stroke-width: 8px; cx: 50%; cy: 50%; r: 50px; mask: url(#mask);" />
-				</svg>
+				{{ with resources.Get "res/theme-icon.svg" }}
+				{{ .Content | safeHTML }}
+			{{ end }}
+			{{ with partial "resource.html" "res/theme-icon.svg" }}
+			<svg width="100px" height="100px">
+				<use href="{{ .RelPermalink }}#header-theme-icon"></use>
+			</svg>
+			{{ end }}
 			</button>
 			<a class="header-about" href="{{ (site.GetPage "about").RelPermalink }}">About</a>
 		</nav>

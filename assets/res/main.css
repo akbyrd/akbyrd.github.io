@@ -159,33 +159,12 @@ a, button {
 	user-select: none;
 }
 
-.header-theme-icon-one {
+.header-theme-icon-background {
 	fill: var(--dark-background);
 }
 
-.header-theme-icon-two {
+.header-theme-icon-fill {
 	fill: var(--dark-text);
-}
-
-.header-theme-icon-mask {
-	.theme-system & {
-		rx: 0%;
-		transition-duration: 200ms;
-		transition-property: rx, width;
-		width: 50%;
-	}
-
-	.theme-light & {
-		transition-duration: 200ms;
-		width: 100%;
-	}
-
-	.theme-dark & {
-		rx: 1%;
-		transition-duration: 400ms;
-		width: 0%;
-		x: 100%;
-	}
 }
 
 .header-about {

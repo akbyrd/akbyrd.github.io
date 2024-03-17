@@ -57,7 +57,7 @@
 	{{ end }}
 
 	{{ $relPermalink := $resource.RelPermalink }}
-	{{ $ret = dict "Short" $short "Long" $long "Integrity" $integrity "RelPermalink" $relPermalink }}
+	{{ $ret = dict "Resource" $resource "Short" $short "Long" $long "Integrity" $integrity "RelPermalink" $relPermalink }}
 {{ end }}
 
 {{ return $ret }}
