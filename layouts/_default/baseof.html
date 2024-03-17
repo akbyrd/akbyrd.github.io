@@ -12,16 +12,16 @@
 	{{ with partial "resource.html" (dict "Name" "favicon.ico" "Rename" false) }}
 	<link rel="icon" href="{{ .RelPermalink }}" sizes="32x32"{{ .Integrity }}>
 	{{ end }}
-	{{ with partial "resource.html" "favicon.svg" }}
+	{{ with partial "resource.html" "res/favicon.svg" }}
 	<link rel="icon" href="{{ .RelPermalink }}" size="any" type="image/svg+xml"{{ .Integrity }}>
 	{{ end }}
-	{{ with partial "resource.html" "apple-touch-icon.png" }}
+	{{ with partial "resource.html" "res/apple-touch-icon.png" }}
 	<link rel="apple-touch-icon" href="{{ .RelPermalink }}"{{ .Integrity }}>
 	{{ end }}
-	{{ with partial "resource.html" "main.css" }}
+	{{ with partial "resource.html" "res/main.css" }}
 	<link rel="stylesheet" href="{{ .RelPermalink }}"{{ .Integrity }}>
 	{{ end }}
-	{{ with partial "resource.html" "main.ts" }}
+	{{ with partial "resource.html" "res/main.ts" }}
 	<script src="{{ .RelPermalink }}" async{{ .Integrity }}></script>
 	{{ end }}
 
