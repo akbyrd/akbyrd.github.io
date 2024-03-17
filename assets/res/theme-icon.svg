@@ -26,7 +26,7 @@
 
 	<mask id="mask">
 		<rect class="header-theme-icon-mask"
-			fill="white" height="100%"
+			fill="white" height="100%" width="50%"
 			style="fill: white; height: 100%;" />
 	</mask>
 
