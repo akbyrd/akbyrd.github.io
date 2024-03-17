@@ -16,8 +16,8 @@
 // [-] TODO: Fix pop when clicking quickly
 // [x] TODO: Fix firefox animation
 // [x] TODO: Use typescript
+// [x] TODO: Make text unselectable
 //
-// [ ] TODO: Make text unselectable
 // [ ] TODO: Add hover text
 // [ ] TODO: Add hover transition
 // [ ] TODO: Move svg to file

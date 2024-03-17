@@ -143,6 +143,7 @@ a, button {
 	stroke: var(--text);
 	height: 1em;
 	transition-duration: 200ms;
+	user-select: none;
 }
 
 .header-theme-icon-one {
