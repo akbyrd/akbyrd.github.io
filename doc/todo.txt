@@ -49,7 +49,8 @@ TODO: Can't set lineAnchors https://discourse.gohugo.io/t/anchorlinenos-true-att
 Content
 TODO: Add my rss list
 
-Testing
+Testing / Compatibility
+TODO: Probably don't use nesting selectors (new in 2023)
 TODO: Test apple touch icon
 TODO: Test theme-color on android
 TODO: Test search engine results
