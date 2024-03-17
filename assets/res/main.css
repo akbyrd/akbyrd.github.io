@@ -91,13 +91,13 @@ body {
 	hanging-punctuation: first allow-end last;
 	margin: 0 auto;
 	max-width: 800px;
-	padding: 20px;
 	text-shadow: 1px 1px 6px var(--text-shadow);
 	transition-duration: 200ms;
 }
 
 header {
 	display: block;
+	margin-bottom: 40px;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -126,19 +126,18 @@ a, button {
 	font-size: 14pt;
 	font-weight: bold;
 	line-height: 28px;
-	margin-bottom: 40px;
 }
 
 .header-title {
 	font-size: 18pt;
 	margin-right: auto;
-	padding: 8px;
+	padding: 20px;
 }
 
 .header-theme-label {
 	font-size: 10pt;
 	opacity: 0%;
-	padding: 8px;
+	padding: 20px 10px;
 	scale: 0%;
 	transition-duration: 100ms;
 	transition-timing-function: ease-out;
@@ -150,7 +149,7 @@ a, button {
 }
 
 .header-theme-button {
-	padding: 8px;
+	padding: 20px 10px;
 }
 
 .header-theme-icon {
@@ -170,7 +169,8 @@ a, button {
 }
 
 .header-about {
-	padding: 8px;
+	padding: 20px;
+	padding-left: 10px
 }
 
 /* ---------------------------------------------------------------------------------------------- */
@@ -199,7 +199,7 @@ a, button {
 
 .post-link {
 	display: block;
-	padding: 8px;
+	padding: 0 20px;
 }
 
 .post-title {
