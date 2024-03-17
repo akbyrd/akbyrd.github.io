@@ -1,5 +1,7 @@
 Home
 TODO: Improve vertical alignment between header and posts (and post time)
+TODO: Hover sticks on theme button after tapping in on mobile
+TODO: Ensure theme button and label move together
 
 About
 TODO: Fix nav offset compared to home
@@ -58,7 +60,7 @@ TODO: Test search engine results
 Theme
 TODO: Pay a UI designer for a review and recommendations
 TODO: Read about meterial design https://m3.material.io/
-TODO: Pick a serif font (titles)
-TODO: Pick a sans font (posts)
+TODO: Pick a font for headers (ensure no padding built into characters)
+TODO: Pick a font for body text
 TODO: Pick a color scheme
 TODO: Add text selection color

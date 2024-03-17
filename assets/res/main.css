@@ -88,6 +88,7 @@ body {
 	color: var(--text);
 	display: block;
 	font-family: serif;
+	hanging-punctuation: first allow-end last;
 	margin: 0 auto;
 	max-width: 800px;
 	text-shadow: 1px 1px 6px var(--text-shadow);
@@ -153,8 +154,8 @@ a, button {
 
 .header-theme-icon {
 	display: block;
-	stroke: var(--text);
 	height: 1em;
+	stroke: var(--text);
 	transition-duration: 200ms;
 	user-select: none;
 }
