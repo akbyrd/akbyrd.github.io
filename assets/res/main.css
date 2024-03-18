@@ -7,6 +7,8 @@
 /* Colors */
 
 html {
+	--max-width: 800px;
+
 	--accent:      #007fd4;
 	--accent-fade: #007fd4a0;
 
@@ -83,6 +85,10 @@ head, script, style {
 	display: none;
 }
 
+html {
+	padding-left: clamp(0px, 100vw - 100%, 100% - var(--max-width));
+}
+
 body {
 	background-color: var(--background);
 	color: var(--text);
@@ -90,7 +96,7 @@ body {
 	font-family: serif;
 	hanging-punctuation: first allow-end last;
 	margin: 0 auto;
-	max-width: 800px;
+	max-width: var(--max-width);
 	text-shadow: 1px 1px 6px var(--text-shadow);
 	transition-duration: 200ms;
 }

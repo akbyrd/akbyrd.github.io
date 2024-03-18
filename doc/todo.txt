@@ -3,7 +3,6 @@ TODO: Hover sticks on theme button after tapping in on mobile
 TODO: Ensure theme button and label move together
 
 About
-TODO: Fix nav offset compared to home
 TODO: Fill in links
 TODO: Reserve image space
 TODO: Responsive image size?
