@@ -7,6 +7,7 @@ TODO: Fill in links
 TODO: Reserve image space
 TODO: Responsive image size?
 TODO: Confirm focus handling
+TODO: Fix scroll bar jitter on android
 
 Posts
 TODO: Fix nav offset compared to home
@@ -54,6 +55,7 @@ TODO: Probably don't use nesting selectors (new in 2023)
 TODO: Test apple touch icon
 TODO: Test theme-color on android
 TODO: Test search engine results
+TODO: Test double tap to zoom on text
 
 Theme
 TODO: Pay a UI designer for a review and recommendations

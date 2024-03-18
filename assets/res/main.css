@@ -107,6 +107,7 @@ header {
 }
 
 h1, h2, h3, h4, h5, h6 {
+	display: block;
 	font-family: sans-serif;
 	font-weight: bold;
 }
@@ -120,6 +121,10 @@ h6 { font-size: 20pt; }
 
 a, button {
 	cursor: pointer;
+}
+
+ul, ol, li {
+	display: block;
 }
 
 /* ---------------------------------------------------------------------------------------------- */
@@ -183,14 +188,15 @@ a, button {
 /* Home - Post List */
 
 .post-list {
-	display: block;
 	list-style: none;
 }
 
-.post {
-	display: block;
-	font-family: sans-serif;
+.post:not(:last-of-type) {
 	margin-bottom: 10px;
+}
+
+.post-link {
+	display: block;
 	padding: 10px 20px;
 
 	&.draft {
@@ -206,7 +212,6 @@ a, button {
 
 .post-title {
 	color: var(--accent);
-	display: block;
 
 	.post-link:hover & {
 		text-decoration: underline;
@@ -216,5 +221,6 @@ a, button {
 .post-time {
 	color: var(--text-detail);
 	display: block;
+	font-family: sans-serif;
 	font-size: 11pt;
 }
