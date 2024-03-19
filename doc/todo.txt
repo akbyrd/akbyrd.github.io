@@ -1,7 +1,3 @@
-Home
-TODO: Hover sticks on theme button after tapping in on mobile
-TODO: Ensure theme button and label move together
-
 About
 TODO: Fill in links
 TODO: Reserve image space

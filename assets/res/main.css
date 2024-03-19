@@ -96,6 +96,7 @@ body {
 	font-family: serif;
 	hanging-punctuation: first allow-end last;
 	margin: 0 auto;
+	min-width: 280px;
 	max-width: var(--max-width);
 	text-shadow: 1px 1px 6px var(--text-shadow);
 	transition-duration: 200ms;
@@ -224,3 +225,13 @@ ul, ol, li {
 	font-family: sans-serif;
 	font-size: 11pt;
 }
+
+/* ---------------------------------------------------------------------------------------------- */
+/* Debug */
+
+/*
+* {
+	outline: 1px solid red;
+	outline-offset: -1px;
+}
+*/
