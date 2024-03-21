@@ -54,9 +54,11 @@
 		</nav>
 	</header>
 
-	<main>
-		{{ block "main" . }}{{ end }}
-	</main>
+	{{ block "main" . }}{{ end }}
+
+	<footer>
+		{{ block "footer" . }}{{ end }}
+	</footer>
 </body>
 
 </html>

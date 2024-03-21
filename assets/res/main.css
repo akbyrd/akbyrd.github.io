@@ -96,7 +96,7 @@ body {
 	font-family: serif;
 	hanging-punctuation: first allow-end last;
 	margin: 0 auto;
-	min-width: 280px;
+	min-width: 296px;
 	max-width: var(--max-width);
 	text-shadow: 1px 1px 6px var(--text-shadow);
 	transition-duration: 200ms;
@@ -105,6 +105,16 @@ body {
 header {
 	display: block;
 	margin-bottom: 40px;
+}
+
+main {
+	display: block;
+}
+
+footer {
+	display: block;
+	margin-top: 40px;
+	padding: 20px;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -124,7 +134,11 @@ a, button {
 	cursor: pointer;
 }
 
-ul, ol, li {
+img {
+	vertical-align: top;
+}
+
+p, ul, ol, li {
 	display: block;
 }
 
@@ -186,7 +200,7 @@ ul, ol, li {
 }
 
 /* ---------------------------------------------------------------------------------------------- */
-/* Home - Post List */
+/* Home */
 
 .post-list {
 	list-style: none;
@@ -224,6 +238,31 @@ ul, ol, li {
 	display: block;
 	font-family: sans-serif;
 	font-size: 11pt;
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* About */
+
+.about-main {
+	font-size: 14pt;
+	padding: 0 20px;
+	text-align: justify;
+}
+
+.about-pic {
+	aspect-ratio: 1;
+	float: left;
+	margin-right: 20px;
+	max-width: 100%;
+	width: 256px;
+}
+
+@media (max-width: 600px) {
+	.about-pic {
+		float: none;
+		display: block;
+		margin: 0 auto 20px auto;
+	}
 }
 
 /* ---------------------------------------------------------------------------------------------- */

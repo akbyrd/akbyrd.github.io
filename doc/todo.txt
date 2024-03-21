@@ -1,12 +1,15 @@
 About
-TODO: Fill in links
-TODO: Reserve image space
-TODO: Responsive image size?
-TODO: Confirm focus handling
-TODO: Fix scroll bar jitter on android
+TODO: Fade image in when it loads?
+TODO: Center alt text while image is loading?
+TODO: Rename image
+TODO: LinkedIn
+TODO: Mastodon
+TODO: Twitter
+TODO: Github
+TODO: Email
+TODO: Might not need a separate layout
 
 Posts
-TODO: Fix nav offset compared to home
 TODO: Automatically calculate title
 TODO: Automatically calculate alias from numeric prefix
 TODO: Set up modified date
@@ -16,9 +19,9 @@ TODO: Edit this page button https://www.ii.com/vscode-uri-scheme-and-hugo/
 TODO: Consider other markup languages (Djot, Markdeep, AsciiDoc, rST, Custom)
 TODO: Headers as hyperlinks (as opposed to showing an anchor icon) https://www.ii.com/linkified-section-headings-in-hugo-generated-web-pages/
 TODO: Confirm focus handling
+TODO: Lazy image loading
 
 General
-TODO: Fix margins and scrolling on small screens
 TODO: Should partialCached be used with resource.html?
 TODO: Figure out why firefox requests apple-touch-icon
 TODO: Minify html in production builds (vscode tasks and github actions)

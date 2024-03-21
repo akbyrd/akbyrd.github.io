@@ -1,5 +1,6 @@
-Embedding a page with a seamless iframe
-https://stackoverflow.com/a/1118715/986007
+Compatability
+-------------
+Aiming for 6 years based on browsers on caniuse.com
 
 
 
@@ -42,3 +43,10 @@ Resources
 Performance
 -----------
 https://developer.yahoo.com/performance/rules.html
+
+
+
+Misc
+----
+Embedding a page with a seamless iframe
+https://stackoverflow.com/a/1118715/986007
