@@ -1,6 +1,4 @@
 About
-TODO: Fade image in when it loads?
-TODO: Center alt text while image is loading?
 TODO: Rename image
 TODO: LinkedIn
 TODO: Mastodon

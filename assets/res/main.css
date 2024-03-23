@@ -135,6 +135,12 @@ a, button {
 }
 
 img {
+	align-items: center;
+	display: flex;
+	justify-content: space-evenly;
+	transition-duration: 200ms;
+	transition-timing-function: ease-in;
+	transition-property: opacity;
 	vertical-align: top;
 }
 
@@ -253,8 +259,8 @@ p, ul, ol, li {
 	aspect-ratio: 1;
 	float: left;
 	margin-right: 20px;
-	max-width: 100%;
-	width: 256px;
+	max-width: 256px;
+	min-width: 256px;
 }
 
 @media (max-width: 600px) {

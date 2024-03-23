@@ -40,8 +40,17 @@ function Initialize()
 	theme.labels = document.getElementsByClassName("header-theme-label")
 	for (const label of theme.labels)
 		label.innerHTML = theme.values[theme.current].label
+
+	const images = document.getElementsByTagName("img")
+	for (const image of images)
+	{
+		image.style.opacity = "0";
+		image.addEventListener("load", () => {
+			image.style.opacity = "1";
+		})
+	}
 }
 
-document.readyState === 'loading'
+document.readyState === "loading"
 	? document.addEventListener("DOMContentLoaded", Initialize)
 	: Initialize()
