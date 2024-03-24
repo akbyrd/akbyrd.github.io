@@ -1,5 +1,4 @@
 About
-TODO: Rename image
 TODO: LinkedIn
 TODO: Mastodon
 TODO: Twitter
@@ -20,6 +19,8 @@ TODO: Confirm focus handling
 TODO: Lazy image loading
 
 General
+TODO: Move resource renaming to a shared template
+TODO: Determine if :not() is usable
 TODO: Should partialCached be used with resource.html?
 TODO: Figure out why firefox requests apple-touch-icon
 TODO: Minify html in production builds (vscode tasks and github actions)

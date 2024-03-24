@@ -31,6 +31,7 @@ function CycleTheme()
 
 function Initialize()
 {
+	// Hook up the theme button
 	theme.current = +(localStorage.getItem(theme.key) || 0)
 
 	const buttons = document.getElementsByClassName("header-theme-button")
@@ -41,13 +42,27 @@ function Initialize()
 	for (const label of theme.labels)
 		label.innerHTML = theme.values[theme.current].label
 
+	// Fade images in
 	const images = document.getElementsByTagName("img")
 	for (const image of images)
 	{
-		image.style.opacity = "0";
-		image.addEventListener("load", () => {
-			image.style.opacity = "1";
-		})
+		function OnLoad()
+		{
+			image.style.opacity = "100%"
+			if (image.naturalWidth)
+				image.classList.add("fade-in")
+		}
+
+		if (image.complete)
+		{
+			OnLoad()
+		}
+		else
+		{
+			image.style.opacity = "0%"
+			image.onload = OnLoad
+			image.onerror = OnLoad
+		}
 	}
 }
 

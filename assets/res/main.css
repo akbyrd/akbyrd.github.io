@@ -1,7 +1,7 @@
 /* ---------------------------------------------------------------------------------------------- */
 /* Reset */
 
-* { all: unset; }
+*:not(img) { all: unset; }
 
 /* ---------------------------------------------------------------------------------------------- */
 /* Colors */
@@ -79,7 +79,7 @@ html {
 }
 
 /* ---------------------------------------------------------------------------------------------- */
-/* Standard Elements */
+/* Shared / Standard */
 
 head, script, style {
 	display: none;
@@ -134,18 +134,42 @@ a, button {
 	cursor: pointer;
 }
 
+.image-background {
+	display: block;
+	margin: 0 auto;
+	outline: 1px solid var(--text-detail);
+	outline-offset: 0px;
+	overflow: hidden;
+	width: fit-content;
+}
+
 img {
 	align-items: center;
 	display: flex;
 	justify-content: space-evenly;
-	transition-duration: 200ms;
-	transition-timing-function: ease-in;
-	transition-property: opacity;
-	vertical-align: top;
+	overflow: auto;
 }
 
 p, ul, ol, li {
 	display: block;
+}
+
+.fade-in {
+	animation-duration: 600ms;
+	animation-name: fade-in;
+	animation-timing-function: cubic-bezier(.5, .5, 0, 1)
+}
+
+@keyframes fade-in {
+	from {
+		opacity: 0%;
+		scale: 102%;
+	}
+
+	to {
+		opacity: 100%;
+		scale: 100%;
+	}
 }
 
 /* ---------------------------------------------------------------------------------------------- */
@@ -255,20 +279,20 @@ p, ul, ol, li {
 	text-align: justify;
 }
 
-.about-pic {
-	aspect-ratio: 1;
+.about-pic-container {
 	float: left;
 	margin-right: 20px;
-	max-width: 256px;
-	min-width: 256px;
 }
 
 @media (max-width: 600px) {
-	.about-pic {
+	.about-pic-container {
 		float: none;
-		display: block;
 		margin: 0 auto 20px auto;
 	}
+}
+
+.about-pic {
+	max-width: 256px;
 }
 
 /* ---------------------------------------------------------------------------------------------- */
