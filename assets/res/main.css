@@ -319,15 +319,19 @@ p, ul, ol, li {
 	}
 
 	a {
+		background-color: var(--dark-background);
+		border-radius: 6px;
+		color: var(--dark-text);
+		display: block;
 		font-family: Code-Prop;
 		font-size: 38px;
 		line-height: 40px;
-		text-align: center;
 	}
 
 	span {
 		display: block;
 		border-radius: 6px;
+		text-align: center;
 	}
 }
 
