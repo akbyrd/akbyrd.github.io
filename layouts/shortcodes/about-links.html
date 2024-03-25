@@ -1,0 +1,17 @@
+<ul class="about-link-container">
+	{{ $page := .Page }}
+	{{ range (split .Inner "\n") }}
+		{{ if len . }}
+			{{ $parts := split . "," }}
+			{{ $color :=  index $parts 0 }}
+			{{ $logo := index $parts 1 }}
+			{{ $url := index $parts 2 }}
+			{{ $title := index $parts 3 }}
+	<li>
+		<a href="{{ $url }}" title="{{ $title }}" style="background-image: linear-gradient({{ $color }}, {{ $color }});">
+			{{ $logo | $page.RenderString }}
+		</a>
+	</li>
+		{{ end }}
+	{{ end }}
+</ul>

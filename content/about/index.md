@@ -10,10 +10,11 @@ build.publishResources = false
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-- [{{< background-color "#ee802f80" >}}&#xf09e; {{< /background-color >}}](abkyrd.dev/feed.xml "RSS")
-- [{{< background-color "#0077b580" >}}&#xf033b;{{< /background-color >}}](https://www.linkedin.com/in/abyrd89/ "LinkedIn")
-- [{{< background-color "#6e549480" >}}&#xf02a4;{{< /background-color >}}](https://github.com/akbyrd "GitHub")
-- [{{< background-color "#6364ff80" >}}&#xf0ad1;{{< /background-color >}}](https://mastodon.gamedev.place/@abyrd "Mastodon")
-- [{{< background-color "#1da1f280" >}}&#xf0544;{{< /background-color >}}](https://twitter.com/abyrd89 "Twitter / X")
-- [{{< background-color "#d4463880" >}}&#xf01ee;{{< /background-color >}}](mailto:dev+blog@akbyrd.email "Email")
-{ .about-link-container }
+{{< about-links >}}
+#ee802f80,&#xf09e;,abkyrd.dev/feed.xml,RSS
+#0077b580,&#xf033b;,https://www.linkedin.com/in/abyrd89/,LinkedIn
+#6e549480,&#xf02a4;,https://github.com/akbyrd,GitHub
+#6364ff80,&#xf0ad1;,https://mastodon.gamedev.place/@abyrd,Mastodon
+#1da1f280,&#xf0544;,https://twitter.com/abyrd89,Twitter / X
+#d4463880,&#xf01ee;,mailto:dev+blog@akbyrd.email,Email
+{{< /about-links >}}

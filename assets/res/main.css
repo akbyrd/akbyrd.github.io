@@ -312,7 +312,6 @@ p, ul, ol, li {
 	user-select: none;
 
 	li {
-		display: block;
 		height: 40px;
 		margin: 0 6px;
 		width: 40px;
@@ -326,11 +325,6 @@ p, ul, ol, li {
 		font-family: Code-Prop;
 		font-size: 38px;
 		line-height: 40px;
-	}
-
-	span {
-		display: block;
-		border-radius: 6px;
 		text-align: center;
 	}
 }
