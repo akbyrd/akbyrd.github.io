@@ -7,8 +7,9 @@ disableHugoGeneratorInject = true
 enableEmoji = true
 enableGitInfo = true
 enableInlineShortcodes = true
-markup.goldmark.renderer.hardWraps = true
 markup.goldmark.renderer.unsafe = true # allow html
+markup.goldmark.parser.attribute.block = true
+markup.goldmark.parser.wrapStandAloneImageWithinParagraph = false
 markup.highlight.anchorLineNos = true
 markup.highlight.lineNos = true
 

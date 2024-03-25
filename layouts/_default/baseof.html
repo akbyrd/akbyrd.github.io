@@ -9,19 +9,19 @@
 	<meta name="theme-color" media="(prefers-color-scheme: light)" content="#bdbdbd" />
 	<title>{{ .Title }}</title>
 
-	{{ with partial "resource.html" (dict "Name" "favicon.ico" "Rename" false) }}
+	{{ with partial "resource" (dict "Name" "favicon.ico" "Rename" false) }}
 	<link rel="icon" href="{{ .RelPermalink }}" sizes="32x32"{{ .Integrity }}>
 	{{ end }}
-	{{ with partial "resource.html" "res/favicon.svg" }}
+	{{ with partial "resource" "res/favicon.svg" }}
 	<link rel="icon" href="{{ .RelPermalink }}" size="any" type="image/svg+xml"{{ .Integrity }}>
 	{{ end }}
-	{{ with partial "resource.html" "res/apple-touch-icon.png" }}
+	{{ with partial "resource" "res/apple-touch-icon.png" }}
 	<link rel="apple-touch-icon" href="{{ .RelPermalink }}"{{ .Integrity }}>
 	{{ end }}
-	{{ with partial "resource.html" "res/main.css" }}
+	{{ with partial "resource" "res/main.css" }}
 	<link rel="stylesheet" href="{{ .RelPermalink }}"{{ .Integrity }}>
 	{{ end }}
-	{{ with partial "resource.html" "res/main.ts" }}
+	{{ with partial "resource" "res/main.ts" }}
 	<script src="{{ .RelPermalink }}" async{{ .Integrity }}></script>
 	{{ end }}
 
@@ -62,3 +62,6 @@
 </body>
 
 </html>
+
+{{ with partial "resource" "res/Code-Mono.ttf" }}{{ end }}
+{{ with partial "resource" "res/Code-Prop.ttf" }}{{ end }}

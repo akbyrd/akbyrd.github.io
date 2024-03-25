@@ -4,7 +4,7 @@
 *:not(img) { all: unset; }
 
 /* ---------------------------------------------------------------------------------------------- */
-/* Colors */
+/* Colors & Fonts */
 
 html {
 	--max-width: 800px;
@@ -49,6 +49,16 @@ html {
 		--text-detail:  var(--light-text-detail);
 		--text-shadow:  var(--light-text-shadow);
 	}
+}
+
+@font-face {
+	font-family: "Code-Mono";
+	src: url("/res/Code-Mono.ttf") format("truetype");
+}
+
+@font-face {
+	font-family: "Code-Prop";
+	src: url("/res/Code-Prop.ttf") format("truetype");
 }
 
 /* ---------------------------------------------------------------------------------------------- */
@@ -293,6 +303,32 @@ p, ul, ol, li {
 
 .about-pic {
 	max-width: 256px;
+}
+
+.about-link-container {
+	display: flex;
+	justify-content: center;
+	margin-top: 20px;
+	user-select: none;
+
+	li {
+		display: block;
+		height: 40px;
+		margin: 0 6px;
+		width: 40px;
+	}
+
+	a {
+		font-family: Code-Prop;
+		font-size: 38px;
+		line-height: 40px;
+		text-align: center;
+	}
+
+	span {
+		display: block;
+		border-radius: 6px;
+	}
 }
 
 /* ---------------------------------------------------------------------------------------------- */

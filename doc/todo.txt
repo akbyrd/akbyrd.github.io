@@ -1,10 +1,10 @@
 About
-TODO: LinkedIn
-TODO: Mastodon
-TODO: Twitter
-TODO: Github
-TODO: Email
-TODO: Might not need a separate layout
+TODO: Get rss url
+TODO: Add font
+	Only needed glyphs
+	WOFF2/WOFF format
+	Proportional for symbols, mono for code (same file?)
+	Cache-bust (get name in css)
 
 Posts
 TODO: Automatically calculate title
@@ -19,8 +19,8 @@ TODO: Confirm focus handling
 TODO: Lazy image loading
 
 General
+TODO: Attempt to combine home and about layouts (negative margin on home)
 TODO: Move resource renaming to a shared template
-TODO: Determine if :not() is usable
 TODO: Should partialCached be used with resource.html?
 TODO: Figure out why firefox requests apple-touch-icon
 TODO: Minify html in production builds (vscode tasks and github actions)
@@ -33,8 +33,6 @@ TODO: Tooltip for emoji (dev only?)
 
 Validation
 TODO: Run site audit as part of deployment
-TODO: Require summary if draft is not true
-TODO: Require dates if non-draft
 TODO: Try https://jigsaw.w3.org/css-validator/
 
 Syntax highlighting
@@ -54,6 +52,8 @@ TODO: Test apple touch icon
 TODO: Test theme-color on android
 TODO: Test search engine results
 TODO: Test double tap to zoom on text
+TODO: Attempt to remove `unset: all`
+TODO: Focus animation initial color is wrong in Edge
 
 Theme
 TODO: Pay a UI designer for a review and recommendations

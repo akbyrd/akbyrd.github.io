@@ -8,6 +8,9 @@
 	{{ if not (or .Draft .Date) }}
 		{{ errorf "Non-draft posts must have a date. File: %s" .File.Path }}
 	{{ end }}
+	{{ if not (or .Draft .Summary) }}
+		{{ errorf "Non-draft posts must have a summary. File: %s" .File.Path }}
+	{{ end }}
 
 	{{ .Content }}
 
