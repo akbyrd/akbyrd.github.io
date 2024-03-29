@@ -54,6 +54,8 @@
 	{{ $integrity := "" | safeHTMLAttr }}
 	{{ if ne hugo.Environment "development" }}
 	{{ $integrity = printf ` integrity=%q crossorigin="anonymous"` ($fingerprint | htmlEscape) | safeHTMLAttr }}
+	{{ else }}
+	{{ $integrity = ` crossorigin="anonymous"` | safeHTMLAttr }}
 	{{ end }}
 
 	{{ $relPermalink := $resource.RelPermalink }}

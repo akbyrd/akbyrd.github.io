@@ -1,10 +1,9 @@
 About
-TODO: Get rss url
-TODO: Add font
-	Only needed glyphs
-	WOFF2/WOFF format
-	Proportional for symbols, mono for code (same file?)
-	Cache-bust (get name in css)
+TODO: Add symbol font
+	Write script for subsetting
+	Load only on specific pages
+
+TODO: Outline on buttons is rounded
 
 Posts
 TODO: Automatically calculate title
@@ -22,10 +21,9 @@ General
 TODO: Attempt to combine home and about layouts (negative margin on home)
 TODO: Move resource renaming to a shared template
 TODO: Should partialCached be used with resource.html?
-TODO: Figure out why firefox requests apple-touch-icon
 TODO: Minify html in production builds (vscode tasks and github actions)
 TODO: Sitemap (remove posts and tests)
-TODO: RSS / Atom
+TODO: RSS / Atom (update link on about)
 TODO: github 404 page
 TODO: Add search support
 TODO: Math formatting (load only when used)
@@ -33,7 +31,8 @@ TODO: Tooltip for emoji (dev only?)
 
 Validation
 TODO: Run site audit as part of deployment
-TODO: Try https://jigsaw.w3.org/css-validator/
+TODO: https://jigsaw.w3.org/css-validator/
+TODO: https://validator.w3.org/
 
 Syntax highlighting
 TODO: Fix line number color
@@ -53,7 +52,7 @@ TODO: Test theme-color on android
 TODO: Test search engine results
 TODO: Test double tap to zoom on text
 TODO: Attempt to remove `unset: all`
-TODO: Focus animation initial color is wrong in Edge
+TODO: Figure out why firefox requests apple-touch-icon
 
 Theme
 TODO: Pay a UI designer for a review and recommendations

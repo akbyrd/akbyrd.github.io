@@ -43,6 +43,7 @@ Resources
 Performance
 -----------
 https://developer.yahoo.com/performance/rules.html
+https://cliffle.com/blog/making-website-faster/
 
 
 

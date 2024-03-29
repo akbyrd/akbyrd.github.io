@@ -13,7 +13,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 {{< about-links.inline >}}
 <ul class="about-link-container">
 	<li>
-		<a href="abkyrd.dev/feed.xml" title="RSS" style="background-image: linear-gradient(#ee802f80, #ee802f80);">
+		<a href="../posts/index.xml" title="RSS" style="background-image: linear-gradient(#ee802f80, #ee802f80);">
 			&#xf09e;
 		</a>
 	</li>

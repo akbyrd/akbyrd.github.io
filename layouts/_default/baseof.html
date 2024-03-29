@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html class="theme-system" lang="{{ or site.Language.LanguageCode site.Language.Lang }}" dir="{{ or site.Language.LanguageDirection `ltr` }}">
+<html class="theme-system" lang="en-us" dir="ltr">
 
 <head>
 	<meta charset="utf-8">
@@ -25,6 +25,24 @@
 	<script src="{{ .RelPermalink }}" async{{ .Integrity }}></script>
 	{{ end }}
 
+	{{ with partial "resource" "res/Symbols.woff2" }}
+		{{ $woff2 := . }}
+		{{ with partial "resource" "res/Symbols.woff" }}
+			{{ $woff := . }}
+	<link rel="preload" as="font" href="{{ $woff2.RelPermalink }}" type="font/woff2"{{ .Integrity }}>
+	<link href="{{ $woff.RelPermalink }}" type="font/woff"{{ .Integrity }}>
+	<style>
+		@font-face {
+			font-family: "Symbols";
+			unicode-range: U+f09e, U+f033b, U+f02a4, U+f0ad1, U+f0544, U+f01ee;
+			src:
+				url("{{ $woff2.RelPermalink }}") format("woff2"),
+				url("{{ $woff.RelPermalink }}") format("woff");
+		}
+	</style>
+		{{ end }}
+	{{ end }}
+
 	<script>
 		const theme = localStorage.getItem("theme") ?? 0
 		const classes = [ "theme-system", "theme-light", "theme-dark" ]
@@ -35,6 +53,7 @@
 </head>
 
 <body>
+
 	<noscript>
 		<style>
 			.require-js { display: none; }
@@ -47,7 +66,7 @@
 			<p class="header-theme-label" for="header-theme-button"></p>
 			<button class="header-theme-button require-js" id="header-theme-button" type="button" aria-label="Toggle Theme">
 			{{ with resources.Get "res/theme-icon.svg" }}
-				{{ .Content | safeHTML }}
+			{{ .Content | safeHTML }}
 			{{ end }}
 			</button>
 			<a class="header-about" href="{{ (site.GetPage "about").RelPermalink }}">About</a>
@@ -59,9 +78,7 @@
 	<footer>
 		{{ block "footer" . }}{{ end }}
 	</footer>
+
 </body>
 
 </html>
-
-{{ with partial "resource" "res/Code-Mono.ttf" }}{{ end }}
-{{ with partial "resource" "res/Code-Prop.ttf" }}{{ end }}

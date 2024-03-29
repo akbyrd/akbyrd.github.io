@@ -51,20 +51,10 @@ html {
 	}
 }
 
-@font-face {
-	font-family: "Code-Mono";
-	src: url("/res/Code-Mono.ttf") format("truetype");
-}
-
-@font-face {
-	font-family: "Code-Prop";
-	src: url("/res/Code-Prop.ttf") format("truetype");
-}
-
 /* ---------------------------------------------------------------------------------------------- */
 /* Focus */
 
-* {
+html * {
 	outline-color: var(--accent-fade);
 	outline-offset: 3px;
 	outline-width: 3px;
@@ -322,7 +312,7 @@ p, ul, ol, li {
 		border-radius: 6px;
 		color: var(--dark-text);
 		display: block;
-		font-family: Code-Prop;
+		font-family: Symbols;
 		font-size: 38px;
 		line-height: 40px;
 		text-align: center;
