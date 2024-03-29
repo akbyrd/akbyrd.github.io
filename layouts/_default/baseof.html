@@ -25,12 +25,13 @@
 	<script src="{{ .RelPermalink }}" async{{ .Integrity }}></script>
 	{{ end }}
 
-	{{ with partial "resource" "res/Symbols.woff2" }}
-		{{ $woff2 := . }}
-		{{ with partial "resource" "res/Symbols.woff" }}
-			{{ $woff := . }}
-	<link rel="preload" as="font" href="{{ $woff2.RelPermalink }}" type="font/woff2"{{ .Integrity }}>
-	<link href="{{ $woff.RelPermalink }}" type="font/woff"{{ .Integrity }}>
+	{{ $woff2 := partial "resource" "res/Symbols.woff2" }}
+	{{ $woff := partial "resource" "res/Symbols.woff" }}
+	{{ $firstSymbol := strings.FindRE "\\p{Co}" (.Page.Content | htmlUnescape) 1 }}
+	{{ if $firstSymbol }}
+	<link rel="preload" as="font" href="{{ $woff2.RelPermalink }}" type="font/woff2"{{ $woff2.Integrity }}>
+	<link href="{{ $woff.RelPermalink }}" type="font/woff"{{ $woff.Integrity }}>
+	{{ end }}
 	<style>
 		@font-face {
 			font-family: "Symbols";
@@ -40,8 +41,6 @@
 				url("{{ $woff.RelPermalink }}") format("woff");
 		}
 	</style>
-		{{ end }}
-	{{ end }}
 
 	<script>
 		const theme = localStorage.getItem("theme") ?? 0

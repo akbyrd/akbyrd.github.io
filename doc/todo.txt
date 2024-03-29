@@ -1,8 +1,4 @@
 About
-TODO: Add symbol font
-	Write script for subsetting
-	Load only on specific pages
-
 TODO: Outline on buttons is rounded
 
 Posts
@@ -18,6 +14,7 @@ TODO: Confirm focus handling
 TODO: Lazy image loading
 
 General
+TODO: Use partialCached (should cache each unique invocation)
 TODO: Attempt to combine home and about layouts (negative margin on home)
 TODO: Move resource renaming to a shared template
 TODO: Should partialCached be used with resource.html?
