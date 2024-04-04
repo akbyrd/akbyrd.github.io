@@ -71,7 +71,7 @@ html * {
 @supports not selector(:focus-visible) {
 	:focus:not(:active) {
 		outline-color: var(--accent);
-		outline-offset: 0px;
+		outline-offset: -3px;
 		outline-style: solid;
 		transition-duration: 200ms;
 		transition-property: outline-offset, outline-color;
@@ -308,10 +308,24 @@ p, ul, ol, li {
 	}
 
 	a {
-		background-color: var(--dark-background);
-		border-radius: 6px;
-		color: var(--dark-text);
 		display: block;
+		outline-offset: 9px;
+
+		&:focus-visible {
+			outline-offset: 3px;
+		}
+
+		@supports not selector(:focus-visible) {
+			&:focus:not(:active) {
+				outline-offset: 3px;
+			}
+		}
+	}
+
+	p {
+		background-color: var(--dark-background);
+		border-radius: 4px;
+		color: var(--dark-text);
 		font-family: Symbols;
 		font-size: 38px;
 		line-height: 40px;

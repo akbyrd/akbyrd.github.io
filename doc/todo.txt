@@ -1,6 +1,3 @@
-About
-TODO: Outline on buttons is rounded
-
 Posts
 TODO: Automatically calculate title
 TODO: Automatically calculate alias from numeric prefix
@@ -12,6 +9,14 @@ TODO: Consider other markup languages (Djot, Markdeep, AsciiDoc, rST, Custom)
 TODO: Headers as hyperlinks (as opposed to showing an anchor icon) https://www.ii.com/linkified-section-headings-in-hugo-generated-web-pages/
 TODO: Confirm focus handling
 TODO: Lazy image loading
+
+Syntax highlighting
+TODO: Fix line number color
+TODO: Fix missing colors
+TODO: Copy all button
+TODO: Try to match editor theme https://gohugo.io/content-management/syntax-highlighting/#generate-syntax-highlighter-css
+TODO: Ids for code blocks
+TODO: Can't set lineAnchors https://discourse.gohugo.io/t/anchorlinenos-true-attribute-doesnt-work-when-using-code-fences/36564/3
 
 General
 TODO: Use partialCached (should cache each unique invocation)
@@ -30,14 +35,6 @@ Validation
 TODO: Run site audit as part of deployment
 TODO: https://jigsaw.w3.org/css-validator/
 TODO: https://validator.w3.org/
-
-Syntax highlighting
-TODO: Fix line number color
-TODO: Fix missing colors
-TODO: Copy all button
-TODO: Try to match editor theme https://gohugo.io/content-management/syntax-highlighting/#generate-syntax-highlighter-css
-TODO: Ids for code blocks
-TODO: Can't set lineAnchors https://discourse.gohugo.io/t/anchorlinenos-true-attribute-doesnt-work-when-using-code-fences/36564/3
 
 Content
 TODO: Add my rss list

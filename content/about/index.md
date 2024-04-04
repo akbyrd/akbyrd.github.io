@@ -8,38 +8,38 @@ build.publishResources = false
 
 {{< image File="me.png" Alt="Me" Size="256x" ContainerClass="about-pic-container" ImageClass="about-pic" >}}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Systems programmer in the game industry. Most interested in custom engines, data oriented design, managing codebases over time, and personal growth. Not interested in modern C++ or unnecessary complexity. Currently principal engineer at Phoenix Labs. Previously at Blizzard Entertainment, Procedural Reality, and Pixel Dash Studios.
 
 {{< about-links.inline >}}
 <ul class="about-link-container">
 	<li>
-		<a href="../posts/index.xml" title="RSS" style="background-image: linear-gradient(#ee802f80, #ee802f80);">
-			&#xf09e;
+		<a href="../posts/index.xml" title="RSS">
+			<p style="background-image: linear-gradient(#ee802f80, #ee802f80);">&#xf09e;</p>
 		</a>
 	</li>
 	<li>
-		<a href="https://www.linkedin.com/in/abyrd89/" title="LinkedIn" style="background-image: linear-gradient(#0077b580, #0077b580);">
-			&#xf033b;
+		<a href="https://www.linkedin.com/in/abyrd89/" title="LinkedIn">
+			<p style="background-image: linear-gradient(#0077b580, #0077b580);">&#xf033b;</p>
 		</a>
 	</li>
 	<li>
-		<a href="https://github.com/akbyrd" title="GitHub" style="background-image: linear-gradient(#6e549480, #6e549480);">
-			&#xf02a4;
+		<a href="https://github.com/akbyrd" title="GitHub">
+			<p style="background-image: linear-gradient(#6e549480, #6e549480);">&#xf02a4;</p>
 		</a>
 	</li>
 	<li>
-		<a href="https://mastodon.gamedev.place/@abyrd" title="Mastodon" style="background-image: linear-gradient(#6364ff80, #6364ff80);">
-			&#xf0ad1;
+		<a href="https://mastodon.gamedev.place/@abyrd" title="Mastodon">
+			<p style="background-image: linear-gradient(#6364ff80, #6364ff80);">&#xf0ad1;</p>
 		</a>
 	</li>
 	<li>
-		<a href="https://twitter.com/abyrd89" title="Twitter / X" style="background-image: linear-gradient(#1da1f280, #1da1f280);">
-			&#xf0544;
+		<a href="https://twitter.com/abyrd89" title="Twitter / X">
+			<p style="background-image: linear-gradient(#1da1f280, #1da1f280);">&#xf0544;</p>
 		</a>
 	</li>
 	<li>
-		<a href="mailto:dev+blog@akbyrd.email" title="Email" style="background-image: linear-gradient(#d4463880, #d4463880);">
-			&#xf01ee;
+		<a href="mailto:dev+blog@akbyrd.email" title="Email">
+			<p style="background-image: linear-gradient(#d4463880, #d4463880);">&#xf01ee;</p>
 		</a>
 	</li>
 </ul>
