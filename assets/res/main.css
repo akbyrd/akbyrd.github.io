@@ -81,12 +81,12 @@ html * {
 /* ---------------------------------------------------------------------------------------------- */
 /* Shared / Standard */
 
-head, script, style {
-	display: none;
-}
-
 html {
 	padding-left: clamp(0px, 100vw - 100%, 100% - var(--max-width));
+}
+
+head, script, style {
+	display: none;
 }
 
 body {
@@ -109,6 +109,8 @@ header {
 
 main {
 	display: block;
+	font-size: 14pt;
+	padding: 0 20px;
 }
 
 footer {
@@ -232,6 +234,10 @@ p, ul, ol, li {
 /* ---------------------------------------------------------------------------------------------- */
 /* Home */
 
+.home-main {
+	padding: 0;
+}
+
 .post-list {
 	list-style: none;
 }
@@ -274,8 +280,6 @@ p, ul, ol, li {
 /* About */
 
 .about-main {
-	font-size: 14pt;
-	padding: 0 20px;
 	text-align: justify;
 }
 

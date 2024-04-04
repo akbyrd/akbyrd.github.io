@@ -20,9 +20,7 @@ TODO: Can't set lineAnchors https://discourse.gohugo.io/t/anchorlinenos-true-att
 
 General
 TODO: Use partialCached (should cache each unique invocation)
-TODO: Attempt to combine home and about layouts (negative margin on home)
 TODO: Move resource renaming to a shared template
-TODO: Should partialCached be used with resource.html?
 TODO: Minify html in production builds (vscode tasks and github actions)
 TODO: Sitemap (remove posts and tests)
 TODO: RSS / Atom (update link on about)

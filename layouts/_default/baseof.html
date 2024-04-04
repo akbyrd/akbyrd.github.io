@@ -72,7 +72,9 @@
 		</nav>
 	</header>
 
-	{{ block "main" . }}{{ end }}
+	<main class="{{ or .Page.Layout .Page.Kind }}-main">
+		{{ block "main" . }}{{ end }}
+	</main>
 
 	<footer>
 		{{ block "footer" . }}{{ end }}

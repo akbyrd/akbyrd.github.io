@@ -1,5 +1,4 @@
 {{ define "main" }}
-	<main>
 		<ul class="post-list">
 			{{ $posts := (.GetPage "posts").RegularPagesRecursive }}
 			{{ range $posts }}
@@ -19,5 +18,4 @@
 			</li>
 			{{ end }}
 		</ul>
-	</main>
 {{ end }}
