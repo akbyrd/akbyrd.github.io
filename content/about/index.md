@@ -1,6 +1,6 @@
 +++
 title = 'About'
-date = 2023-12-10T22:41:28-08:00
+date = 2023-12-10
 layout = 'about'
 draft = true
 build.publishResources = false
@@ -8,7 +8,7 @@ build.publishResources = false
 
 {{< image File="me.png" Alt="Me" Size="256x" ContainerClass="about-pic-container" ImageClass="about-pic" >}}
 
-Systems programmer in the game industry. Most interested in custom engines, data oriented design, managing codebases over time, and personal growth. Not interested in modern C++ or unnecessary complexity. Currently principal engineer at Phoenix Labs. Previously at Blizzard Entertainment, Procedural Reality, and Pixel Dash Studios.
+Systems programmer in the game industry. Interested in custom engines, data oriented design, managing codebases over time, and personal growth. Not interested in modern C++ or unnecessary complexity. Currently principal engineer at Phoenix Labs. Previously at Blizzard Entertainment, Procedural Reality, and Pixel Dash Studios.
 
 {{< about-links.inline >}}
 <ul class="about-link-container">
@@ -43,4 +43,5 @@ Systems programmer in the game industry. Most interested in custom engines, data
 		</a>
 	</li>
 </ul>
+{{- /**/ -}}
 {{< /about-links.inline >}}

@@ -1,37 +1,37 @@
 <!DOCTYPE html>
-
 <html class="theme-system" lang="en-us" dir="ltr">
 
 <head>
+	<title>{{ .Title }}</title>
+
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1" />
 	<meta name="theme-color" content="#212121" />
 	<meta name="theme-color" media="(prefers-color-scheme: light)" content="#bdbdbd" />
-	<title>{{ .Title }}</title>
 
-	{{ with partial "resource" (dict "Name" "favicon.ico" "Rename" false) }}
+	{{ with partial "resource" (dict "Name" "favicon.ico" "Rename" false) -}}
 	<link rel="icon" href="{{ .RelPermalink }}" sizes="32x32"{{ .Integrity }}>
-	{{ end }}
-	{{ with partial "resource" "res/favicon.svg" }}
+	{{- end }}
+	{{- with partial "resource" "res/favicon.svg" }}
 	<link rel="icon" href="{{ .RelPermalink }}" size="any" type="image/svg+xml"{{ .Integrity }}>
-	{{ end }}
-	{{ with partial "resource" "res/apple-touch-icon.png" }}
+	{{- end }}
+	{{- with partial "resource" "res/apple-touch-icon.png" }}
 	<link rel="apple-touch-icon" href="{{ .RelPermalink }}"{{ .Integrity }}>
-	{{ end }}
-	{{ with partial "resource" "res/main.css" }}
+	{{- end }}
+	{{- with partial "resource" "res/main.css" }}
 	<link rel="stylesheet" href="{{ .RelPermalink }}"{{ .Integrity }}>
-	{{ end }}
-	{{ with partial "resource" "res/main.ts" }}
+	{{- end }}
+	{{- with partial "resource" "res/main.ts" }}
 	<script src="{{ .RelPermalink }}" async{{ .Integrity }}></script>
-	{{ end }}
+	{{- end }}
 
 	{{ $woff2 := partial "resource" "res/Symbols.woff2" }}
-	{{ $woff := partial "resource" "res/Symbols.woff" }}
-	{{ $firstSymbol := strings.FindRE "\\p{Co}" (.Page.Content | htmlUnescape) 1 }}
-	{{ if $firstSymbol }}
+	{{- $woff := partial "resource" "res/Symbols.woff" }}
+	{{- $firstSymbol := strings.FindRE "\\p{Co}" (.Page.Content | htmlUnescape) 1 }}
+	{{- if $firstSymbol -}}
 	<link rel="preload" as="font" href="{{ $woff2.RelPermalink }}" type="font/woff2"{{ $woff2.Integrity }}>
 	<link href="{{ $woff.RelPermalink }}" type="font/woff"{{ $woff.Integrity }}>
-	{{ end }}
+	{{ end -}}
 	<style>
 		@font-face {
 			font-family: "Symbols";
@@ -42,6 +42,12 @@
 		}
 	</style>
 
+	<noscript>
+		<style>
+			.require-js { display: none; }
+		</style>
+	</noscript>
+
 	<script>
 		const theme = localStorage.getItem("theme") ?? 0
 		const classes = [ "theme-system", "theme-light", "theme-dark" ]
@@ -49,37 +55,31 @@
 		html.classList.remove("theme-system")
 		html.classList.add(classes[theme])
 	</script>
+
+	{{- block "head" . }}{{ end }}
 </head>
 
-<body>
-
-	<noscript>
-		<style>
-			.require-js { display: none; }
-		</style>
-	</noscript>
-
+<body class="{{ or .Page.Layout .Page.Kind }}">
 	<header>
 		<nav class="header">
 			<a class="header-title" href="{{ site.Home.RelPermalink}}">{{ site.Title }}</a>
 			<p class="header-theme-label" for="header-theme-button"></p>
 			<button class="header-theme-button require-js" id="header-theme-button" type="button" aria-label="Toggle Theme">
-			{{ with resources.Get "res/theme-icon.svg" }}
-			{{ .Content | safeHTML }}
-			{{ end }}
+			{{ with resources.Get "res/theme-icon.svg" -}}
+			{{- .Content | safeHTML -}}
+			{{- end }}
 			</button>
 			<a class="header-about" href="{{ (site.GetPage "about").RelPermalink }}">About</a>
 		</nav>
 	</header>
 
-	<main class="{{ or .Page.Layout .Page.Kind }}-main">
-		{{ block "main" . }}{{ end }}
+	<main>
+		{{- block "main" . }}{{ end }}
 	</main>
 
 	<footer>
-		{{ block "footer" . }}{{ end }}
+		{{- block "footer" . }}{{ end }}
 	</footer>
-
 </body>
 
 </html>

@@ -1,0 +1,6 @@
+<h1 class="post-title">{{ .LinkTitle }}</h1>
+{{- with .Date }}
+<time class="post-time" datetime="{{ .Format "2006-01-02" }}">{{ .Format "Jan 2, 2006" }}</time>
+{{- else }}
+<div class="post-time">&zwnj;</div>
+{{- end -}}

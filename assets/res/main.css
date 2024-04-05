@@ -119,18 +119,16 @@ footer {
 	padding: 20px;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3, h4 {
 	display: block;
 	font-family: sans-serif;
 	font-weight: bold;
 }
 
 h1 { font-size: 30pt; }
-h2 { font-size: 28pt; }
-h3 { font-size: 26pt; }
-h4 { font-size: 24pt; }
-h5 { font-size: 22pt; }
-h6 { font-size: 20pt; }
+h2 { font-size: 26pt; }
+h3 { font-size: 22pt; }
+h4 { font-size: 18pt; }
 
 a, button {
 	cursor: pointer;
@@ -234,7 +232,7 @@ p, ul, ol, li {
 /* ---------------------------------------------------------------------------------------------- */
 /* Home */
 
-.home-main {
+.home main {
 	padding: 0;
 }
 
@@ -279,7 +277,7 @@ p, ul, ol, li {
 /* ---------------------------------------------------------------------------------------------- */
 /* About */
 
-.about-main {
+.about main {
 	text-align: justify;
 }
 

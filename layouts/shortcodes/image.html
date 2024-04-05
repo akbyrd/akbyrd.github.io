@@ -1,52 +1,52 @@
 {{ $rename := true }}
-{{ if eq hugo.Environment "development" }}
-	{{ $rename = false }}
-{{ end }}
+{{- if eq hugo.Environment "development" }}
+	{{- $rename = false }}
+{{- end }}
 
-{{ $path := .Page.RelPermalink }}
-{{ $file := .Get "File" }}
-{{ $alt := .Get "Alt" }}
-{{ $size := .Get "Size" }}
-{{ $containerClass := .Get "ContainerClass" }}
-{{ $imageClass := .Get "ImageClass" }}
+{{- $path := .Page.RelPermalink }}
+{{- $file := .Get "File" }}
+{{- $alt := .Get "Alt" }}
+{{- $size := .Get "Size" }}
+{{- $containerClass := .Get "ContainerClass" }}
+{{- $imageClass := .Get "ImageClass" }}
 
-{{ with $.Page.Resources.Get $file }}
-	{{ $resize := printf "%s jpeg q90 photo" $size }}
-	{{ with .Resize $resize }}
-		{{ $resource := . | fingerprint }}
-		{{ $fingerprint := $resource.Data.Integrity }}
+{{- with $.Page.Resources.Get $file }}
+	{{- $resize := printf "%s jpeg q90 photo" $size }}
+	{{- with .Resize $resize }}
+		{{- $resource := . | fingerprint }}
+		{{- $fingerprint := $resource.Data.Integrity }}
 
-		{{ $hash := index (index (findRESubmatch `sha\d*-(.*)` $fingerprint) 0) 1 }}
-		{{ $long := $hash }}
-		{{ $short := $hash | first 6 }}
+		{{- $hash := index (index (findRESubmatch `sha\d*-(.*)` $fingerprint) 0) 1 }}
+		{{- $long := $hash }}
+		{{- $short := $hash | first 6 }}
 
-		{{ if $rename }}
-			{{ $safe := $short }}
-			{{ $safe = replace $safe "+" "p" }}
-			{{ $safe = replace $safe "/" "f" }}
-			{{ $safe = replace $safe "=" "e" }}
-			{{ $file = replaceRE `\.([^.]*\z)` (printf "-%s.$1" $safe) $file }}
-			{{ $file = replaceRE `\.ts\z` ".js" $file }}
-		{{ end }}
+		{{- if $rename }}
+			{{- $safe := $short }}
+			{{- $safe = replace $safe "+" "p" }}
+			{{- $safe = replace $safe "/" "f" }}
+			{{- $safe = replace $safe "=" "e" }}
+			{{- $file = replaceRE `\.([^.]*\z)` (printf "-%s.$1" $safe) $file }}
+			{{- $file = replaceRE `\.ts\z` ".js" $file }}
+		{{- end }}
 
-		{{ $file = printf "%s%s" $path $file }}
-		{{ $resource = $resource.Content | resources.FromString $file }}
+		{{- $file = printf "%s%s" $path $file }}
+		{{- $resource = $resource.Content | resources.FromString $file }}
 
-		{{ with $containerClass }}
-		<div class="{{ $containerClass }} image-background">
-		{{ else }}
-		<div class="image-background">
-		{{ end }}
-		{{ with $imageClass }}
-			<img class="{{ $imageClass }}"
-		{{ else }}
-			<img
-		{{ end }}
-				src="{{ $resource.RelPermalink }}" alt="{{ $alt }}"
-				width="{{ $resource.Width }}" height="{{ $resource.Height }}"
-				decoding="async" loading="lazy" />
-		</div>
-	{{ end }}
-{{ else }}
-	{{ errorf "Failed to find image %s" $file }}
-{{ end }}
+		{{- with $containerClass }}
+<div class="{{ $containerClass }} image-background">
+		{{- else }}
+<div class="image-background">
+		{{- end }}
+		{{- with $imageClass }}
+	<img class="{{ $imageClass }}"
+		{{- else }}
+	<img
+		{{- end }}
+		src="{{ $resource.RelPermalink }}" alt="{{ $alt }}"
+		width="{{ $resource.Width }}" height="{{ $resource.Height }}"
+		decoding="async" loading="lazy" />
+</div>
+	{{- end }}
+{{- else }}
+	{{- errorf "Failed to find image %s" $file }}
+{{- end }}

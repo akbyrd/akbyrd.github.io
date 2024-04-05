@@ -1,24 +1,21 @@
-{{ define "main" }}
-	<h1>{{ .Title }}</h1>
+{{- define "head" }}
+	{{- if .Page.Store.Get "hasMermaid" }}
 
-	{{ $dateMachine := .Date | time.Format "2006-01-02T15:04:05-07:00" }}
-	{{ $dateHuman := .Date | time.Format ":date_long" }}
-	<time datetime="{{ $dateMachine }}">{{ $dateHuman }}</time>
+	<script type="module">
+		import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';
+		mermaid.initialize({ startOnLoad: true });
+	</script>
+	{{- end }}
+{{- end }}
 
-	{{ if not (or .Draft .Date) }}
-		{{ errorf "Non-draft posts must have a date. File: %s" .File.Path }}
-	{{ end }}
-	{{ if not (or .Draft .Summary) }}
-		{{ errorf "Non-draft posts must have a summary. File: %s" .File.Path }}
-	{{ end }}
+{{- define "main" }}
+{{- if not (or .Draft .Date) }}
+{{- errorf "Non-draft posts must have a date. File: %s" .File.Path }}
+{{- end }}
+{{- if not (or .Draft .Summary) }}
+{{- errorf "Non-draft posts must have a summary. File: %s" .File.Path }}
+{{- end }}
 
-	{{ .Content }}
-
-	{{ if .Page.Store.Get "hasMermaid" }}
-		<script type="module">
-			import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';
-			mermaid.initialize({ startOnLoad: true });
-		</script>
-	{{ end }}
-
-{{ end }}
+		{{ partial "post-title" . }}
+		{{ .Content }}
+{{- end }}
