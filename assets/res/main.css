@@ -56,13 +56,13 @@ html {
 
 html * {
 	outline-color: var(--accent-fade);
-	outline-offset: 3px;
+	outline-offset: 9px;
 	outline-width: 3px;
 }
 
 :focus-visible {
 	outline-color: var(--accent);
-	outline-offset: -3px;
+	outline-offset: 3px;
 	outline-style: solid;
 	transition-duration: 200ms;
 	transition-property: outline-offset, outline-color;
@@ -71,7 +71,7 @@ html * {
 @supports not selector(:focus-visible) {
 	:focus:not(:active) {
 		outline-color: var(--accent);
-		outline-offset: -3px;
+		outline-offset: 3px;
 		outline-style: solid;
 		transition-duration: 200ms;
 		transition-property: outline-offset, outline-color;
@@ -124,12 +124,28 @@ h1, h2, h3, h4 {
 	font-weight: bold;
 }
 
+h2, h3 {
+	margin: 0.5em 0;
+
+	a {
+		text-decoration: none;
+	}
+
+	a:hover {
+		text-decoration: underline;
+	}
+}
+
 h1 { font-size: 30pt; }
 h2 { font-size: 26pt; }
-h3 { font-size: 22pt; }
-h4 { font-size: 18pt; }
+h3 { font-size: 18pt; }
 
-a, button {
+a {
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+button {
 	cursor: pointer;
 }
 
@@ -149,7 +165,14 @@ img {
 	overflow: auto;
 }
 
-p, ul, ol, li {
+p {
+	display: block;
+	hyphens: auto;
+	margin-bottom: 1em;
+	text-align: justify;
+}
+
+ul, ol, li {
 	display: block;
 }
 
@@ -181,6 +204,21 @@ p, ul, ol, li {
 	font-size: 14pt;
 	font-weight: bold;
 	line-height: 28px;
+
+	* {
+		outline-offset: 3px;
+		text-decoration: none;
+
+		&:focus-visible {
+			outline-offset: -3px;
+		}
+
+		@supports not selector(:focus-visible) {
+			&:focus:not(:active) {
+				outline-offset: -3px;
+			}
+		}
+	}
 }
 
 .header-title {
@@ -192,6 +230,7 @@ p, ul, ol, li {
 .header-theme-label {
 	font-size: 10pt;
 	opacity: 0%;
+	margin: 0;
 	padding: 20px 10px;
 	scale: 0%;
 	transition-duration: 100ms;
@@ -239,13 +278,15 @@ p, ul, ol, li {
 	list-style: none;
 }
 
-.post-list-item:not(:last-of-type) {
-	margin-bottom: 10px;
+.post-list-item {
+	margin: 10px 0;
 }
 
 .post-link {
 	display: block;
+	outline-offset: 3px;
 	padding: 0 20px;
+	text-decoration: none;
 
 	&.draft {
 		background: repeating-linear-gradient(
@@ -255,6 +296,16 @@ p, ul, ol, li {
 			var(--draft-stripe) 10px,
 			var(--draft-stripe) 20px
 		);
+	}
+
+	&:focus-visible {
+		outline-offset: -3px;
+	}
+
+	@supports not selector(:focus-visible) {
+		&:focus:not(:active) {
+			outline-offset: -3px;
+		}
 	}
 }
 
@@ -277,11 +328,6 @@ p, ul, ol, li {
 
 /* ---------------------------------------------------------------------------------------------- */
 /* About */
-
-.about main {
-	text-align: justify;
-	hyphens: auto;
-}
 
 .about-pic-container {
 	float: left;
@@ -312,18 +358,7 @@ p, ul, ol, li {
 	}
 
 	a {
-		display: block;
-		outline-offset: 9px;
-
-		&:focus-visible {
-			outline-offset: 3px;
-		}
-
-		@supports not selector(:focus-visible) {
-			&:focus:not(:active) {
-				outline-offset: 3px;
-			}
-		}
+		text-decoration: none;
 	}
 
 	p {
@@ -333,6 +368,7 @@ p, ul, ol, li {
 		font-family: Symbols;
 		font-size: 38px;
 		line-height: 40px;
+		margin-bottom: 0;
 		text-align: center;
 	}
 }
