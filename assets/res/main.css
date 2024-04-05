@@ -104,7 +104,7 @@ body {
 
 header {
 	display: block;
-	margin-bottom: 40px;
+	margin-bottom: 20px;
 }
 
 main {
@@ -239,13 +239,13 @@ p, ul, ol, li {
 	list-style: none;
 }
 
-.post:not(:last-of-type) {
+.post-list-item:not(:last-of-type) {
 	margin-bottom: 10px;
 }
 
 .post-link {
 	display: block;
-	padding: 10px 20px;
+	padding: 0 20px;
 
 	&.draft {
 		background: repeating-linear-gradient(
@@ -260,6 +260,7 @@ p, ul, ol, li {
 
 .post-title {
 	color: var(--accent);
+	padding-top: 10px;
 
 	.post-link:hover & {
 		text-decoration: underline;
@@ -271,6 +272,7 @@ p, ul, ol, li {
 	display: block;
 	font-family: sans-serif;
 	font-size: 11pt;
+	padding-bottom: 10px;
 }
 
 /* ---------------------------------------------------------------------------------------------- */
