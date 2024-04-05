@@ -115,8 +115,7 @@ main {
 
 footer {
 	display: block;
-	margin-top: 40px;
-	padding: 20px;
+	margin: 20px 0;
 }
 
 h1, h2, h3, h4 {
@@ -279,6 +278,7 @@ p, ul, ol, li {
 
 .about main {
 	text-align: justify;
+	hyphens: auto;
 }
 
 .about-pic-container {

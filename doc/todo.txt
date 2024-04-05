@@ -5,7 +5,6 @@ TODO: Set up modified date
 TODO: Implement comments (Github, Giscus, Staticman, Custom)
 TODO: Fix typo / pull request button
 TODO: Edit this page button https://www.ii.com/vscode-uri-scheme-and-hugo/
-TODO: Consider other markup languages (Djot, Markdeep, AsciiDoc, rST, Custom)
 TODO: Headers as hyperlinks (as opposed to showing an anchor icon) https://www.ii.com/linkified-section-headings-in-hugo-generated-web-pages/
 TODO: Confirm focus handling
 TODO: Lazy image loading
@@ -28,13 +27,11 @@ TODO: github 404 page
 TODO: Add search support
 TODO: Math formatting (load only when used)
 TODO: Tooltip for emoji (dev only?)
-
-Validation
-TODO: Run site audit as part of deployment
-TODO: https://jigsaw.w3.org/css-validator/
-TODO: https://validator.w3.org/
+TODO: Consider other markup languages (Djot, Markdeep, AsciiDoc, rST, Custom)
+TODO: Ensure double tap to zoom works on mobile
 
 Content
+TODO: Improve about page content
 TODO: Add my rss list
 
 Testing / Compatibility
@@ -45,6 +42,9 @@ TODO: Test search engine results
 TODO: Test double tap to zoom on text
 TODO: Attempt to remove `unset: all`
 TODO: Figure out why firefox requests apple-touch-icon
+TODO: Run site audit as part of deployment
+TODO: https://jigsaw.w3.org/css-validator/
+TODO: https://validator.w3.org/
 
 Theme
 TODO: Pay a UI designer for a review and recommendations
