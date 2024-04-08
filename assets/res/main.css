@@ -18,6 +18,7 @@ html {
 	--dark-text-detail:  #616161;
 	--dark-text-shadow:  #000000a0;
 	--dark-outline:      #404040;
+	--dark-scrollbar:    #767676;
 
 	--light-background:   #bdbdbd;
 	--light-draft-stripe: #a0a0a0;
@@ -25,6 +26,7 @@ html {
 	--light-text-detail:  #404040;
 	--light-text-shadow:  #00000020;
 	--light-outline:      #404040;
+	--light-scrollbar:    #808080;
 }
 
 .theme-system, .theme-dark {
@@ -34,6 +36,7 @@ html {
 	--text-detail:  var(--dark-text-detail);
 	--text-shadow:  var(--dark-text-shadow);
 	--outline:      var(--dark-outline);
+	--scrollbar:    var(--dark-scrollbar);
 }
 
 .theme-light {
@@ -43,6 +46,7 @@ html {
 	--text-detail:  var(--light-text-detail);
 	--text-shadow:  var(--light-text-shadow);
 	--outline:      var(--light-outline);
+	--scrollbar:    var(--light-scrollbar);
 }
 
 @media (prefers-color-scheme: light) {
@@ -53,6 +57,7 @@ html {
 		--text-detail:  var(--light-text-detail);
 		--text-shadow:  var(--light-text-shadow);
 		--outline:      var(--light-outline);
+		--scrollbar:    var(--light-scrollbar);
 	}
 }
 
@@ -69,7 +74,6 @@ html * {
 	outline-color: var(--accent);
 	outline-offset: 3px;
 	outline-style: solid;
-	transition-duration: 200ms;
 	transition-property: outline-offset, outline-color;
 }
 
@@ -78,7 +82,6 @@ html * {
 		outline-color: var(--accent);
 		outline-offset: 3px;
 		outline-style: solid;
-		transition-duration: 200ms;
 		transition-property: outline-offset, outline-color;
 	}
 }
@@ -86,8 +89,13 @@ html * {
 /* ---------------------------------------------------------------------------------------------- */
 /* Shared / Standard */
 
+*:not(img) {
+	transition-duration: 200ms;
+}
+
 html {
 	padding-left: clamp(0px, 100vw - 100%, 100% - var(--max-width));
+	scrollbar-color: var(--scrollbar) var(--background);
 }
 
 head, script, style {
@@ -104,7 +112,6 @@ body {
 	min-width: 296px;
 	max-width: var(--max-width);
 	text-shadow: 1px 1px 6px var(--text-shadow);
-	transition-duration: 200ms;
 }
 
 header {
@@ -319,6 +326,7 @@ ul, ol, li {
 	scale: 0%;
 	transition-duration: 100ms;
 	transition-timing-function: ease-out;
+	transition-property: scale, opacity;
 
 	&:has(+ .header-theme-button:hover) {
 		opacity: 50%;
@@ -334,7 +342,6 @@ ul, ol, li {
 	display: block;
 	height: 1em;
 	stroke: var(--text);
-	transition-duration: 200ms;
 	user-select: none;
 }
 

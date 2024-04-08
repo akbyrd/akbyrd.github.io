@@ -1,9 +1,8 @@
 Posts
 TODO: Code formatting
-	Inline code color doesn't transition correctly
+	Allow selection to work while over line numbers
 	Better font
 	Copy all button
-	Allow selection to work while over line numbers
 	Line anchors
 		Can't set? https://discourse.gohugo.io/t/anchorlinenos-true-attribute-doesnt-work-when-using-code-fences/36564/3
 
