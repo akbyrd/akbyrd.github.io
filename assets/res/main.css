@@ -209,18 +209,21 @@ code {
 	}
 
 	.ln {
-		/*border-right-color: var(--outline);*/
-		border-right-style: solid;
-		border-left-style: solid;
-		border-left-color: transparent;
 		border-width: 1px;
+		margin-right: 10px;
+		user-select: none;
+	}
+
+	&.sticky .ln {
+		border-right-color: var(--outline);
+		border-right-style: solid;
+		border-left-color: transparent;
+		border-left-style: solid;
 		inset: 0;
 		margin-left: -11px;
-		margin-right: 10px;
 		padding-left: 9px;
 		padding-right: 10px;
 		position: sticky;
-		user-select: none;
 	}
 }
 

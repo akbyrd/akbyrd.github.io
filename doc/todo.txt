@@ -1,7 +1,5 @@
 Posts
 TODO: Code formatting
-	Increase size of highlight slightly (outline?)
-	Improve line number right border color when highlighted
 	Inline code color doesn't transition correctly
 	Better font
 	Copy all button
