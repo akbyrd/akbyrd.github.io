@@ -167,7 +167,7 @@ code {
 
 	pre & {
 		display: block;
-		padding: 10px;
+		padding: 10px 0;
 	}
 
 	pre:has(&) {
@@ -181,7 +181,6 @@ code {
 
 	.line {
 		display: flex;
-		margin: 0 -10px;
 		padding: 0 10px;
 
 		&.hl {
