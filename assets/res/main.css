@@ -118,21 +118,18 @@ footer {
 	margin: 20px 0;
 }
 
-h1, h2, h3, h4 {
+h1, h2, h3 {
 	display: block;
 	font-family: sans-serif;
 	font-weight: bold;
-}
-
-h2, h3 {
-	margin: 0.5em 0;
+	margin: 20px 0;
 
 	a {
 		text-decoration: none;
-	}
 
-	a:hover {
-		text-decoration: underline;
+		&:hover {
+			text-decoration: underline;
+		}
 	}
 }
 
@@ -147,6 +144,39 @@ a {
 
 button {
 	cursor: pointer;
+}
+
+code {
+	font-family: monospace;
+	font-size: .8em;
+	text-wrap: nowrap;
+	white-space-collapse: preserve;
+	min-width: fit-content;
+	tab-size: 4;
+
+	p & {
+		background-color: var(--dark-draft-stripe);
+		border: 1px solid #444;
+		padding: 1px 1px 2px 1px;
+	}
+
+	pre & {
+		display: block;
+		padding: 10px;
+
+		> span {
+			margin: 0 -10px;
+			padding: 0 10px 0 calc(10px - 0.4em);
+		}
+	}
+
+	pre:has(&) {
+		background-color: var(--dark-draft-stripe);
+		border: 1px solid #444;
+		display: block;
+		overflow: auto;
+		scrollbar-width: thin;
+	}
 }
 
 .image-background {
@@ -168,8 +198,13 @@ img {
 p {
 	display: block;
 	hyphens: auto;
-	margin-bottom: 1em;
+	margin: 20px 0;
 	text-align: justify;
+	line-height: 1.3em;
+
+	a {
+		color: var(--accent);
+	}
 }
 
 ul, ol, li {
@@ -229,8 +264,9 @@ ul, ol, li {
 
 .header-theme-label {
 	font-size: 10pt;
-	opacity: 0%;
+	line-height: unset;
 	margin: 0;
+	opacity: 0%;
 	padding: 20px 10px;
 	scale: 0%;
 	transition-duration: 100ms;
@@ -313,6 +349,10 @@ ul, ol, li {
 	color: var(--accent);
 	padding-top: 10px;
 
+	.home & {
+		margin: 0;
+	}
+
 	.post-link:hover & {
 		text-decoration: underline;
 	}
@@ -323,6 +363,9 @@ ul, ol, li {
 	display: block;
 	font-family: sans-serif;
 	font-size: 11pt;
+	font-weight: normal;
+	min-width: 1lh;
+	min-height: 1lh;
 	padding-bottom: 10px;
 }
 
@@ -348,7 +391,6 @@ ul, ol, li {
 .about-link-container {
 	display: flex;
 	justify-content: center;
-	margin-top: 20px;
 	user-select: none;
 
 	li {

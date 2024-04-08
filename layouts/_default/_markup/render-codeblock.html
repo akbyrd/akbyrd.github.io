@@ -1,0 +1,9 @@
+{{ if eq .Type "" }}
+{{/* They don't have line numbers and create a tab stop */}}
+{{- errorf "Language is required for code blocks.\n\t%s" .Position }}
+{{- end }}
+<pre>
+	<code>
+		{{- (transform.HighlightCodeBlock .).Inner -}}
+	</code>
+</pre>

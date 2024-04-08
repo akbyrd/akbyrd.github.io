@@ -10,8 +10,9 @@ enableInlineShortcodes = true
 markup.goldmark.renderer.unsafe = true # allow html
 markup.goldmark.parser.attribute.block = true
 markup.goldmark.parser.wrapStandAloneImageWithinParagraph = false
-markup.highlight.anchorLineNos = true
+#markup.highlight.anchorLineNos = true
 markup.highlight.lineNos = true
+markup.highlight.lineNumbersInTable = false
 
 # Disable unnecessary RSS files
 outputs.home = ['html']

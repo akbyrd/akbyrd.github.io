@@ -1,20 +1,30 @@
 Posts
+TODO: Code formatting
+	Disable noClasses
+	Don't scroll line numbers
+	Line highlight appearance
+	Hoist colors
+	Better font
+	Why are the outlines offset?
+	Increase size of highlight slightly
+	Copy all button
+	Line anchors
+		Can't set? https://discourse.gohugo.io/t/anchorlinenos-true-attribute-doesnt-work-when-using-code-fences/36564/3
+
 TODO: Automatically calculate title
 TODO: Automatically calculate alias from numeric prefix
 TODO: Set up modified date
 TODO: Implement comments (Github, Giscus, Staticman, Custom)
+TODO: Choose a diagram method: goat, mermaid, graphviz, other
 TODO: Fix typo / pull request button
 TODO: Edit this page button https://www.ii.com/vscode-uri-scheme-and-hugo/
 TODO: Confirm focus handling
 TODO: Lazy image loading
 
 Syntax highlighting
-TODO: Fix line number color
-TODO: Fix missing colors
-TODO: Copy all button
 TODO: Try to match editor theme https://gohugo.io/content-management/syntax-highlighting/#generate-syntax-highlighter-css
-TODO: Ids for code blocks
-TODO: Can't set lineAnchors https://discourse.gohugo.io/t/anchorlinenos-true-attribute-doesnt-work-when-using-code-fences/36564/3
+TODO: Add context block to improve syntax coloring
+TODO: Apply to inline code
 
 General
 TODO: Use partialCached (should cache each unique invocation)
@@ -28,6 +38,7 @@ TODO: Math formatting (load only when used)
 TODO: Tooltip for emoji (dev only?)
 TODO: Consider other markup languages (Djot, Markdeep, AsciiDoc, rST, Custom)
 TODO: Ensure double tap to zoom works on mobile
+TODO: Try a render hook for images https://gohugo.io/render-hooks/images/
 
 Content
 TODO: Improve about page content

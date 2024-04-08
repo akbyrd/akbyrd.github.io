@@ -15,7 +15,13 @@
 {{- if not (or .Draft .Summary) }}
 {{- errorf "Non-draft posts must have a summary. File: %s" .File.Path }}
 {{- end }}
-
-		{{ partial "post-title" . }}
+		<h1 class="post-title">
+			{{ .LinkTitle }}
+			{{- with .Date }}
+			<time class="post-time" datetime="{{ .Format "2006-01-02" }}">{{ .Format "Jan 2, 2006" }}</time>
+			{{- else }}
+			<time class="post-time"></time>
+			{{- end -}}
+		</h1>
 		{{ .Content }}
 {{- end }}

@@ -8,7 +8,12 @@
 			{{- with .ExpiryDate  }}{{ $devOnly = or $devOnly (le . time.Now) }}{{ end }}
 			<li class="post-list-item">
 				<a class="post-link{{if $devOnly }} draft{{ end }}" href="{{ .RelPermalink }}">
-					{{ partial "post-title" . }}
+					<h1 class="post-title">{{ .LinkTitle }}</h1>
+					{{- with .Date }}
+					<time class="post-time" datetime="{{ .Format "2006-01-02" }}">{{ .Format "Jan 2, 2006" }}</time>
+					{{- else }}
+					<time class="post-time"></time>
+					{{- end }}
 				</a>
 			</li>
 			{{- end }}
