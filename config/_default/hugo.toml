@@ -13,6 +13,7 @@ markup.goldmark.parser.wrapStandAloneImageWithinParagraph = false
 #markup.highlight.anchorLineNos = true
 markup.highlight.lineNos = true
 markup.highlight.lineNumbersInTable = false
+markup.highlight.noClasses = false
 
 # Disable unnecessary RSS files
 outputs.home = ['html']

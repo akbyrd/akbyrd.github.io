@@ -3,7 +3,7 @@
 {{- errorf "Language is required for code blocks.\n\t%s" .Position }}
 {{- end }}
 <pre>
-	<code>
+	<code class="theme-dark">
 		{{- (transform.HighlightCodeBlock .).Inner -}}
 	</code>
 </pre>
