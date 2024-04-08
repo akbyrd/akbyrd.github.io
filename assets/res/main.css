@@ -218,6 +218,7 @@ code {
 	.ln {
 		border-width: 1px;
 		margin-right: 10px;
+		pointer-events: none;
 		user-select: none;
 	}
 

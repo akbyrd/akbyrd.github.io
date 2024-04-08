@@ -1,6 +1,5 @@
 Posts
 TODO: Code formatting
-	Allow selection to work while over line numbers
 	Better font
 	Copy all button
 	Line anchors
