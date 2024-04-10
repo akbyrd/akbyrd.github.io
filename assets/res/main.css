@@ -501,28 +501,27 @@ ul, ol, li {
 /* Syntax highlighting */
 
 code {
+	--code-background:           #101010;
+	--code-line-numbers:         #424242;
 	--code-macros:               #7e57c2;
 	--code-control-flow:         #e91e63;
 	--code-labels:               #607d8b;
 	--code-keywords:             #2196f3;
 	--code-types:                #00897b;
 	--code-functions:            #64dd17;
-	--code-func-params:          #00bcd4; /**/
 	--code-variables:            #00bcd4;
 	--code-literals:             #ffc107;
 	--code-escape-seq:           #ff9800;
 	--code-format-specs:         #f44336;
 	--code-comments:             #33691e;
-	--code-doc-tags:             #2196f377; /**/
-	--code-doc-params:           #00bcd499; /**/
 	--code-default:              #9e9e9e;
 	--code-invalid:              #ff0000;
-	--code-highlight-background: #404040;
+	--code-highlight-background: #191919;
 	--code-highlight-border:     #007fd4;
 
-	/* Code           (custom)  */ &          { background-color: var(--draft-stripe); }
-	/* Code Line      (custom)  */ p &        { border-color: var(--outline); }
-	/* Code Block     (custom)  */ pre &      {}
+	/* Code           (custom)  */ &          {}
+	/* Code Line      (custom)  */ p &        { background-color: var(--code-background);  border-color: var(--outline); }
+	/* Code Block     (custom)  */ pre &      { background-color: var(--code-background); }
 	/* Code Container (custom)  */ pre:has(&) { border-color: var(--outline); }
 	/* Other                    */ .x         { color: var(--code-invalid); }
 	/* Error                    */ .err       {}
@@ -531,8 +530,8 @@ code {
 	/* LineTableTD              */ .lntd      {}
 	/* LineTable                */ .lntable   {}
 	/* LineHighlight            */ .hl        { background-color: var(--code-highlight-background); border-color: var(--code-highlight-border); }
-	/* LineNumbersTable         */ .lnt       { color: var(--code-default); opacity: 40% }
-	/* LineNumbers              */ .ln        { color: var(--code-default); opacity: 40%; background-color: var(--draft-stripe); }
+	/* LineNumbersTable         */ .lnt       { color: var(--code-line-numbers) }
+	/* LineNumbers              */ .ln        { color: var(--code-line-numbers); background-color: var(--code-background); }
 	/* LineNumbers              */ .hl .ln    { background-color: var(--code-highlight-background); border-color: var(--code-highlight-border); }
 	/* Line                     */ .line      { color: var(--code-default); }
 	/* Keyword                  */ .k         { color: var(--code-keywords); }

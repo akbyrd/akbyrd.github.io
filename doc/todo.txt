@@ -1,7 +1,6 @@
 Posts
 TODO: Code formatting
 	Inline code doesn't transition properly (maybe lots of transitions?)
-	Match editor theme
 	Better font
 	Copy all button
 	Line anchors
