@@ -159,8 +159,8 @@ button {
 }
 
 code {
-	font-family: monospace;
-	font-size: .8em;
+	font-family: Code, monospace;
+	font-size: 11pt;
 	min-width: fit-content;
 	tab-size: 4;
 	white-space: pre;
@@ -169,7 +169,8 @@ code {
 	p & {
 		border-style: solid;
 		border-width: 1px;
-		padding: 1px 1px 2px 1px;
+		padding: 1px 2px;
+		vertical-align: top;
 	}
 
 	pre & {
@@ -520,7 +521,7 @@ code {
 	--code-highlight-border:     #007fd4;
 
 	/* Code           (custom)  */ &          {}
-	/* Code Line      (custom)  */ p &        { background-color: var(--code-background);  border-color: var(--outline); }
+	/* Code Line      (custom)  */ p &        { color: var(--code-default); background-color: var(--code-background); border-color: var(--outline); }
 	/* Code Block     (custom)  */ pre &      { background-color: var(--code-background); }
 	/* Code Container (custom)  */ pre:has(&) { border-color: var(--outline); }
 	/* Other                    */ .x         { color: var(--code-invalid); }

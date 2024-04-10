@@ -1,10 +1,16 @@
 Posts
 TODO: Code formatting
+	Code font jitters on load
+	Are fonts being cached properly?
+	Merge symbol and code fonts
+	Test more languages
+	Light theme for inline code
 	Inline code doesn't transition properly (maybe lots of transitions?)
-	Better font
+	Getting weird zoom behavior (transitions?)
 	Copy all button
 	Line anchors
 		Can't set? https://discourse.gohugo.io/t/anchorlinenos-true-attribute-doesnt-work-when-using-code-fences/36564/3
+		Scroll to center, not top?
 
 TODO: Automatically calculate title
 TODO: Automatically calculate alias from numeric prefix
@@ -45,7 +51,6 @@ TODO: Test theme-color on android
 TODO: Test search engine results
 TODO: Test double tap to zoom on text
 TODO: Attempt to remove `unset: all`
-TODO: Figure out why firefox requests apple-touch-icon
 TODO: Run site audit as part of deployment
 TODO: https://jigsaw.w3.org/css-validator/
 TODO: https://validator.w3.org/
