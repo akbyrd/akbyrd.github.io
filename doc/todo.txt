@@ -1,5 +1,7 @@
 Posts
 TODO: Code formatting
+	Inline code doesn't transition properly (maybe lots of transitions?)
+	Match editor theme
 	Better font
 	Copy all button
 	Line anchors
@@ -9,14 +11,13 @@ TODO: Automatically calculate title
 TODO: Automatically calculate alias from numeric prefix
 TODO: Set up modified date
 TODO: Implement comments (Github, Giscus, Staticman, Custom)
-TODO: Choose a diagram method: goat, mermaid, graphviz, other
+TODO: Choose a diagram method: goat, mermaid (jerky layout), graphviz, other
 TODO: Fix typo / pull request button
 TODO: Edit this page button https://www.ii.com/vscode-uri-scheme-and-hugo/
 TODO: Confirm focus handling
 TODO: Lazy image loading
 
 Syntax highlighting
-TODO: Try to match editor theme https://gohugo.io/content-management/syntax-highlighting/#generate-syntax-highlighter-css
 TODO: Add context block to improve syntax coloring
 TODO: Apply to inline code
 
