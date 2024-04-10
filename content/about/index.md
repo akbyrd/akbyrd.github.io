@@ -14,7 +14,7 @@ Systems programmer in the game industry. Interested in game engines, data orient
 <ul class="about-link-container">
 	<li>
 		<a href="../posts/index.xml" title="RSS">
-			<p style="background-image: linear-gradient(#ee802f80, #ee802f80);">&#xf09e;</p>
+			<p style="background-image: linear-gradient(#ee802f80, #ee802f80);">&#xf046b;</p>
 		</a>
 	</li>
 	<li>

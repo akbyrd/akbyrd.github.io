@@ -1,12 +1,11 @@
 Posts
 TODO: Code formatting
-	Code font jitters on load
-	Are fonts being cached properly?
 	Merge symbol and code fonts
-	Test more languages
-	Light theme for inline code
+	Code content doesn't always load immediately (transition related?)
 	Inline code doesn't transition properly (maybe lots of transitions?)
 	Getting weird zoom behavior (transitions?)
+	Test more languages
+	Light theme for inline code
 	Copy all button
 	Line anchors
 		Can't set? https://discourse.gohugo.io/t/anchorlinenos-true-attribute-doesnt-work-when-using-code-fences/36564/3

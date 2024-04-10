@@ -14,7 +14,7 @@ foreach ($out in $symbolsOut)
 		--output-file=$out `
 		--flavor=$ext `
 		--with-zopfli `
-		--unicodes="uf09e,uf033b,uf02a4,uf0ad1,uf0544,uf01ee"
+		--unicodes="uf046b,uf033b,uf02a4,uf0ad1,uf0544,uf01ee"
 }
 
 foreach ($out in $codeOut)
