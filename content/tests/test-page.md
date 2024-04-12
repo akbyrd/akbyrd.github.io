@@ -20,10 +20,10 @@ Aliquam enim est, iaculis eu nulla ac, ornare varius massa. Curabitur sed facili
 ## Code
 
 ### No Language
-Some `code` embedded in a line of normal text: { `{ "label": "hugo build" }` \
-Some `code` embedded in a line of normal text: { `{ "label": "hugo build" }`
+Some `code` embedded in a line of normal text: `{ "label": "hugo build" }` \
+Some `code` embedded in a line of normal text: `{ "label": "hugo build" }`
 
-### JSON
+### Basic
 ```json {lineanchors=json}
 {
 	"label": "hugo build",
@@ -32,7 +32,7 @@ Some `code` embedded in a line of normal text: { `{ "label": "hugo build" }`
 }
 ```
 
-### C++
+### Highlight
 ```cpp {lineanchors=cpp, lineNoStart=999, hl_lines="1-2"}
 // long long long long long long long long long long long long long long long long long long
 inline u32 IndexToHandle(u32 index, u8 generation)
@@ -42,6 +42,8 @@ inline u32 IndexToHandle(u32 index, u8 generation)
 	return handle;
 }
 ```
+
+### Language
 {{% details "C++" %}}
 ```cpp
 #pragma once
@@ -106,7 +108,7 @@ noexcept(0)
 }
 
 template <typename, class... Us>
-struct alignas(8) C3 final : private C2 // TODO
+struct alignas(8) C3 final : private C2
 {
 	C3() = default;
 	C3(C3&&) = delete;
@@ -147,14 +149,13 @@ void types()
 	enum Foo : int;
 }
 
-template<typename T = int> struct TemplateDefault {}; // TODO
+template<typename T = int> struct TemplateDefault {};
 
 struct SOperators
 {
 	SOperators() = default;
 	SOperators(int) {}
 
-	// TODO: operator keyword color
 	void* operator new(size_t) { return 0; }
 	void* operator new[](size_t) { return 0; }
 	void operator delete(void*) {}
@@ -216,7 +217,7 @@ struct SOperators
 void operator +(A, A) {};
 
 char operator""_z(char) { return 0; }
-char g = 's'_z; // TODO: user defined literal color
+char g = 's'_z;
 
 template <typename> void function_template() {}
 
@@ -236,7 +237,7 @@ functions()
 	delete[] (SOperators*) nullptr;
 
 	SOperators f;
-	(int) f; // TODO: overloaded cast color
+	(int) f;
 	f[0];
 	*f;
 	f->Bar();
@@ -336,7 +337,7 @@ enums()
  * @param foo foo
  * @param[in] foo foo
  * TODO:
-*/
+ */
 
 namespace Space { int member; }
 void

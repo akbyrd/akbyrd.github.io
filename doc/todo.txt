@@ -1,11 +1,13 @@
 Posts
 TODO: Code formatting
-	Merge symbol and code fonts
+	vscode uses consolas. Pick new font that's similar?
+	Font doesn't load before page renders
+	Layout jitter when font loads
+	Summary doesn't transition correctly
 	Code content doesn't always load immediately (transition related?)
-	Inline code doesn't transition properly (maybe lots of transitions?)
-	Getting weird zoom behavior (transitions?)
 	Test more languages
 	Light theme for inline code
+	Highlight inline code
 	Copy all button
 	Line anchors
 		Can't set? https://discourse.gohugo.io/t/anchorlinenos-true-attribute-doesnt-work-when-using-code-fences/36564/3
@@ -21,10 +23,6 @@ TODO: Edit this page button https://www.ii.com/vscode-uri-scheme-and-hugo/
 TODO: Confirm focus handling
 TODO: Lazy image loading
 
-Syntax highlighting
-TODO: Add context block to improve syntax coloring
-TODO: Apply to inline code
-
 General
 TODO: Use partialCached (should cache each unique invocation)
 TODO: Move resource renaming to a shared template
@@ -38,6 +36,7 @@ TODO: Tooltip for emoji (dev only?)
 TODO: Consider other markup languages (Djot, Markdeep, AsciiDoc, rST, Custom)
 TODO: Ensure double tap to zoom works on mobile
 TODO: Try a render hook for images https://gohugo.io/render-hooks/images/
+TODO: Replace syntax highlighting implementation (accuracy, context, inline)
 
 Content
 TODO: Improve about page content

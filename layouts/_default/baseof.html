@@ -25,33 +25,20 @@
 	<script src="{{ .RelPermalink }}" async{{ .Integrity }}></script>
 	{{- end }}
 
-	{{ $woff2 := partial "resource" "res/Symbols.woff2" }}
-	{{- $woff := partial "resource" "res/Symbols.woff" }}
-	{{- $firstSymbol := strings.FindRE "\\p{Co}" (.Page.Content | htmlUnescape) 1 }}
-	{{- if $firstSymbol -}}
-	<link rel="preload" as="font" href="{{ $woff2.RelPermalink }}" type="font/woff2"{{ $woff2.Integrity }}>
-	<link href="{{ $woff.RelPermalink }}" type="font/woff"{{ $woff.Integrity }}>
-	{{ end -}}
-	<style>
-		@font-face {
-			font-family: "Symbols";
-			unicode-range: U+f046b, U+f033b, U+f02a4, U+f0ad1, U+f0544, U+f01ee;
-			src:
-				url("{{ $woff2.RelPermalink }}") format("woff2"),
-				url("{{ $woff.RelPermalink }}") format("woff");
-		}
-	</style>
-
 	{{ $woff2 := partial "resource" "res/Code.woff2" }}
 	{{- $woff := partial "resource" "res/Code.woff" }}
-	{{- if strings.Contains .Page.Content "<code>" -}}
+	{{- $hasSymbols := strings.FindRE "\\p{Co}" (.Page.Content | htmlUnescape) 1 }}
+	{{- $hasCode := strings.Contains .Page.Content "<code>" -}}
+	{{- if or $hasSymbols $hasCode -}}
 	<link rel="preload" as="font" href="{{ $woff2.RelPermalink }}" type="font/woff2"{{ $woff2.Integrity }}>
 	<link href="{{ $woff.RelPermalink }}" type="font/woff"{{ $woff.Integrity }}>
 	{{ end -}}
 	<style>
 		@font-face {
 			font-family: "Code";
-			unicode-range: U+0000-00a0;
+			font-feature-settings: "zero" on;
+
+			unicode-range: U+0000-00a0, U+f046b, U+f033b, U+f02a4, U+f0ad1, U+f0544, U+f01ee;
 			src:
 				url("{{ $woff2.RelPermalink }}") format("woff2"),
 				url("{{ $woff.RelPermalink }}") format("woff");

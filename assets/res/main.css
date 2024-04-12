@@ -91,6 +91,14 @@ html * {
 
 *:not(img) {
 	transition-duration: 200ms;
+	transition-property:
+		color,
+		background-color,
+		border-color,
+		outline-color,
+		scrollbar-color,
+		stroke,
+		text-shadow;
 }
 
 html {
@@ -159,7 +167,7 @@ button {
 }
 
 code {
-	font-family: Code, monospace;
+	font-family: Code;
 	font-size: 11pt;
 	min-width: fit-content;
 	tab-size: 4;
@@ -249,7 +257,6 @@ details {
 		border: 1px solid var(--outline);
 		padding: 4px 6px;
 		user-select: none;
-		transition-property: color, background-color, border-color;
 		transition-duration: 100ms;
 
 		&:hover {
@@ -473,32 +480,36 @@ ul, ol, li {
 
 .about-link-container {
 	display: flex;
-	justify-content: center;
+	justify-content: space-between;
 	user-select: none;
+	max-width: calc(40px * 6 + 12px * 5);
+	margin: 0 auto;
 
 	li {
 		height: 40px;
-		margin: 0 6px;
 		width: 40px;
 	}
 
 	a {
+		display: block;
+		font-size: 44px;
+		font-family: Code;
+		font-size: 44px;
 		text-decoration: none;
 	}
 
 	p {
+		aspect-ratio: 1;
 		background-color: var(--dark-background);
 		border-radius: 4px;
 		color: var(--dark-text);
-		font-family: Symbols;
-		font-size: 38px;
-		line-height: 40px;
-		margin-bottom: 0;
+		line-height: 42px;
+		margin: 0;
+		overflow: hidden;
 		text-align: center;
 
-		a[title="RSS"] & {
-			font-size: 42px;
-		}
+		a[title="GitHub"] & { font-size: 105%; }
+		a[title="Mastodon"] & { font-size: 98%; }
 	}
 }
 
