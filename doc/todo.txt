@@ -1,10 +1,8 @@
 Posts
+TODO: Fix transitions (don't use *)
+TODO: Summary doesn't transition correctly
 TODO: Code formatting
 	Why are colors different in vscode vs firefox (other browsers?)
-
-	Summary doesn't transition correctly
-	Code content doesn't always load immediately (transition related?)
-	Test more languages
 	Light theme for inline code
 	Highlight inline code
 	Copy all button
@@ -12,14 +10,12 @@ TODO: Code formatting
 		Can't set? https://discourse.gohugo.io/t/anchorlinenos-true-attribute-doesnt-work-when-using-code-fences/36564/3
 		Scroll to center, not top?
 
+TODO: Make window resizing maintain scroll position
 TODO: Automatically calculate title
 TODO: Automatically calculate alias from numeric prefix
-TODO: Set up modified date
 TODO: Implement comments (Github, Giscus, Staticman, Custom)
 TODO: Choose a diagram method: goat, mermaid (jerky layout), graphviz, other
-TODO: Fix typo / pull request button
-TODO: Edit this page button https://www.ii.com/vscode-uri-scheme-and-hugo/
-TODO: Confirm focus handling
+TODO: Add "fix typo" button (https://www.ii.com/vscode-uri-scheme-and-hugo/)
 TODO: Lazy image loading
 TODO: Fix warning on checklist checkboxes (chrome)
 
@@ -50,6 +46,7 @@ TODO: Test search engine results
 TODO: Test double tap to zoom on text
 TODO: Attempt to remove `unset: all`
 TODO: Run site audit as part of deployment
+TODO: Add syntax highlighting test page
 TODO: https://jigsaw.w3.org/css-validator/
 TODO: https://validator.w3.org/
 

@@ -119,6 +119,7 @@ body {
 	margin: 0 auto;
 	min-width: 296px;
 	max-width: var(--max-width);
+	overflow-wrap: break-word;
 	text-shadow: 1px 1px 6px var(--text-shadow);
 }
 
@@ -160,6 +161,11 @@ h3 { font-size: 18pt; }
 a {
 	cursor: pointer;
 	text-decoration: underline;
+
+	hyphenate-character: "";
+	@supports not (hyphenate-character: "") {
+		hyphens: manual;
+	}
 }
 
 button {
@@ -176,13 +182,18 @@ code {
 	min-width: fit-content;
 	tab-size: 4;
 	white-space: pre;
-	white-space-collapse: preserve;
 
 	p & {
 		border-style: solid;
 		border-width: 1px;
 		padding: 1px 3px;
 		position: relative; bottom: 1px;
+		white-space: break-spaces;
+
+		hyphenate-character: "";
+		@supports not (hyphenate-character: "") {
+			hyphens: manual;
+		}
 	}
 
 	pre & {
@@ -292,9 +303,11 @@ img {
 p {
 	display: block;
 	hyphens: auto;
-	margin: 20px 0;
-	text-align: justify;
 	line-height: 1.3em;
+	margin: 20px 0;
+	overflow: auto;
+	scrollbar-width: thin;
+	text-align: justify;
 
 	a {
 		color: var(--accent);
