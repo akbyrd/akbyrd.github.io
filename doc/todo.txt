@@ -1,8 +1,9 @@
 Posts
 TODO: Code formatting
-	vscode uses consolas. Pick new font that's similar?
 	Font doesn't load before page renders
 	Layout jitter when font loads
+	Why are colors different in vscode vs firefox (other browsers?)
+
 	Summary doesn't transition correctly
 	Code content doesn't always load immediately (transition related?)
 	Test more languages

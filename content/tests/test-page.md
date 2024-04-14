@@ -19,6 +19,13 @@ Aliquam enim est, iaculis eu nulla ac, ornare varius massa. Curabitur sed facili
 
 ## Code
 
+```cpp
+C1a
+```
+```cpp { .font-test }
+C1a
+```
+
 ### No Language
 Some `code` embedded in a line of normal text: `{ "label": "hugo build" }` \
 Some `code` embedded in a line of normal text: `{ "label": "hugo build" }`

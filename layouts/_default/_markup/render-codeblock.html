@@ -2,8 +2,14 @@
 {{/* They don't have line numbers and create a tab stop */}}
 {{- errorf "Language is required for code blocks.\n\t%s" .Position }}
 {{- end }}
+
+{{ $classes := "" }}
+{{ with index .Attributes "class" }}
+	{{ $classes = printf " %s" . }}
+{{ end }}
+
 <pre>
-	<code class="theme-dark">
+	<code class="theme-dark{{ $classes }}">
 		{{- (transform.HighlightCodeBlock .).Inner -}}
 	</code>
 </pre>
