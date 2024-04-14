@@ -1,7 +1,5 @@
 Posts
 TODO: Code formatting
-	Font doesn't load before page renders
-	Layout jitter when font loads
 	Why are colors different in vscode vs firefox (other browsers?)
 
 	Summary doesn't transition correctly
@@ -23,6 +21,7 @@ TODO: Fix typo / pull request button
 TODO: Edit this page button https://www.ii.com/vscode-uri-scheme-and-hugo/
 TODO: Confirm focus handling
 TODO: Lazy image loading
+TODO: Fix warning on checklist checkboxes (chrome)
 
 General
 TODO: Use partialCached (should cache each unique invocation)

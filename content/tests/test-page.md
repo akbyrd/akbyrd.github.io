@@ -19,18 +19,11 @@ Aliquam enim est, iaculis eu nulla ac, ornare varius massa. Curabitur sed facili
 
 ## Code
 
-```cpp
-C1a
-```
-```cpp { .font-test }
-C1a
-```
-
-### No Language
+### Inline
 Some `code` embedded in a line of normal text: `{ "label": "hugo build" }` \
 Some `code` embedded in a line of normal text: `{ "label": "hugo build" }`
 
-### Basic
+### Standard
 ```json {lineanchors=json}
 {
 	"label": "hugo build",
@@ -39,7 +32,7 @@ Some `code` embedded in a line of normal text: `{ "label": "hugo build" }`
 }
 ```
 
-### Highlight
+### Highlighted
 ```cpp {lineanchors=cpp, lineNoStart=999, hl_lines="1-2"}
 // long long long long long long long long long long long long long long long long long long
 inline u32 IndexToHandle(u32 index, u8 generation)
@@ -50,7 +43,15 @@ inline u32 IndexToHandle(u32 index, u8 generation)
 }
 ```
 
-### Language
+### Characters
+`01 airlg \/|&$@*- {} [] <> () __ -- << >> || '' ""`
+
+```txt
+01 airlg \/|&$@*- {} [] <> () __ -- << >> || '' ""
+```
+
+
+### Languages
 {{% details "C++" %}}
 ```cpp
 #pragma once

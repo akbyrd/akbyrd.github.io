@@ -36,26 +36,12 @@
 	<style>
 		@font-face {
 			font-family: "Code";
-			font-feature-settings: "zero" on, "size" on, "case" on, "salt" off;
-
 			unicode-range: U+0000-00a0, U+f046b, U+f033b, U+f02a4, U+f0ad1, U+f0544, U+f01ee;
 			src:
 				url("{{ $woff2.RelPermalink }}") format("woff2"),
 				url("{{ $woff.RelPermalink }}") format("woff");
 		}
 	</style>
-
-	{{ range (slice "Code1" "Code2" "Code3" "Code4" "Code5" "Code6" "Code7" "Code8" "Code9") }}
-	{{ $woff2 := partial "resource" (printf "res/%s.woff2" .) }}
-	<style>
-		@font-face {
-			font-family: "{{ . }}";
-			font-feature-settings: "zero" on;
-			unicode-range: U+0000-00a0, U+f046b, U+f033b, U+f02a4, U+f0ad1, U+f0544, U+f01ee;
-			src: url("{{ $woff2.RelPermalink }}") format("woff2"),
-		}
-	</style>
-	{{ end }}
 
 	<noscript>
 		<style>
