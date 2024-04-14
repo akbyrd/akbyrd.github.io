@@ -166,26 +166,6 @@ button {
 	cursor: pointer;
 }
 
-.consolas {
-	font-family: consolas;
-	&:not(:last-of-type) { margin-bottom: -22.5px; margin-left: 25px; }
-}
-.sauce {
-	font-family: Code;
-	font-feature-settings: "zero", "ss01", "ss04", "ss06", "ss07";
-	&:not(:last-of-type) { margin-bottom: -21.5px; margin-left: 25px; }
-}
-.inconsolata {
-	font-family: Code5;
-	font-feature-settings: "ss03", "ss05", "ss08", "cv09", "cv15", "cv29", "calt" off;
-	&:not(:last-of-type) { margin-bottom: -22.5px; margin-left: 25px; }
-}
-.fira {
-	font-family: Code6;
-	font-feature-settings: "ss01";
-	&:not(:last-of-type) { margin-bottom: -23px; margin-left: 25px; }
-}
-
 code {
 	font-family: Code;
 	font-feature-settings: "ss01";
