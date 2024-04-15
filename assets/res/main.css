@@ -175,10 +175,9 @@ button {
 code {
 	font-family: Code;
 	font-feature-settings: "ss01";
-	font-size: 11pt;
 	font-size-adjust: ex-height 0.48;
+	font-size: 11pt;
 	line-height: 19px;
-
 	min-width: fit-content;
 	tab-size: 4;
 	white-space: pre;

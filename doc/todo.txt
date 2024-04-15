@@ -2,7 +2,6 @@ Posts
 TODO: Fix transitions (don't use *)
 TODO: Summary doesn't transition correctly
 TODO: Code formatting
-	Why are colors different in vscode vs firefox (other browsers?)
 	Light theme for inline code
 	Highlight inline code
 	Copy all button

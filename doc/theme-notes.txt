@@ -45,3 +45,8 @@ Inspection
 Subsetting
 	https://www.fontsquirrel.com/tools/webfont-generator
 	https://github.com/zachleat/glyphhanger
+Fonts
+	https://www.codingfont.com/blog/
+	https://realpython.com/coding-font/
+	https://www.s9w.io/font_compare/
+	https://www.programmingfonts.org/
