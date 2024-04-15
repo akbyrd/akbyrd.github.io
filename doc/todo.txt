@@ -1,8 +1,6 @@
 Posts
-TODO: Fix transitions (don't use *)
-TODO: Summary doesn't transition correctly
 TODO: Code formatting
-	Light theme for inline code
+	Light theme for code
 	Highlight inline code
 	Copy all button
 	Line anchors
@@ -56,3 +54,6 @@ TODO: Pick a font for headers (ensure no padding built into characters)
 TODO: Pick a font for body text
 TODO: Pick a color scheme
 TODO: Add text selection color
+
+Wishlist
+TODO: Improve syntax highlighting (use compiler, support inline code)

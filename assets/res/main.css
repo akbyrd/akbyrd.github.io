@@ -61,6 +61,18 @@ html {
 	}
 }
 
+body, svg, time {
+	transition-duration: 200ms;
+	transition-property:
+		color,
+		background-color,
+		border-color,
+		outline-color,
+		scrollbar-color,
+		stroke,
+		text-shadow;
+}
+
 /* ---------------------------------------------------------------------------------------------- */
 /* Focus */
 
@@ -88,18 +100,6 @@ html * {
 
 /* ---------------------------------------------------------------------------------------------- */
 /* Shared / Standard */
-
-*:not(img) {
-	transition-duration: 200ms;
-	transition-property:
-		color,
-		background-color,
-		border-color,
-		outline-color,
-		scrollbar-color,
-		stroke,
-		text-shadow;
-}
 
 html {
 	padding-left: clamp(0px, 100vw - 100%, 100% - var(--max-width));
@@ -272,6 +272,7 @@ details {
 		padding: 4px 6px;
 		user-select: none;
 		transition-duration: 100ms;
+		transition-property: background-color;
 
 		&:hover {
 			background-color: var(--outline);
