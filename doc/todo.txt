@@ -1,7 +1,6 @@
 Posts
 TODO: Code formatting
-	Light theme for code
-	Highlight inline code
+	Improve copy paste (table?)
 	Copy all button
 	Line anchors
 		Can't set? https://discourse.gohugo.io/t/anchorlinenos-true-attribute-doesnt-work-when-using-code-fences/36564/3
@@ -14,6 +13,7 @@ TODO: Implement comments (Github, Giscus, Staticman, Custom)
 TODO: Choose a diagram method: goat, mermaid (jerky layout), graphviz, other
 TODO: Add "fix typo" button (https://www.ii.com/vscode-uri-scheme-and-hugo/)
 TODO: Lazy image loading
+TODO: Implement zoom for images (current page? new page?)
 TODO: Fix warning on checklist checkboxes (chrome)
 
 General
@@ -43,7 +43,7 @@ TODO: Test search engine results
 TODO: Test double tap to zoom on text
 TODO: Attempt to remove `unset: all`
 TODO: Run site audit as part of deployment
-TODO: Add syntax highlighting test page
+TODO: Add syntax highlighting samples test page
 TODO: https://jigsaw.w3.org/css-validator/
 TODO: https://validator.w3.org/
 
@@ -54,6 +54,7 @@ TODO: Pick a font for headers (ensure no padding built into characters)
 TODO: Pick a font for body text
 TODO: Pick a color scheme
 TODO: Add text selection color
+TODO: Light theme for code
 
 Wishlist
 TODO: Improve syntax highlighting (use compiler, support inline code)

@@ -21,10 +21,11 @@ Aliquam enim est, iaculis eu nulla ac, ornare varius massa. Curabitur sed facili
 
 ### Inline
 Some `code` embedded in a line of normal text: `{ "label": "hugo build" }` \
-Some `code` embedded in a line of normal text: `{ "label": "hugo build" }`
+Some `code` embedded in a line of normal text: `{ "label": "hugo build" }` \
+Some `code` embedded in a line of normal text: {{< code >}}#!json { "label": "hugo build" }{{< /code >}} and such
 
 ### Standard
-```json {lineanchors=json}
+```json {lineanchors=json, class=foo}
 {
 	"label": "hugo build",
 	"type": "shell",

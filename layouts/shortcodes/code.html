@@ -1,0 +1,10 @@
+{{- $opts := dict "hl_inline" true }}
+
+{{- $matches := findRESubmatch "#!(\\w+) (.*)" .Inner 1 }}
+{{- with index $matches 0 }}
+	{{- $lang := index . 1 }}
+	{{- $code := index . 2 }}
+	{{- (highlight $code $lang $opts) }}
+{{- else }}
+	{{- (highlight .Inner "" $opts) }}
+{{- end -}}

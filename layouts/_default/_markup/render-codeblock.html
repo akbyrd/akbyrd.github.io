@@ -3,13 +3,9 @@
 {{- errorf "Language is required for code blocks.\n\t%s" .Position }}
 {{- end }}
 
-{{ $classes := "" }}
-{{ with index .Attributes "class" }}
-	{{ $classes = printf " %s" . }}
-{{ end }}
-
+{{ $class := index .Attributes "class" }}
 <pre>
-	<code class="theme-dark{{ $classes }}">
+	<code{{ with $class }} class="."{{ end }}>
 		{{- (transform.HighlightCodeBlock .).Inner -}}
 	</code>
 </pre>
