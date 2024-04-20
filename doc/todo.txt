@@ -1,6 +1,5 @@
 Posts
 TODO: Code formatting
-	Copy all button
 	Line anchors
 		Can't set? https://discourse.gohugo.io/t/anchorlinenos-true-attribute-doesnt-work-when-using-code-fences/36564/3
 		Scroll to center, not top?
