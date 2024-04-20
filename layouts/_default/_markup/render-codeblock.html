@@ -3,17 +3,18 @@
 	{{- $class = printf "%s %s" $class . }}
 {{- end }}
 
-
 {{- $opts := dict "lineNumbersInTable" true }}
 {{- $result := (transform.HighlightCodeBlock . $opts).Wrapped -}}
 
+{{- $button := "<button class=\"code-copy require-js\"><p>Copy</p></button>" }}
+{{- $buttonFmt := printf "%s\n$1" $button }}
+
 {{- $result = replaceRE `^<div class="highlight[^"]*">` "" $result }}
-{{- $result = strings.TrimPrefix "<div class=\"chroma\">\n" $result }}
-{{- $result = strings.TrimSuffix "</div>\n</div>" $result }}
+{{- $result = replaceRE "(</div>)\n</div>" $buttonFmt $result }}
 {{- $result = replaceRE `(<table( class="[^"]*">)?)\n?` "$1\n" $result }}
 {{- $result = replaceRE `\n?(</table>)\n?` "\n$1\n" $result }}
 {{- $result = replaceRE `\n?(</?tr>)\n?` "\n$1\n" $result }}
 {{- $result = replaceRE `\n?(</?td>)\n?` "\n$1\n" $result }}
 {{- $result = replace $result " tabindex=\"0\"" "" }}
-{{- $result = replace $result " class=\"chroma\"" "" }}
+{{- $result = replace $result "pre class=\"chroma\"" "pre" }}
 {{- $result | safeHTML -}}

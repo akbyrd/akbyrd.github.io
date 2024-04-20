@@ -284,7 +284,7 @@ ul, ol, li {
 /* ---------------------------------------------------------------------------------------------- */
 /* Code */
 
-code {
+code, .code-copy {
 	font-family: Code;
 	font-feature-settings: "ss01";
 	font-size-adjust: ex-height 0.48;
@@ -299,14 +299,9 @@ code {
 	border-color: var(--outline);
 	border-style: solid;
 	border-width: 1px;
+	padding: 1px 3px 1px 3px;
 	position: relative; bottom: 1px;
 	white-space: break-spaces;
-
-	padding: 1px 3px 1px 3px;
-	@supports selector(-moz-loading) {
-		padding-top: 0px;
-		padding-bottom: 2px;
-	}
 
 	hyphenate-character: "";
 	@supports not (hyphenate-character: "") {
@@ -365,6 +360,48 @@ code {
 		border-bottom-style: solid;
 		margin-bottom: -1px;
 		padding-bottom: 1px;
+	}
+}
+
+.chroma {
+	display: block;
+	position: relative;
+}
+
+.code-copy {
+	position: absolute;
+	right: 0px;
+	top: 0px;
+	user-select: none;
+
+	p {
+		margin: 0;
+		background-color: var(--code-highlight-background);
+
+		border: 1px solid var(--outline);
+		padding: 4px 8px;
+		opacity: 0%;
+		pointer-events: none;
+		transition-duration: 100ms;
+		transition-timing-function: ease-out;
+
+		button:hover & {
+			opacity: 100%;
+		}
+
+		button:focus-visible & {
+			opacity: 100%;
+			transition-duration: 200ms;
+			transition-property: opacity, outline-color, outline-offset;
+		}
+
+		@supports not selector(:focus-visible) {
+			button:focus & {
+				opacity: 100%;
+				transition-duration: 200ms;
+				transition-property: opacity, outline-color, outline-offset;
+			}
+		}
 	}
 }
 
@@ -566,7 +603,7 @@ code {
 /* ---------------------------------------------------------------------------------------------- */
 /* Syntax highlighting */
 
-code, .lntable {
+code, .chroma {
 	/* Other                    */ .x         { color: var(--code-invalid); }
 	/* Error                    */ .err       {}
 	/* CodeLine                 */ .cl        { color: var(--code-default); }
