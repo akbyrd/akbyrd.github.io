@@ -104,6 +104,7 @@ html * {
 	outline-color: var(--accent);
 	outline-offset: 3px;
 	outline-style: solid;
+	transition-duration: 200ms;
 	transition-property: outline-offset, outline-color;
 }
 
@@ -112,6 +113,7 @@ html * {
 		outline-color: var(--accent);
 		outline-offset: 3px;
 		outline-style: solid;
+		transition-duration: 200ms;
 		transition-property: outline-offset, outline-color;
 	}
 }
@@ -236,8 +238,6 @@ p {
 	hyphens: auto;
 	line-height: 1.3em;
 	margin: 20px 0;
-	overflow: auto;
-	scrollbar-width: thin;
 	text-align: justify;
 
 	a {
