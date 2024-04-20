@@ -41,6 +41,7 @@ Editing / Subsetting / Insepction
 	https://fontforge.org/en-US/
 	https://github.com/fonttools/fonttools
 Inspection
+	https://opentype.js.org/font-inspector.html
 	https://wakamaifondue.com/
 Subsetting
 	https://www.fontsquirrel.com/tools/webfont-generator

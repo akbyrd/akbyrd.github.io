@@ -1,6 +1,5 @@
 Posts
 TODO: Code formatting
-	Improve copy paste (table?)
 	Copy all button
 	Line anchors
 		Can't set? https://discourse.gohugo.io/t/anchorlinenos-true-attribute-doesnt-work-when-using-code-fences/36564/3
@@ -44,6 +43,7 @@ TODO: Test double tap to zoom on text
 TODO: Attempt to remove `unset: all`
 TODO: Run site audit as part of deployment
 TODO: Add syntax highlighting samples test page
+TODO: 1 frame of missing text in firefox
 TODO: https://jigsaw.w3.org/css-validator/
 TODO: https://validator.w3.org/
 

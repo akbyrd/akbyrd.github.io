@@ -1,11 +1,19 @@
-{{ if eq .Type "" }}
-{{/* They don't have line numbers and create a tab stop */}}
-{{- errorf "Language is required for code blocks.\n\t%s" .Position }}
+{{- $class := "highlight" }}
+{{- with index .Attributes "class" }}
+	{{- $class = printf "%s %s" $class . }}
 {{- end }}
 
-{{ $class := index .Attributes "class" }}
-<pre>
-	<code{{ with $class }} class="."{{ end }}>
-		{{- (transform.HighlightCodeBlock .).Inner -}}
-	</code>
-</pre>
+
+{{- $opts := dict "lineNumbersInTable" true }}
+{{- $result := (transform.HighlightCodeBlock . $opts).Wrapped -}}
+
+{{- $result = replaceRE `^<div class="highlight[^"]*">` "" $result }}
+{{- $result = strings.TrimPrefix "<div class=\"chroma\">\n" $result }}
+{{- $result = strings.TrimSuffix "</div>\n</div>" $result }}
+{{- $result = replaceRE `(<table( class="[^"]*">)?)\n?` "$1\n" $result }}
+{{- $result = replaceRE `\n?(</table>)\n?` "\n$1\n" $result }}
+{{- $result = replaceRE `\n?(</?tr>)\n?` "\n$1\n" $result }}
+{{- $result = replaceRE `\n?(</?td>)\n?` "\n$1\n" $result }}
+{{- $result = replace $result " tabindex=\"0\"" "" }}
+{{- $result = replace $result " class=\"chroma\"" "" }}
+{{- $result | safeHTML -}}

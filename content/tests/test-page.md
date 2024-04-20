@@ -21,8 +21,7 @@ Aliquam enim est, iaculis eu nulla ac, ornare varius massa. Curabitur sed facili
 
 ### Inline
 Some `code` embedded in a line of normal text: `{ "label": "hugo build" }` \
-Some `code` embedded in a line of normal text: `{ "label": "hugo build" }` \
-Some `code` embedded in a line of normal text: {{< hl json >}}{ "label": "hugo build" }{{< /hl >}} and such
+Some `code` embedded in a line of normal text: {{< hl json >}}{ "label": "hugo build" }{{< /hl >}}
 
 ### Standard
 ```json {lineanchors=json, class=foo}
@@ -35,7 +34,7 @@ Some `code` embedded in a line of normal text: {{< hl json >}}{ "label": "hugo b
 
 ### Highlighted
 ```cpp {lineanchors=cpp, lineNoStart=999, hl_lines="1-2"}
-// long long long long long long long long long long long long long long long long long long
+// long long long long long long long long long long long long long long long long long long long long
 inline u32 IndexToHandle(u32 index, u8 generation)
 {
 	Assert(index <= MaxIndex);
