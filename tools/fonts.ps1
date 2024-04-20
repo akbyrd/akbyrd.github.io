@@ -15,7 +15,7 @@ foreach ($out in $codeOut)
 		--drop-tables="PfEd, BASE" `
 		--layout-features="ss01" `
 		--unicodes="u0000-00a0,ufeff,ufffd" `
-		--unicodes="uf046b,uf033b,uf02a4,uf0ad1,uf0544,uf01ee"
+		--unicodes="uf046b,uf033b,uf02a4,uf0ad1,uf0544,uf01ee,uf4bb"
 
 	$name = Split-Path -Leaf $out
 	$size = (Get-Item $out).Length / 1024

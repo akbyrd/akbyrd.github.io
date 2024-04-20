@@ -6,7 +6,7 @@
 {{- $opts := dict "lineNumbersInTable" true }}
 {{- $result := (transform.HighlightCodeBlock . $opts).Wrapped -}}
 
-{{- $button := "<button class=\"code-copy require-js\"><p>Copy</p></button>" }}
+{{- $button := "<button class=\"code-copy require-js\" type=\"button\" aria-label=\"Copy\"><p>&#xf4bb;</p></button>" }}
 {{- $buttonFmt := printf "%s\n$1" $button }}
 
 {{- $result = replaceRE `^<div class="highlight[^"]*">` "" $result }}

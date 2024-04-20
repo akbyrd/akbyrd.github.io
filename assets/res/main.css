@@ -317,7 +317,7 @@ code, .code-copy {
 	display: block;
 	margin: 20px 0;
 	overflow: auto;
-	padding: 8px 0;
+	padding: 7px 0 8px 0;
 	scrollbar-width: thin;
 
 	.lntd:first-of-type {
@@ -369,19 +369,24 @@ code, .code-copy {
 }
 
 .code-copy {
+	height: 36px;
 	position: absolute;
 	right: 0px;
 	top: 0px;
 	user-select: none;
+	width: 36px;
 
 	p {
-		margin: 0;
 		background-color: var(--code-highlight-background);
-
 		border: 1px solid var(--outline);
-		padding: 4px 8px;
+		display: block;
+		font-size: 28px;
+		justify-content: center;
+		line-height: 34px;
+		margin: 0;
 		opacity: 0%;
 		pointer-events: none;
+		text-align: center;
 		transition-duration: 100ms;
 		transition-timing-function: ease-out;
 
