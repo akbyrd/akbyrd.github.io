@@ -1,6 +1,9 @@
+// -------------------------------------------------------------------------------------------------
+// Theme Toggle
+
 const theme = {
 	current: 0,
-	labels: null as HTMLCollection | null,
+	labels: null as null | HTMLCollection,
 
 	// Stored. Do not change
 	key: "theme",
@@ -9,6 +12,20 @@ const theme = {
 		{ class: "theme-light", label: "Light" },
 		{ class: "theme-dark", label: "Dark" },
 	],
+}
+
+function InitTheme()
+{
+	// Hook up the theme button
+	theme.current = +(localStorage.getItem(theme.key) || 0)
+
+	const buttons = document.getElementsByClassName("header-theme-button")
+	for (const button of buttons)
+		button.addEventListener("click", CycleTheme)
+
+	theme.labels = document.getElementsByClassName("header-theme-label")
+	for (const label of theme.labels)
+		label.innerHTML = theme.values[theme.current].label
 }
 
 function CycleTheme()
@@ -29,63 +46,43 @@ function CycleTheme()
 	localStorage.setItem(theme.key, theme.current.toString())
 }
 
-function CopyCode(button: Element)
+// -------------------------------------------------------------------------------------------------
+// Images
+
+function InitImages()
 {
-	if ("clipboard" in navigator)
-	{
-		const table = button.previousElementSibling!
-		const code = table.querySelector(".lntd:last-of-type code")!
-		if (code.textContent)
-			navigator.clipboard.writeText(code.textContent)
-  }
-}
-
-function Initialize()
-{
-	// Hook up the theme button
-	{
-		theme.current = +(localStorage.getItem(theme.key) || 0)
-
-		const buttons = document.getElementsByClassName("header-theme-button")
-		for (const button of buttons)
-			button.addEventListener("click", CycleTheme)
-
-		theme.labels = document.getElementsByClassName("header-theme-label")
-		for (const label of theme.labels)
-			label.innerHTML = theme.values[theme.current].label
-	}
-
-	// Hook up code copy buttons
-	{
-		const buttons = document.getElementsByClassName("code-copy")
-		for (const button of buttons)
-			button.addEventListener("click", () => CopyCode(button));
-	}
-
 	// Fade images in
+	const images = document.getElementsByTagName("img")
+	for (const image of images)
 	{
-		const images = document.getElementsByTagName("img")
-		for (const image of images)
-			{
-				function OnLoad()
-				{
+		function OnLoad()
+		{
 			image.style.opacity = "100%"
 			if (image.naturalWidth)
 				image.classList.add("fade-in")
 		}
 
 		if (image.complete)
-			{
-				OnLoad()
-			}
-			else
-			{
-				image.style.opacity = "0%"
-				image.onload = OnLoad
-				image.onerror = OnLoad
-			}
+		{
+			OnLoad()
+		}
+		else
+		{
+			image.style.opacity = "0%"
+			image.onload = OnLoad
+			image.onerror = OnLoad
 		}
 	}
+}
+
+
+// -------------------------------------------------------------------------------------------------
+// Initialization
+
+function Initialize()
+{
+	InitTheme()
+	InitImages()
 }
 
 document.readyState === "loading"
