@@ -1,8 +1,12 @@
 Posts
-TODO: Code formatting
-	Line anchors
-		Can't set? https://discourse.gohugo.io/t/anchorlinenos-true-attribute-doesnt-work-when-using-code-fences/36564/3
-		Scroll to center, not top?
+TODO: Code line anchors
+	Play nicely with hard coded highlight
+	Apply highlight to code lines
+	Push url immediately, replace while dragging, pop if same when done
+	Don't clear highlight after dragging and returning to start point
+	Consider only handling events on ln parent, not on individual lns
+	Generate line numbers
+	Test on mobile
 
 TODO: Make window resizing maintain scroll position
 TODO: Automatically calculate title
@@ -29,12 +33,17 @@ TODO: Ensure double tap to zoom works on mobile
 TODO: Try a render hook for images https://gohugo.io/render-hooks/images/
 TODO: Replace syntax highlighting implementation (accuracy, context, inline)
 
+Details
+TODO: Selection is screwy around details
+TODO: Fix outline z on details
+
 Content
 TODO: Improve about page content
 TODO: Add my rss list
 
 Testing / Compatibility
-TODO: Probably don't use nesting selectors (new in 2023)
+TODO: Remove & (2024), :has (2024), :not (2021) selectors
+TODO: Test in safari
 TODO: Test apple touch icon
 TODO: Test theme-color on android
 TODO: Test search engine results

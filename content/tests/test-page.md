@@ -24,7 +24,7 @@ Some `code` embedded in a line of normal text: `{ "label": "hugo build" }` \
 Some `code` embedded in a line of normal text: {{< hl json >}}{ "label": "hugo build" }{{< /hl >}}
 
 ### Standard
-```json {lineanchors=json, class=foo}
+```json {lineanchors=json, id=CodeStandard}
 {
 	"label": "hugo build",
 	"type": "shell",
@@ -33,7 +33,7 @@ Some `code` embedded in a line of normal text: {{< hl json >}}{ "label": "hugo b
 ```
 
 ### Highlighted
-```cpp {lineanchors=cpp, lineNoStart=999, hl_lines="1-2"}
+```cpp {lineanchors=cpp, lineNoStart=999, hl_lines="1-2", #CodeHighlighted}
 // long long long long long long long long long long long long long long long long long long long long
 inline u32 IndexToHandle(u32 index, u8 generation)
 {
@@ -46,14 +46,14 @@ inline u32 IndexToHandle(u32 index, u8 generation)
 ### Characters
 `01 airlg \/|&$@*- {} [] <> () __ -- << >> || '' ""`
 
-```txt
+```txt {#CodeCharacters}
 01 airlg \/|&$@*- {} [] <> () __ -- << >> || '' ""
 ```
 
 
 ### Languages
 {{% details "C++" %}}
-```cpp
+```cpp {#CppSyntax}
 #pragma once
 
 #ifndef ONCE
@@ -367,21 +367,8 @@ int main() {}
 
 ## Diagrams
 ### Goat
-```goat
-      .
-      |
-  .---+---.
-  |       |
-.-+-.   .-+-.
-|   |   |   |
-1   2   3   4
-```
 
 ### Mermaid
-```mermaid
-flowchart LR
-   A -- text --> B -- text2 --> C
-```
 
 
 

@@ -3,18 +3,32 @@
 	{{- $class = printf "%s %s" $class . }}
 {{- end }}
 
+{{- $id := index .Attributes "id" }}
+{{- if not $id }}
+	{{- if not (in .Type (slice "goat" "mermaid")) }}
+		{{/* They don't have line numbers and create a tab stop */}}
+		{{- errorf "Id is required for code blocks.\n\t%s" .Position }}
+	{{- end }}
+{{- end }}
+
 {{- $opts := dict "lineNumbersInTable" true }}
-{{- $result := (transform.HighlightCodeBlock . $opts).Wrapped -}}
+{{- $result := (transform.HighlightCodeBlock . $opts).Wrapped}}
 
-{{- $button := "<button class=\"code-copy require-js\" type=\"button\" aria-label=\"Copy\"><p>&#xf4bb;</p></button>" }}
-{{- $buttonFmt := printf "%s\n$1" $button }}
+{{- /* Remove table outer div */}}
+{{- $idFmt := printf `$0 id="%s"` $id }}
+{{- $result = replaceRE `^<div class="highlight[^>]*>` "" $result }}
+{{- $result = replaceRE `^<div class="chroma"` $idFmt $result }}
+{{- $result = replaceRE "(</div>)\n</div>" "$1" $result }}
 
-{{- $result = replaceRE `^<div class="highlight[^"]*">` "" $result }}
-{{- $result = replaceRE "(</div>)\n</div>" $buttonFmt $result }}
-{{- $result = replaceRE `(<table( class="[^"]*">)?)\n?` "$1\n" $result }}
-{{- $result = replaceRE `\n?(</table>)\n?` "\n$1\n" $result }}
-{{- $result = replaceRE `\n?(</?tr>)\n?` "\n$1\n" $result }}
-{{- $result = replaceRE `\n?(</?td>)\n?` "\n$1\n" $result }}
+{{- /* Remove highlight outer spans */}}
+{{- $result = replaceRE `<span class="hl"><span class="lnt">([ \d\n]*)</span></span>` `<span class="lnt hl">$1</span>` $result }}
+
+{{- /* Add copy button */}}
+{{- $btnFmt := "<button class=\"code-copy require-js\" type=\"button\" aria-label=\"Copy\"><p>&#xf4bb;</p></button>\n$1" }}
+{{- $result = replaceRE "(</div>)$" $btnFmt $result }}
+
+{{- /* Remove some junk */}}
 {{- $result = replace $result " tabindex=\"0\"" "" }}
 {{- $result = replace $result "pre class=\"chroma\"" "pre" }}
+
 {{- $result | safeHTML -}}

@@ -332,11 +332,6 @@ code, .code-copy {
 		padding: 0 8px;
 	}
 
-	.line {
-		display: flex;
-		padding-right: 8px;
-	}
-
 	.hl {
 		display: flex;
 		border-width: 1px;
@@ -344,22 +339,31 @@ code, .code-copy {
 
 	.lntd:first-of-type .hl {
 		border-left-style: solid;
+		/* TODO: ln only */
+		padding-left: 7px;
 	}
 
 	.lntd:last-of-type .hl {
 		border-right-style: solid;
+		/* TODO: ln only */
+		padding-left: 7px;
 	}
 
 	.hl:first-of-type, :not(.hl) + .hl {
 		border-top-style: solid;
-		margin-top: -1px;
+		margin-top: -2px;
 		padding-top: 1px;
 	}
 
 	.hl:last-of-type, .hl:has(+ :not(.hl)) {
 		border-bottom-style: solid;
-		margin-bottom: -1px;
+		margin-bottom: -2px;
 		padding-bottom: 1px;
+	}
+
+	.line {
+		display: flex;
+		padding-right: 8px;
 	}
 }
 
@@ -609,6 +613,8 @@ code, .code-copy {
 /* Syntax highlighting */
 
 code, .chroma {
+	color: var(--code-default);
+
 	/* Other                    */ .x         { color: var(--code-invalid); }
 	/* Error                    */ .err       {}
 	/* CodeLine                 */ .cl        { color: var(--code-default); }

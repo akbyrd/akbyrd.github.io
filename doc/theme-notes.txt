@@ -51,3 +51,11 @@ Fonts
 	https://realpython.com/coding-font/
 	https://www.s9w.io/font_compare/
 	https://www.programmingfonts.org/
+
+
+
+Code
+----
+Clickable Line Numbers
+https://jsfiddle.net/oj3h7pwu/28/ - ::before and counter, requires each line to be separate <code>
+https://codepen.io/phuocng/pen/gOqVWQX - textarea. Confines selection to code, but doesn't stretch and can't select entire page

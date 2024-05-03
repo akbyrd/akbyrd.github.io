@@ -26,7 +26,7 @@ draft = true
 	- Get stuck with errors after fixing them
 	- Moving posts breaks things
 - Error messages
-	- ```toml
+	- ```toml {#TomlConfig}
 		markup.goldmark.renderer.hardWraps = true
 		[markup]
 			[markup.highlight]
@@ -65,7 +65,7 @@ Add schema generation to hugo
 Create new hugo theme
 
 ### Linux
-```bash
+```bash {#LinuxInstall}
 # apt install gcc
 
 # wget https://go.dev/dl/go1.21.5.linux-amd64.tar.gz
