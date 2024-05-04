@@ -1,4 +1,7 @@
-function assert(value: unknown): asserts value {}
+function assert(value: unknown): asserts value
+{
+	console.assert(value != false, "Condition failed")
+}
 
 // -------------------------------------------------------------------------------------------------
 // Theme Toggle
@@ -82,8 +85,9 @@ function InitImages()
 
 type CodeHighlight =
 {
-	lnParent: HTMLElement,
+	idParent: HTMLElement,
 	lns:      NodeListOf<HTMLElement>,
+	cls:      NodeListOf<HTMLElement>,
 	start:    number,
 	radius:   number,
 }
@@ -181,29 +185,34 @@ function ClearSelection()
 
 	const dir = Math.sign(code.hl.radius) || 1
 	for (let i = 0; i != code.hl.radius + dir; i += dir)
+	{
 		code.hl.lns[code.hl.start + i].classList.remove("hl")
+		code.hl.cls[code.hl.start + i].classList.remove("hl")
+	}
 
-	//for (const ln of code.hl.lns)
-	//	ln.classList.remove("hl")
 	code.hl = undefined
 
 	code.scrollTarget.removeAttribute("id")
 }
 
-function SetSelection(lnParent: HTMLElement, lns: NodeListOf<HTMLElement>, start: number, radius: number)
+function SetSelection(idParent: HTMLElement, lns: NodeListOf<HTMLElement>, start: number, radius: number)
 {
 	console.log("SetSelection")
 
 	code.hl = {
-		lnParent: lnParent,
+		idParent: idParent,
 		lns:      lns,
+		cls:      idParent.querySelectorAll<HTMLElement>(".line"),
 		start:    start,
 		radius:   radius,
 	}
 
 	const dir = Math.sign(radius) || 1
 	for (let i = 0; i != radius + dir; i += dir)
-		lns[start + i].classList.add("hl")
+	{
+		code.hl.lns[start + i].classList.add("hl")
+		code.hl.cls[start + i].classList.add("hl")
+	}
 }
 
 function BeginSelection(e: MouseEvent)
@@ -216,8 +225,12 @@ function BeginSelection(e: MouseEvent)
 	const lns      = lnParent.querySelectorAll<HTMLElement>(".lnt")
 	const start    = Array.from(lns).indexOf(ln)
 
+	let idParent = lnParent
+	while (!idParent.id)
+		idParent = idParent.parentElement!
+
 	ClearSelection()
-	SetSelection(lnParent, lns, start, 0)
+	SetSelection(idParent, lns, start, 0)
 
 	document.addEventListener("mousemove", UpdateSelection, { passive: true })
 	document.addEventListener("mouseup",   EndSelection, { passive: true })
@@ -249,12 +262,18 @@ function UpdateSelection(e: MouseEvent)
 	if (no < oo)
 	{
 		for (let i = code.hl.radius; i != nr2; i -= os)
+		{
 			code.hl.lns[code.hl.start + i].classList.remove("hl")
+			code.hl.cls[code.hl.start + i].classList.remove("hl")
+		}
 		code.hl.radius = nr2
 	}
 
 	for (let i = code.hl.radius; i != nr; i += ns)
+	{
 		code.hl.lns[code.hl.start + i + ns].classList.add("hl")
+		code.hl.cls[code.hl.start + i + ns].classList.add("hl")
+	}
 	code.hl.radius = nr
 
 	SetScrollTargetPos()
@@ -275,7 +294,6 @@ function EndSelection(e: MouseEvent)
 	isSame &&= code.prevHl?.radius == code.hl.radius
 	if (isSame)
 	{
-		console.log("EndSelection (Clear)", code.prevHl, code.hl.start, code.hl.radius)
 		code.prevHl = undefined
 		ClearSelection()
 	}
@@ -320,13 +338,9 @@ function SetScrollTargetId(push: boolean, scroll: boolean)
 	const b   = code.hl.start + code.hl.radius + 1
 	const min = Math.min(a, b)
 	const max = Math.max(a, b)
+
 	const lines = code.hl.radius ? `L${min}-${max}` : `L${min}`
-
-	let idParent = code.hl.lnParent
-	while (!idParent.id)
-		idParent = idParent.parentElement!
-
-	const id = `${idParent.id}${lines}`
+	const id    = `${code.hl.idParent.id}${lines}`
 
 	if (location.hash.substring(1) != id)
 	{
@@ -365,16 +379,16 @@ function SelectionFromHash()
 	if (match)
 	{
 		const [hash, id, sa, sb] = match
-		const lnParent = document.getElementById(id)
-		if (lnParent && sa)
+		const idParent = document.getElementById(id)
+		if (idParent && sa)
 		{
-			const lns = lnParent.querySelectorAll<HTMLElement>(".lnt")
+			const lns = idParent.querySelectorAll<HTMLElement>(".lnt")
 			if (lns.length)
 			{
 				const a = Math.min(parseInt(sa) || 1, lns.length)
 				const b = Math.min(parseInt(sb) || a, lns.length)
 
-				SetSelection(lnParent, lns, a - 1, b - a)
+				SetSelection(idParent, lns, a - 1, b - a)
 				SetScrollTargetPos()
 				SetScrollTargetId(false, true)
 			}

@@ -300,7 +300,8 @@ code, .code-copy {
 	border-style: solid;
 	border-width: 1px;
 	padding: 1px 3px 1px 3px;
-	position: relative; bottom: 1px;
+	position: relative;
+	bottom: 1px;
 	white-space: break-spaces;
 
 	hyphenate-character: "";
@@ -310,15 +311,7 @@ code, .code-copy {
 }
 
 .lntable {
-	background-color: var(--code-background);
-	border-color: var(--outline);
-	border-style: solid;
-	border-width: 1px;
-	display: block;
-	margin: 20px 0;
-	overflow: auto;
-	padding: 7px 0 8px 0;
-	scrollbar-width: thin;
+	width: 100%;
 
 	.lntd:first-of-type {
 		left: 0;
@@ -327,26 +320,28 @@ code, .code-copy {
 		user-select: none;
 	}
 
-	.lnt {
-		display: flex;
+	.lntd:first-of-type .lnt {
+		display: block;
 		padding: 0 8px;
-	}
-
-	.hl {
-		display: flex;
-		border-width: 1px;
 	}
 
 	.lntd:first-of-type .hl {
 		border-left-style: solid;
-		/* TODO: ln only */
 		padding-left: 7px;
+	}
+
+	.lntd:last-of-type .line {
+		display: block;
+		padding-right: 8px;
 	}
 
 	.lntd:last-of-type .hl {
 		border-right-style: solid;
-		/* TODO: ln only */
-		padding-left: 7px;
+		padding-right: 7px;
+	}
+
+	.hl {
+		border-width: 1px;
 	}
 
 	.hl:first-of-type, :not(.hl) + .hl {
@@ -360,16 +355,18 @@ code, .code-copy {
 		margin-bottom: -2px;
 		padding-bottom: 1px;
 	}
-
-	.line {
-		display: flex;
-		padding-right: 8px;
-	}
 }
 
-.chroma {
+div.chroma {
+	background-color: var(--code-background);
+	border-color: var(--outline);
+	border-style: solid;
+	border-width: 1px;
 	display: block;
-	position: relative;
+	margin: 20px 0;
+	overflow: auto;
+	padding: 7px 0 8px 0;
+	scrollbar-width: thin;
 }
 
 .code-copy {
