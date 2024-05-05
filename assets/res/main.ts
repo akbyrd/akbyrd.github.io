@@ -93,11 +93,12 @@ type CodeHighlight =
 	radius:    number,
 }
 
-type CodeHighlightPrev =
+type CodeHighlightDragState =
 {
-	idParent: HTMLElement,
-	start:    number,
-	radius:   number,
+	idParent:  HTMLElement,
+	start:     number,
+	radius:    number,
+	distSq:    number,
 }
 
 type Code =
@@ -105,7 +106,7 @@ type Code =
 	scrollTarget?: HTMLElement,
 	lnParents:     HTMLElement[],
 	hl?:           CodeHighlight,
-	prevHl?:       CodeHighlightPrev,
+	prevHl?:       CodeHighlightDragState,
 }
 
 const code: Code = {
@@ -277,6 +278,7 @@ function BeginSelection(e: MouseEvent)
 			idParent: code.hl.idParent,
 			start:    code.hl.start,
 			radius:   code.hl.radius,
+			distSq:   0,
 		}
 	}
 
@@ -330,6 +332,9 @@ function UpdateSelection(e: MouseEvent)
 
 	SetScrollTargetPos()
 	SetScrollTargetId(false, false)
+
+	if (code.prevHl)
+		code.prevHl.distSq += Math.abs(e.movementX) + Math.abs(e.movementY)
 }
 
 function EndSelection(e: MouseEvent)
@@ -342,6 +347,7 @@ function EndSelection(e: MouseEvent)
 	document.removeEventListener("mouseup",   EndSelection)
 
 	let isSame = true
+	isSame &&= code.prevHl?.distSq! < 10
 	isSame &&= code.prevHl?.idParent == code.hl.idParent
 	isSame &&= code.prevHl?.start == code.hl.start
 	isSame &&= code.prevHl?.radius == code.hl.radius

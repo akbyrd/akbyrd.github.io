@@ -1,7 +1,6 @@
 Posts
 TODO: Code line anchors
 	Push url immediately, replace while dragging, pop if same when done
-	Don't clear highlight after dragging and returning to start point
 	Generate line numbers
 	Test on mobile
 	Profile
