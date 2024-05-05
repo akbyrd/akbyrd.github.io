@@ -1,17 +1,7 @@
 Posts
 TODO: Code line anchors
-	Play nicely with hard coded highlight
-		MouseDown  > Intrinsic to Manual > BeginSelection    > ClearSelection - Clear intrinsic, stash, set manual
-		MouseUp    > Manual to Manual    > EndSelection                       - Scroll
-		MouseUp    > Manual to Intrinsic > EndSelection      > ClearSelection - Clear manual, restore intrinsic
-		Load       > Intrinsic to Manual > SelectionFromHash > ClearSelection - Clear intrinsic, stash, set manual
-		HashChange > Intrinsic to Manual > SelectionFromHash > ClearSelection - Clear intrinsic, stash, set manual
-		HashChange > Manual to Manual    > SelectionFromHash > ClearSelection - Clear manual, set manual
-		HashChange > Manual to Intrinsic > SelectionFromHash > ClearSelection - Clear manual, restore intrinsic
-
 	Push url immediately, replace while dragging, pop if same when done
 	Don't clear highlight after dragging and returning to start point
-	Consider only handling events on ln parent, not on individual lns
 	Generate line numbers
 	Test on mobile
 	Profile
