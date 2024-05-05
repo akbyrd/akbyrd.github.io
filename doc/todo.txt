@@ -1,6 +1,5 @@
 Posts
 TODO: Code line anchors
-	Push url immediately, replace while dragging, pop if same when done
 	Generate line numbers
 	Test on mobile
 	Profile
@@ -16,6 +15,7 @@ TODO: Implement zoom for images (current page? new page?)
 TODO: Fix warning on checklist checkboxes (chrome)
 
 General
+TODO: Favicon is missing in back/forward menu in firefox
 TODO: Use partialCached (should cache each unique invocation)
 TODO: Move resource renaming to a shared template
 TODO: Minify html in production builds (vscode tasks and github actions)

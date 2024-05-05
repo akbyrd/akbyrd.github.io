@@ -95,16 +95,22 @@ type CodeHighlight =
 
 type CodeHighlightDragState =
 {
-	idParent:  HTMLElement,
-	start:     number,
-	radius:    number,
-	distSq:    number,
+	idParent: HTMLElement,
+	start:    number,
+	radius:   number,
+}
+
+type CodeClick =
+{
+	prevLocation: string,
+	distSq:       number,
 }
 
 type Code =
 {
 	scrollTarget?: HTMLElement,
 	lnParents:     HTMLElement[],
+	click?:        CodeClick,
 	hl?:           CodeHighlight,
 	prevHl?:       CodeHighlightDragState,
 }
@@ -197,7 +203,7 @@ function CreateSelection(idParent: HTMLElement)
 
 function SetSelection(hl?: CodeHighlight)
 {
-	console.log("SetSelection")
+	//console.log("SetSelection")
 
 	const prevHl = code.hl
 	const currHl = hl
@@ -231,8 +237,6 @@ function SetSelection(hl?: CodeHighlight)
 			changes.set(prevHl.lns[prevHl.start + i], false)
 			changes.set(prevHl.cls[prevHl.start + i], false)
 		}
-		// TODO: This should pobably be somewhere else
-		code.scrollTarget!.removeAttribute("id")
 	}
 
 	// Set manual selection
@@ -263,7 +267,7 @@ function SetSelection(hl?: CodeHighlight)
 function BeginSelection(e: MouseEvent)
 {
 	if (e.button != 0) return
-	console.log("BeginSelection")
+	//console.log("BeginSelection")
 
 	const ln       = e.target as HTMLElement
 	const lnParent = e.currentTarget as HTMLElement
@@ -278,13 +282,18 @@ function BeginSelection(e: MouseEvent)
 			idParent: code.hl.idParent,
 			start:    code.hl.start,
 			radius:   code.hl.radius,
-			distSq:   0,
 		}
+	}
+
+	code.click = {
+		prevLocation: location.toString(),
+		distSq:       0,
 	}
 
 	const hl = CreateSelection(idParent)
 	hl.start = Array.from(hl.lns).indexOf(ln)
 	SetSelection(hl)
+	SetScrollTargetId(false)
 
 	document.addEventListener("mousemove", UpdateSelection, { passive: true })
 	document.addEventListener("mouseup",   EndSelection, { passive: true })
@@ -292,6 +301,7 @@ function BeginSelection(e: MouseEvent)
 
 function UpdateSelection(e: MouseEvent)
 {
+	assert(code.click)
 	assert(code.hl)
 
 	let nr = 0
@@ -331,44 +341,49 @@ function UpdateSelection(e: MouseEvent)
 	code.hl.radius = nr
 
 	SetScrollTargetPos()
-	SetScrollTargetId(false, false)
+	SetScrollTargetId(false)
 
-	if (code.prevHl)
-		code.prevHl.distSq += Math.abs(e.movementX) + Math.abs(e.movementY)
+	code.click.distSq += Math.abs(e.movementX) + Math.abs(e.movementY)
 }
 
 function EndSelection(e: MouseEvent)
 {
+	assert(code.click)
 	assert(code.hl)
 	if (e.button != 0) return
-	console.log("EndSelection")
+	//console.log("EndSelection")
 
 	document.removeEventListener("mousemove", UpdateSelection)
 	document.removeEventListener("mouseup",   EndSelection)
 
 	let isSame = true
-	isSame &&= code.prevHl?.distSq! < 10
+	isSame &&= code.click.distSq! < 10
 	isSame &&= code.prevHl?.idParent == code.hl.idParent
 	isSame &&= code.prevHl?.start == code.hl.start
 	isSame &&= code.prevHl?.radius == code.hl.radius
-
 	if (isSame)
-	{
 		SetSelection(undefined)
-	}
-	else
+
+	SetScrollTargetPos()
+	SetScrollTargetId(false)
+
+	const currLocation = location.toString()
+	if (currLocation != code.click.prevLocation)
 	{
-		SetScrollTargetPos()
-		SetScrollTargetId(true, false)
+		console.log("pushState", new URL(code.click.prevLocation).hash, new URL(currLocation).hash)
+		history.replaceState({ previouslyVisited: true }, "", code.click.prevLocation)
+		history.pushState({ previouslyVisited: true }, "", currLocation)
 	}
+
 	code.prevHl = undefined
+	code.click = undefined
 }
 
 function SetScrollTargetPos()
 {
 	assert(code.scrollTarget)
 	if (!code.hl) return
-	console.log("SetScrollTargetPos")
+	//console.log("SetScrollTargetPos")
 
 	const a   = code.hl.start + 1
 	const b   = code.hl.start + code.hl.radius + 1
@@ -384,28 +399,21 @@ function SetScrollTargetPos()
 	code.scrollTarget.style.setProperty("top", `${scrollY}px`)
 }
 
-function SetScrollTargetId(push: boolean, scroll: boolean)
+function SetScrollTargetId(scroll: boolean)
 {
 	assert(code.scrollTarget)
-	assert(code.hl)
+	//console.log("SetScrollTargetId")
 
-	const a   = code.hl.start + 1
-	const b   = code.hl.start + code.hl.radius + 1
-	const min = Math.min(a, b)
-	const max = Math.max(a, b)
-
-	const lines = code.hl.radius ? `L${min}-${max}` : `L${min}`
-	const id    = `${code.hl.idParent.id}${lines}`
-
-	if (location.hash.substring(1) != id)
+	let id = ""
+	if (code.hl)
 	{
-		const newLocation = new URL(location.toString())
-		newLocation.hash = id
+		const a   = code.hl.start + 1
+		const b   = code.hl.start + code.hl.radius + 1
+		const min = Math.min(a, b)
+		const max = Math.max(a, b)
 
-		// TODO: Might want to throttle this. The browser will complain if you spam
-		push
-			? history.pushState(null, "", newLocation)
-			: history.replaceState(null, "", newLocation)
+		const lines = code.hl.radius ? `L${min}-${max}` : `L${min}`
+		id = `${code.hl.idParent.id}${lines}`
 	}
 
 	if (history.state?.previouslyVisited)
@@ -415,17 +423,25 @@ function SetScrollTargetId(push: boolean, scroll: boolean)
 	}
 	else
 	{
-		history.replaceState({ previouslyVisited: true }, "")
 		code.scrollTarget.id = id
 
 		if (scroll)
 			setTimeout(() => code.scrollTarget!.scrollIntoView(), 1)
 	}
+
+	// TODO: Might want to throttle this. The browser will complain if you spam
+	if (location.hash.substring(1) != id)
+	{
+		const currLocation = new URL(location.toString())
+		currLocation.hash = id
+		//console.log("replaceState", currLocation.hash)
+		history.replaceState({ previouslyVisited: true }, "", currLocation)
+	}
 }
 
 function SelectionFromHash()
 {
-	console.log("SelectionFromHash")
+	//console.log("SelectionFromHash")
 
 	// TODO: Reduce js version and replace matchAll
 	const regex = /^#(.+?)(?:L(\d+)(?:-(\d+))?)?$/g
@@ -446,14 +462,17 @@ function SelectionFromHash()
 
 				SetSelection(hl)
 				SetScrollTargetPos()
-				SetScrollTargetId(false, true)
+				SetScrollTargetId(true)
 				return
 			}
 		}
 	}
 
 	if (code.hl)
+	{
 		SetSelection(undefined)
+		SetScrollTargetId(false)
+	}
 }
 
 // -------------------------------------------------------------------------------------------------
