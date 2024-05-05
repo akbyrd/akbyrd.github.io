@@ -93,30 +93,42 @@ type CodeHighlight =
 	radius:    number,
 }
 
-type CodeHighlightDragState =
+type CodeHighlightState =
 {
 	idParent: HTMLElement,
 	start:    number,
 	radius:   number,
 }
 
+type Throttle =
+{
+	duration: number,
+	lastTime: number,
+	timeout:  number,
+}
+
 type CodeClick =
 {
-	prevLocation: string,
+	prevLocation: URL,
 	distSq:       number,
+	setHash:      Throttle,
 }
 
 type Code =
 {
 	scrollTarget?: HTMLElement,
 	lnParents:     HTMLElement[],
+	hash:          string,
 	click?:        CodeClick,
 	hl?:           CodeHighlight,
-	prevHl?:       CodeHighlightDragState,
+	prevHl?:       CodeHighlightState,
+	historyState:  Object,
 }
 
 const code: Code = {
 	lnParents: [],
+	hash: "",
+	historyState: { previouslyVisited: true },
 }
 
 function InitCode()
@@ -188,23 +200,35 @@ function DisableSelection()
 
 function CreateSelection(idParent: HTMLElement)
 {
-	const hl: CodeHighlight = {
-		intrinsic: new Array<number>,
-		idParent:  idParent,
-		lns:       idParent.querySelectorAll<HTMLElement>(".lnt"),
-		cls:       idParent.querySelectorAll<HTMLElement>(".line"),
-		start:     0,
-		radius:    0,
+	if (code.hl && code.hl.idParent == idParent)
+	{
+		const hl: CodeHighlight = {
+			intrinsic: code.hl.intrinsic,
+			idParent:  code.hl.idParent,
+			lns:       code.hl.lns,
+			cls:       code.hl.cls,
+			start:     0,
+			radius:    0,
+		}
+		return hl
 	}
-	assert(hl.lns.length == hl.cls.length)
-
-	return hl
+	else
+	{
+		const hl: CodeHighlight = {
+			intrinsic: new Array<number>,
+			idParent:  idParent,
+			lns:       idParent.querySelectorAll<HTMLElement>(".lnt"),
+			cls:       idParent.querySelectorAll<HTMLElement>(".line"),
+			start:     0,
+			radius:    0,
+		}
+		assert(hl.lns.length == hl.cls.length)
+		return hl
+	}
 }
 
 function SetSelection(hl?: CodeHighlight)
 {
-	//console.log("SetSelection")
-
 	const prevHl = code.hl
 	const currHl = hl
 	code.hl = hl
@@ -267,7 +291,6 @@ function SetSelection(hl?: CodeHighlight)
 function BeginSelection(e: MouseEvent)
 {
 	if (e.button != 0) return
-	//console.log("BeginSelection")
 
 	const ln       = e.target as HTMLElement
 	const lnParent = e.currentTarget as HTMLElement
@@ -286,14 +309,21 @@ function BeginSelection(e: MouseEvent)
 	}
 
 	code.click = {
-		prevLocation: location.toString(),
+		prevLocation: new URL(location.toString()),
 		distSq:       0,
+		setHash: {
+			duration: 100,
+			lastTime: 0,
+			timeout:  0,
+		},
 	}
 
 	const hl = CreateSelection(idParent)
 	hl.start = Array.from(hl.lns).indexOf(ln)
 	SetSelection(hl)
-	SetScrollTargetId(false)
+	CalculateHash()
+	SetHash()
+	SetScrollTargetId()
 
 	document.addEventListener("mousemove", UpdateSelection, { passive: true })
 	document.addEventListener("mouseup",   EndSelection, { passive: true })
@@ -340,8 +370,10 @@ function UpdateSelection(e: MouseEvent)
 	}
 	code.hl.radius = nr
 
+	CalculateHash()
+	SetHash()
 	SetScrollTargetPos()
-	SetScrollTargetId(false)
+	SetScrollTargetId()
 
 	code.click.distSq += Math.abs(e.movementX) + Math.abs(e.movementY)
 }
@@ -351,7 +383,6 @@ function EndSelection(e: MouseEvent)
 	assert(code.click)
 	assert(code.hl)
 	if (e.button != 0) return
-	//console.log("EndSelection")
 
 	document.removeEventListener("mousemove", UpdateSelection)
 	document.removeEventListener("mouseup",   EndSelection)
@@ -362,17 +393,20 @@ function EndSelection(e: MouseEvent)
 	isSame &&= code.prevHl?.start == code.hl.start
 	isSame &&= code.prevHl?.radius == code.hl.radius
 	if (isSame)
+	{
 		SetSelection(undefined)
+		CalculateHash()
+	}
 
 	SetScrollTargetPos()
-	SetScrollTargetId(false)
+	SetScrollTargetId()
 
-	const currLocation = location.toString()
-	if (currLocation != code.click.prevLocation)
+	history.replaceState(code.historyState, "", code.click.prevLocation)
+	if (code.hash != code.click.prevLocation.hash)
 	{
-		console.log("pushState", new URL(code.click.prevLocation).hash, new URL(currLocation).hash)
-		history.replaceState({ previouslyVisited: true }, "", code.click.prevLocation)
-		history.pushState({ previouslyVisited: true }, "", currLocation)
+		const currLocation = new URL(location.toString())
+		currLocation.hash = code.hash
+		history.pushState(code.historyState, "", currLocation)
 	}
 
 	code.prevHl = undefined
@@ -383,7 +417,6 @@ function SetScrollTargetPos()
 {
 	assert(code.scrollTarget)
 	if (!code.hl) return
-	//console.log("SetScrollTargetPos")
 
 	const a   = code.hl.start + 1
 	const b   = code.hl.start + code.hl.radius + 1
@@ -399,12 +432,23 @@ function SetScrollTargetPos()
 	code.scrollTarget.style.setProperty("top", `${scrollY}px`)
 }
 
-function SetScrollTargetId(scroll: boolean)
+function SetScrollTargetId()
 {
 	assert(code.scrollTarget)
-	//console.log("SetScrollTargetId")
 
-	let id = ""
+	if (history.state?.previouslyVisited)
+	{
+		// Don't auto-scroll when pressing F5
+		setTimeout(() => code.scrollTarget!.id = code.hash.substring(1), 1)
+	}
+	else
+	{
+		code.scrollTarget.id = code.hash.substring(1)
+	}
+}
+
+function CalculateHash()
+{
 	if (code.hl)
 	{
 		const a   = code.hl.start + 1
@@ -413,36 +457,41 @@ function SetScrollTargetId(scroll: boolean)
 		const max = Math.max(a, b)
 
 		const lines = code.hl.radius ? `L${min}-${max}` : `L${min}`
-		id = `${code.hl.idParent.id}${lines}`
-	}
-
-	if (history.state?.previouslyVisited)
-	{
-		// Don't auto-scroll when pressing F5
-		setTimeout(() => code.scrollTarget!.id = id, 1)
+		code.hash = `#${code.hl.idParent.id}${lines}`
 	}
 	else
 	{
-		code.scrollTarget.id = id
-
-		if (scroll)
-			setTimeout(() => code.scrollTarget!.scrollIntoView(), 1)
+		code.hash = ""
 	}
+}
 
-	// TODO: Might want to throttle this. The browser will complain if you spam
-	if (location.hash.substring(1) != id)
+function SetHash()
+{
+	if (!code.click) return
+
+	const now = performance.now()
+	const elapsed = now - code.click.setHash.lastTime;
+	if (elapsed >= code.click.setHash.duration)
 	{
-		const currLocation = new URL(location.toString())
-		currLocation.hash = id
-		//console.log("replaceState", currLocation.hash)
-		history.replaceState({ previouslyVisited: true }, "", currLocation)
+		clearTimeout(code.click.setHash.timeout)
+		code.click.setHash.timeout = 0
+		code.click.setHash.lastTime = now
+		if (location.hash != code.hash)
+		{
+			const currLocation = new URL(location.toString())
+			currLocation.hash = code.hash
+			history.replaceState(code.historyState, "", currLocation)
+		}
+	}
+	else if (!code.click.setHash.timeout)
+	{
+		const remaining = code.click.setHash.duration - elapsed
+		code.click.setHash.timeout = setTimeout(() => SetHash(), remaining)
 	}
 }
 
 function SelectionFromHash()
 {
-	//console.log("SelectionFromHash")
-
 	// TODO: Reduce js version and replace matchAll
 	const regex = /^#(.+?)(?:L(\d+)(?:-(\d+))?)?$/g
 	const [match] = location.hash.matchAll(regex)
@@ -461,8 +510,11 @@ function SelectionFromHash()
 				hl.radius = b - a
 
 				SetSelection(hl)
+				CalculateHash()
 				SetScrollTargetPos()
-				SetScrollTargetId(true)
+				SetScrollTargetId()
+				if (!history.state?.previouslyVisited)
+					setTimeout(() => code.scrollTarget!.scrollIntoView(), 1)
 				return
 			}
 		}
@@ -471,7 +523,8 @@ function SelectionFromHash()
 	if (code.hl)
 	{
 		SetSelection(undefined)
-		SetScrollTargetId(false)
+		CalculateHash()
+		SetScrollTargetId()
 	}
 }
 

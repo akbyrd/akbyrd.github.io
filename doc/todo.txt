@@ -1,7 +1,8 @@
 Posts
 TODO: Code line anchors
-	Generate line numbers
+	Test thoroughly
 	Test on mobile
+	Generate line numbers
 	Profile
 
 TODO: Make window resizing maintain scroll position
