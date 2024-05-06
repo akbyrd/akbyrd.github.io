@@ -328,16 +328,13 @@ code, .code-copy {
 
 	code {
 		display: block;
-		padding: 5px 0 6px 0;
-
-		width: 100%;
 		min-width: fit-content;
+		padding: 7px 0 8px 0;
 	}
 
 	.line {
 		counter-increment: line-numbers;
 		display: flex;
-		user-select: none;
 	}
 
 	.line::before {
@@ -347,50 +344,49 @@ code, .code-copy {
 		content: counter(line-numbers);
 		left: 0;
 		padding: 0 8px;
-		pointer-events: none;
 		position: sticky;
 	}
 
 	.cl {
-		background-color: inherit;
-		border-color: inherit;
-		border-width: 1px;
 		cursor: text;
 		flex-grow: 1;
 		padding-right: 8px;
-		user-select: all;
+	}
+
+	.hl {
+		border-right-style: solid;
+		border-width: 1px;
 	}
 
 	.hl::before {
 		border-left-style: solid;
 		padding-left: 7px;
-	}
-
-	.hl .cl {
-		padding-right: 7px;
-		border-right-style: solid;
+		padding-bottom: 1px;
+		margin-bottom: -1px;
 	}
 
 	.hl:first-of-type, :not(.hl) + .hl {
-		&::before, .cl {
-			border-top-style: solid;
-			margin-top: -1px;
-		}
+		border-top-style: solid;
+		margin-top: -1px;
+		position: relative;
+		z-index: 1;
 
-		&::before {
-			z-index: 1;
+		.cl {
+			padding-top: 1px;
+			margin-top: -1px;
 		}
 	}
 
 	.hl:last-of-type, .hl:has(+ :not(.hl)) {
-		&::before, .cl {
-			border-bottom-style: solid;
-			margin-bottom: -2px;
-			padding-bottom: 1px;
-		}
+		border-bottom-style: solid;
+		margin-bottom: -2px;
+		padding-bottom: 1px;
+		position: relative;
+		z-index: 1;
 
-		&::before {
-			z-index: 1;
+		.cl {
+			padding-bottom: 1px;
+			margin-bottom: -2px;
 		}
 	}
 }
@@ -398,10 +394,11 @@ code, .code-copy {
 .code-copy {
 	height: 36px;
 	position: absolute;
-	right: 0px;
-	top: 0px;
+	right: -1px;
+	top: -1px;
 	user-select: none;
 	width: 36px;
+	z-index: 1;
 
 	p {
 		background-color: var(--code-highlight-background);

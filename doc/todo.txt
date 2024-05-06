@@ -4,27 +4,10 @@ TODO: Code line anchors
 
 		Option 1 - Line numbers as counter
 			Pro: Not selectable
-			QUESTION: Is it possible to get clicking working well?
+			Con: Fiddly
+			Con: Starting at a specific line number is tricky
 			QUESTION: Can they be started at a specific number? (Probably, with style attribute in html)
-			----
-			TODO: Don't click line numbers when selecting text
-				Don't start selection if over cl?
-				Float line numbers left?
-				Separate line and cl, overflow?
-				Use an ordered list?
-				Get the bounds of line numbers?
-			TODO: Don't select code when clicking line numbers
-			----
-			TODO: Fix code vertical size
-			TODO: Fix code horizontal size
-			TODO: Fix code line right padding
-			TODO: Fix code right border position
-			TODO: Fix line number vertical size
-			TODO: Fix line number left border color
 			TODO: Fix line number uniform width
-			TODO: Fix line number background
-			TODO: Fix indentation between lns and code
-			TODO: Fix button offset
 
 		Option 2 - Line numbers as ordered list
 			Pro: Not selectable
@@ -79,7 +62,7 @@ TODO: Improve about page content
 TODO: Add my rss list
 
 Testing / Compatibility
-TODO: Remove & (2024), :has (2024), :not (2021) selectors
+TODO: Remove nesting (2024), & (2024), :has (2024), :not (2021) selectors
 TODO: Test in safari
 TODO: Test apple touch icon
 TODO: Test theme-color on android
