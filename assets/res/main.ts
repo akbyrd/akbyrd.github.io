@@ -1,6 +1,7 @@
 function assert(value: unknown): asserts value
 {
-	console.assert(value != false, "Condition failed")
+	if (!value)
+		throw "Condition failed"
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -26,7 +27,7 @@ function InitTheme()
 
 	const buttons = document.getElementsByClassName("header-theme-button")
 	for (const button of buttons)
-		button.addEventListener("click", CycleTheme)
+		button.addEventListener("click", CycleTheme, { passive: true })
 
 	theme.labels = document.getElementsByClassName("header-theme-label")
 	for (const label of theme.labels)
@@ -87,8 +88,7 @@ type CodeHighlight =
 {
 	intrinsic: number[],
 	idParent:  HTMLElement,
-	lns:       NodeListOf<HTMLElement>,
-	cls:       NodeListOf<HTMLElement>,
+	lines:     NodeListOf<HTMLElement>,
 	start:     number,
 	radius:    number,
 }
@@ -118,6 +118,7 @@ type Code =
 {
 	scrollTarget?: HTMLElement,
 	lnParents:     HTMLElement[],
+	lns:           HTMLElement[],
 	hash:          string,
 	click?:        CodeClick,
 	hl?:           CodeHighlight,
@@ -127,6 +128,7 @@ type Code =
 
 const code: Code = {
 	lnParents: [],
+	lns: [],
 	hash: "",
 	historyState: { previouslyVisited: true },
 }
@@ -136,24 +138,30 @@ function InitCode()
 	// Hook up code copy buttons
 	const buttons = document.getElementsByClassName("code-copy")
 	for (const button of buttons)
-		button.addEventListener("click", () => CopyCode(button))
+		button.addEventListener("click", CopyCode, { passive: true })
 
 	// Hook up line number selection
-	const lnRoots = document.querySelectorAll(".chroma:has(.lntable)")
-	for (const lnRoot of lnRoots)
+	const idParents = document.querySelectorAll(".highlight")
+	for (const idParent of idParents)
 	{
-		const lnParent = lnRoot.querySelector(".lntd:first-of-type")
-		if (lnParent && lnRoot.id)
-			code.lnParents.push(lnParent as HTMLElement)
+		const lnParent = idParent.querySelector("code")
+		code.lnParents.push(lnParent as HTMLElement)
+
+		//const lines = idParent.querySelectorAll(".line")
+		//code.lns.concat(lines as unknown as HTMLElement[])
 	}
 
 	if (code.lnParents)
 	{
+		const css = document.styleSheets[0];
+		css.insertRule(".line { cursor: pointer; }", css.cssRules.length);
+		css.insertRule(".cl { cursor: auto; }", css.cssRules.length);
+
 		for (const lnParent of code.lnParents)
 		{
 			lnParent.addEventListener("mousedown", BeginSelection, { passive: true })
-			lnParent.style.pointerEvents = "auto"
-			lnParent.style.cursor = "pointer"
+			//lnParent.style.pointerEvents = "auto"
+			//lnParent.style.cursor = "pointer"
 		}
 
 		document.addEventListener("mousedown", DisableSelection, { passive: true })
@@ -171,12 +179,13 @@ function InitCode()
 	}
 }
 
-function CopyCode(button: Element)
+function CopyCode(e: Event)
 {
 	if ("clipboard" in navigator)
 	{
-		const table = button.previousElementSibling!
-		const code = table.querySelector(".lntd:last-of-type code")!
+		const button = e.currentTarget as HTMLElement
+		const pre = button.previousElementSibling!
+		const code = pre.querySelector("code")!
 		if (code.textContent)
 			navigator.clipboard.writeText(code.textContent)
 	}
@@ -205,8 +214,7 @@ function CreateSelection(idParent: HTMLElement)
 		const hl: CodeHighlight = {
 			intrinsic: code.hl.intrinsic,
 			idParent:  code.hl.idParent,
-			lns:       code.hl.lns,
-			cls:       code.hl.cls,
+			lines:     code.hl.lines,
 			start:     0,
 			radius:    0,
 		}
@@ -217,12 +225,10 @@ function CreateSelection(idParent: HTMLElement)
 		const hl: CodeHighlight = {
 			intrinsic: new Array<number>,
 			idParent:  idParent,
-			lns:       idParent.querySelectorAll<HTMLElement>(".lnt"),
-			cls:       idParent.querySelectorAll<HTMLElement>(".line"),
+			lines:     idParent.querySelectorAll<HTMLElement>(".line"),
 			start:     0,
 			radius:    0,
 		}
-		assert(hl.lns.length == hl.cls.length)
 		return hl
 	}
 }
@@ -239,17 +245,14 @@ function SetSelection(hl?: CodeHighlight)
 	// Remove intrinsic selection
 	if (currHl && currHl.idParent != prevHl?.idParent)
 	{
-		for (const [i, ln] of currHl.lns.entries())
+		for (const [i, line] of currHl.lines.entries())
 		{
-			if (ln.classList.contains("hl"))
+			if (line.classList.contains("hl"))
 				currHl.intrinsic.push(i)
 		}
 
 		for (const i of currHl.intrinsic)
-		{
-			changes.set(currHl.lns[i], false)
-			changes.set(currHl.cls[i], false)
-		}
+			changes.set(currHl.lines[i], false)
 	}
 
 	// Remove manual selection
@@ -257,10 +260,7 @@ function SetSelection(hl?: CodeHighlight)
 	{
 		const dir = Math.sign(prevHl.radius) || 1
 		for (let i = 0; i != prevHl.radius + dir; i += dir)
-		{
-			changes.set(prevHl.lns[prevHl.start + i], false)
-			changes.set(prevHl.cls[prevHl.start + i], false)
-		}
+			changes.set(prevHl.lines[prevHl.start + i], false)
 	}
 
 	// Set manual selection
@@ -268,21 +268,16 @@ function SetSelection(hl?: CodeHighlight)
 	{
 		const dir = Math.sign(currHl.radius) || 1
 		for (let i = 0; i != currHl.radius + dir; i += dir)
-		{
-			changes.set(currHl.lns[currHl.start + i], true)
-			changes.set(currHl.cls[currHl.start + i], true)
-		}
+			changes.set(currHl.lines[currHl.start + i], true)
 	}
 
 	// Restore intrinsic selection
 	if (prevHl && prevHl.idParent != currHl?.idParent)
 	{
 		for (const i of prevHl.intrinsic)
-		{
-			changes.set(prevHl.lns[i], true)
-			changes.set(prevHl.cls[i], true)
-		}
+			changes.set(prevHl.lines[i], true)
 	}
+
 
 	for (const [e, v] of changes)
 		e.classList.toggle("hl", v)
@@ -292,8 +287,9 @@ function BeginSelection(e: MouseEvent)
 {
 	if (e.button != 0) return
 
-	const ln       = e.target as HTMLElement
+	const line     = e.target as HTMLElement
 	const lnParent = e.currentTarget as HTMLElement
+	if (!line.classList.contains("line")) return
 
 	let idParent = lnParent
 	while (!idParent.id)
@@ -319,7 +315,7 @@ function BeginSelection(e: MouseEvent)
 	}
 
 	const hl = CreateSelection(idParent)
-	hl.start = Array.from(hl.lns).indexOf(ln)
+	hl.start = Array.from(hl.lines).indexOf(line)
 	SetSelection(hl)
 	CalculateHash()
 	SetHash()
@@ -336,13 +332,13 @@ function UpdateSelection(e: MouseEvent)
 
 	let nr = 0
 	let no = 0
-	for (const [i, ln] of code.hl.lns.entries())
+	for (const [i, line] of code.hl.lines.entries())
 	{
 		const r = i - code.hl.start
 		const o = Math.abs(r)
 		if (o >= no)
 		{
-			const rect = ln.getBoundingClientRect()
+			const rect = line.getBoundingClientRect()
 			if (i < code.hl.start && e.y <  rect.bottom) { nr = r; no = o; }
 			if (i > code.hl.start && e.y >= rect.top)    { nr = r; no = o; }
 		}
@@ -356,18 +352,12 @@ function UpdateSelection(e: MouseEvent)
 	if (no < oo)
 	{
 		for (let i = code.hl.radius; i != nr2; i -= os)
-		{
-			code.hl.lns[code.hl.start + i].classList.remove("hl")
-			code.hl.cls[code.hl.start + i].classList.remove("hl")
-		}
+			code.hl.lines[code.hl.start + i].classList.remove("hl")
 		code.hl.radius = nr2
 	}
 
 	for (let i = code.hl.radius; i != nr; i += ns)
-	{
-		code.hl.lns[code.hl.start + i + ns].classList.add("hl")
-		code.hl.cls[code.hl.start + i + ns].classList.add("hl")
-	}
+		code.hl.lines[code.hl.start + i + ns].classList.add("hl")
 	code.hl.radius = nr
 
 	CalculateHash()
@@ -380,9 +370,9 @@ function UpdateSelection(e: MouseEvent)
 
 function EndSelection(e: MouseEvent)
 {
+	if (e.button != 0) return
 	assert(code.click)
 	assert(code.hl)
-	if (e.button != 0) return
 
 	document.removeEventListener("mousemove", UpdateSelection)
 	document.removeEventListener("mouseup",   EndSelection)
@@ -423,8 +413,8 @@ function SetScrollTargetPos()
 	const min = Math.min(a, b)
 	const max = Math.max(a, b)
 
-	const minLn   = code.hl.lns[min - 1]
-	const maxLn   = code.hl.lns[max - 1]
+	const minLn   = code.hl.lines[min - 1]
+	const maxLn   = code.hl.lines[max - 1]
 	const minY    = minLn.getBoundingClientRect().top
 	const maxY    = maxLn.getBoundingClientRect().bottom
 	const middleY = (minY + maxY - window.innerHeight) / 2
@@ -502,10 +492,10 @@ function SelectionFromHash()
 		if (idParent && sa)
 		{
 			const hl = CreateSelection(idParent)
-			if (hl.lns.length)
+			if (hl.lines.length)
 			{
-				const a = Math.min(parseInt(sa) || 1, hl.lns.length)
-				const b = Math.min(parseInt(sb) || a, hl.lns.length)
+				const a = Math.min(parseInt(sa) || 1, hl.lines.length)
+				const b = Math.min(parseInt(sb) || a, hl.lines.length)
 				hl.start  = a - 1
 				hl.radius = b - a
 
@@ -539,5 +529,5 @@ function Initialize()
 }
 
 document.readyState !== "complete"
-	? window.addEventListener("load", (e) => Initialize())
+	? window.addEventListener("load", (e) => Initialize(), { passive: true })
 	: Initialize()

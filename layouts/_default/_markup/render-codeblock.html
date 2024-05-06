@@ -11,24 +11,18 @@
 	{{- end }}
 {{- end }}
 
-{{- $opts := dict "lineNumbersInTable" true }}
-{{- $result := (transform.HighlightCodeBlock . $opts).Wrapped}}
+{{- $result := (transform.HighlightCodeBlock .).Wrapped}}
 
-{{- /* Remove table outer div */}}
-{{- $idFmt := printf `$0 id="%s"` $id }}
-{{- $result = replaceRE `^<div class="highlight[^>]*>` "" $result }}
-{{- $result = replaceRE `^<div class="chroma"` $idFmt $result }}
-{{- $result = replaceRE "(</div>)\n</div>" "$1" $result }}
-
-{{- /* Remove highlight outer spans */}}
-{{- $result = replaceRE `<span class="hl"><span class="lnt">([ \d\n]*)</span></span>` `<span class="lnt hl">$1</span>` $result }}
+{{- /* Add some newlines */}}
+{{- $result = replaceRE `^(<div [^>]*>)` "$1\n" $result }}
+{{- $result = replaceRE "</div>$" "\n</div>\n" $result }}
 
 {{- /* Add copy button */}}
 {{- $btnFmt := "<button class=\"code-copy require-js\" type=\"button\" aria-label=\"Copy\"><p>&#xf4bb;</p></button>\n$1" }}
-{{- $result = replaceRE "(</div>)$" $btnFmt $result }}
+{{- $result = replaceRE `(</div>\n)` $btnFmt $result }}
 
 {{- /* Remove some junk */}}
-{{- $result = replace $result " tabindex=\"0\"" "" }}
-{{- $result = replace $result "pre class=\"chroma\"" "pre" }}
+{{- $result = replaceRE `<code class="([^"]*)" data-lang="([^"]*)">` `<code>` $result }}
+{{- $result = replaceRE ` tabindex="0"` `` $result }}
 
 {{- $result | safeHTML -}}

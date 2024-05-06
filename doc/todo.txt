@@ -1,8 +1,47 @@
 Posts
 TODO: Code line anchors
+	Generate line numbers
+
+		Option 1 - Line numbers as counter
+			Pro: Not selectable
+			QUESTION: Is it possible to get clicking working well?
+			QUESTION: Can they be started at a specific number? (Probably, with style attribute in html)
+			----
+			TODO: Don't click line numbers when selecting text
+				Don't start selection if over cl?
+				Float line numbers left?
+				Separate line and cl, overflow?
+				Use an ordered list?
+				Get the bounds of line numbers?
+			TODO: Don't select code when clicking line numbers
+			----
+			TODO: Fix code vertical size
+			TODO: Fix code horizontal size
+			TODO: Fix code line right padding
+			TODO: Fix code right border position
+			TODO: Fix line number vertical size
+			TODO: Fix line number left border color
+			TODO: Fix line number uniform width
+			TODO: Fix line number background
+			TODO: Fix indentation between lns and code
+			TODO: Fix button offset
+
+		Option 2 - Line numbers as ordered list
+			Pro: Not selectable
+			Pro: Better formatting
+			Pro: Allowed by the spec
+			Con: Space is added when copying
+
+		Option 3 - Line numbers in html, non-table
+			Con: Selectable
+			QUESTION: Is it possible to remove the newlines between spans when copying?
+
+		Option 4 - Line numbers in html, table
+			Con: More HTML
+			Con: Selectable
+
 	Test thoroughly
 	Test on mobile
-	Generate line numbers
 	Profile
 
 TODO: Make window resizing maintain scroll position

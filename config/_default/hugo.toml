@@ -10,7 +10,6 @@ enableInlineShortcodes = true
 markup.goldmark.renderer.unsafe = true # allow html
 markup.goldmark.parser.attribute.block = true
 markup.goldmark.parser.wrapStandAloneImageWithinParagraph = false
-markup.highlight.lineNos = true
 markup.highlight.noClasses = false
 
 # Disable unnecessary RSS files
