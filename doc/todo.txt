@@ -1,6 +1,5 @@
 Posts
 TODO: Code line anchors
-	Fix hash when line numbers don't start at 1
 	Test thoroughly
 	Test on mobile
 	Profile

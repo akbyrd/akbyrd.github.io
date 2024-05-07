@@ -88,6 +88,7 @@ type CodeHighlight =
 {
 	intrinsic: number[],
 	idParent:  HTMLElement,
+	lnStart:   number,
 	lines:     NodeListOf<HTMLElement>,
 	start:     number,
 	radius:    number,
@@ -214,6 +215,7 @@ function CreateSelection(idParent: HTMLElement)
 		const hl: CodeHighlight = {
 			intrinsic: code.hl.intrinsic,
 			idParent:  code.hl.idParent,
+			lnStart:   code.hl.lnStart,
 			lines:     code.hl.lines,
 			start:     0,
 			radius:    0,
@@ -225,6 +227,7 @@ function CreateSelection(idParent: HTMLElement)
 		const hl: CodeHighlight = {
 			intrinsic: new Array<number>,
 			idParent:  idParent,
+			lnStart:   parseInt(idParent.style.getPropertyValue("--ln-start")) || 1,
 			lines:     idParent.querySelectorAll<HTMLElement>(".line"),
 			start:     0,
 			radius:    0,
@@ -443,8 +446,8 @@ function CalculateHash()
 	{
 		const a   = code.hl.start + 1
 		const b   = code.hl.start + code.hl.radius + 1
-		const min = Math.min(a, b)
-		const max = Math.max(a, b)
+		const min = Math.min(a, b) + code.hl.lnStart - 1
+		const max = Math.max(a, b) + code.hl.lnStart - 1
 
 		const lines = code.hl.radius ? `L${min}-${max}` : `L${min}`
 		code.hash = `#${code.hl.idParent.id}${lines}`
@@ -466,6 +469,7 @@ function SetHash()
 		clearTimeout(code.click.setHash.timeout)
 		code.click.setHash.timeout = 0
 		code.click.setHash.lastTime = now
+
 		if (location.hash != code.hash)
 		{
 			const currLocation = new URL(location.toString())
@@ -494,8 +498,8 @@ function SelectionFromHash()
 			const hl = CreateSelection(idParent)
 			if (hl.lines.length)
 			{
-				const a = Math.min(parseInt(sa) || 1, hl.lines.length)
-				const b = Math.min(parseInt(sb) || a, hl.lines.length)
+				const a = Math.min(parseInt(sa) - hl.lnStart + 1 || 1, hl.lines.length)
+				const b = Math.min(parseInt(sb) - hl.lnStart + 1 || a, hl.lines.length)
 				hl.start  = a - 1
 				hl.radius = b - a
 
