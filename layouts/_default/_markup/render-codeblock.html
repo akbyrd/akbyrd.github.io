@@ -1,8 +1,3 @@
-{{- $class := "highlight" }}
-{{- with index .Attributes "class" }}
-	{{- $class = printf "%s %s" $class . }}
-{{- end }}
-
 {{- $id := index .Attributes "id" }}
 {{- if not $id }}
 	{{- if not (in .Type (slice "goat" "mermaid")) }}
@@ -11,18 +6,44 @@
 	{{- end }}
 {{- end }}
 
-{{- $result := (transform.HighlightCodeBlock .).Wrapped}}
+{{- $lineStart := 1 }}
+{{- with index .Options "lineNoStart" }}
+	{{- $lineStart = mod . 1e256 }}
+{{- end }}
+
+{{- $result := (transform.HighlightCodeBlock .).Wrapped }}
 
 {{- /* Add some newlines */}}
 {{- $result = replaceRE `^(<div [^>]*>)` "$1\n" $result }}
 {{- $result = replaceRE "</div>$" "\n</div>\n" $result }}
 
 {{- /* Add copy button */}}
-{{- $btnFmt := "<button class=\"code-copy require-js\" type=\"button\" aria-label=\"Copy\"><p>&#xf4bb;</p></button>\n$1" }}
-{{- $result = replaceRE `(</div>\n)` $btnFmt $result }}
+{{- $btnFmt := `<button class="code-copy require-js" type="button" aria-label="Copy"><p>&#xf4bb;</p></button>$2$1` }}
+{{- $result = replaceRE `(</div>(\n))` $btnFmt $result }}
 
 {{- /* Remove some junk */}}
 {{- $result = replaceRE `<code class="([^"]*)" data-lang="([^"]*)">` `<code>` $result }}
 {{- $result = replaceRE ` tabindex="0"` `` $result }}
+
+{{- /* Add line number data */}}
+{{- $newLines := strings.Count "\n" .Inner }}
+{{- $lineEnd := add $lineStart $newLines }}
+{{- $lineWidth := len (printf "%d" $lineEnd) }}
+
+{{- $lineStartFmt := "" }}
+{{- if ne $lineStart 1 }}
+	{{- $lineStartFmt = printf `--ln-start: %d;` $lineStart }}
+{{- end }}
+
+{{- $lineWidthFmt := "" }}
+{{- if gt $lineEnd 10 }}
+	{{- $lineWidthFmt = printf `--ln-width: %dch;` $lineWidth }}
+{{- end }}
+
+{{- with or $lineStartFmt $lineWidthFmt }}
+	{{- $separator := or (and (and $lineStartFmt $lineWidthFmt) " ") "" }}
+	{{- $lineFmt := printf `<div$1 style="%s%s%s">` $lineStartFmt $separator $lineWidthFmt }}
+	{{- $result = replaceRE `^<div([^>]*)>` $lineFmt $result }}
+{{- end }}
 
 {{- $result | safeHTML -}}

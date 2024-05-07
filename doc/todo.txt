@@ -1,28 +1,6 @@
 Posts
 TODO: Code line anchors
-	Generate line numbers
-
-		Option 1 - Line numbers as counter
-			Pro: Not selectable
-			Con: Fiddly
-			Con: Starting at a specific line number is tricky
-			QUESTION: Can they be started at a specific number? (Probably, with style attribute in html)
-			TODO: Fix line number uniform width
-
-		Option 2 - Line numbers as ordered list
-			Pro: Not selectable
-			Pro: Better formatting
-			Pro: Allowed by the spec
-			Con: Space is added when copying
-
-		Option 3 - Line numbers in html, non-table
-			Con: Selectable
-			QUESTION: Is it possible to remove the newlines between spans when copying?
-
-		Option 4 - Line numbers in html, table
-			Con: More HTML
-			Con: Selectable
-
+	Fix hash when line numbers don't start at 1
 	Test thoroughly
 	Test on mobile
 	Profile
@@ -62,7 +40,7 @@ TODO: Improve about page content
 TODO: Add my rss list
 
 Testing / Compatibility
-TODO: Remove nesting (2024), & (2024), :has (2024), :not (2021) selectors
+TODO: Remove nesting/& (2024), :has (2024), :not (2021) selectors, nth-child (2023)
 TODO: Test in safari
 TODO: Test apple touch icon
 TODO: Test theme-color on android

@@ -315,12 +315,12 @@ code, .code-copy {
 	border-color: var(--outline);
 	border-style: solid;
 	border-width: 1px;
-	counter-reset: line-numbers;
 	display: block;
 	margin: 20px 0;
 	position: relative;
 
 	pre {
+		counter-reset: line-numbers var(--ln-start, 1);
 		display: block;
 		overflow: auto;
 		scrollbar-width: thin;
@@ -333,7 +333,6 @@ code, .code-copy {
 	}
 
 	.line {
-		counter-increment: line-numbers;
 		display: flex;
 	}
 
@@ -345,9 +344,12 @@ code, .code-copy {
 		left: 0;
 		padding: 0 8px;
 		position: sticky;
+		text-align: right;
+		width: var(--ln-width, 1);
 	}
 
 	.cl {
+		counter-increment: line-numbers;
 		cursor: text;
 		flex-grow: 1;
 		padding-right: 8px;
@@ -365,7 +367,7 @@ code, .code-copy {
 		margin-bottom: -1px;
 	}
 
-	.hl:first-of-type, :not(.hl) + .hl {
+	.hl:nth-child(1 of .hl) {
 		border-top-style: solid;
 		margin-top: -1px;
 		position: relative;
@@ -377,7 +379,7 @@ code, .code-copy {
 		}
 	}
 
-	.hl:last-of-type, .hl:has(+ :not(.hl)) {
+	.hl:nth-last-child(1 of .hl) {
 		border-bottom-style: solid;
 		margin-bottom: -2px;
 		padding-bottom: 1px;
