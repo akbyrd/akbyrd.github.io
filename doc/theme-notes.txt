@@ -59,3 +59,13 @@ Code
 Clickable Line Numbers
 https://jsfiddle.net/oj3h7pwu/28/ - ::before and counter, requires each line to be separate <code>
 https://codepen.io/phuocng/pen/gOqVWQX - textarea. Confines selection to code, but doesn't stretch and can't select entire page
+Pointer events are new-ish (2019)
+Touch events are supported as of 2017
+Don't use pointer events
+- No sense in limiting mouse support
+- Can't clear touch-action and still have to use touch events to block scrolling
+- Would be a lot simpler though
+Pointer events come before touch events
+Synthesized mouse events come at the end of the touch interaction
+Synthesized mouse events only for single taps (not after dragging or multiple touches)
+PointerEvent.pointerId and Touch.identifier are the same

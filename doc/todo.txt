@@ -1,7 +1,7 @@
 Posts
 TODO: Code line anchors
-	Test thoroughly
 	Test on mobile
+		Lines move when selected
 	Profile
 
 TODO: Make window resizing maintain scroll position

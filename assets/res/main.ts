@@ -111,7 +111,10 @@ type Throttle =
 type CodeClick =
 {
 	prevLocation: URL,
-	distSq:       number,
+	id:           number,
+	startX:       number,
+	startY:       number,
+	dist:         number,
 	setHash:      Throttle,
 }
 
@@ -147,28 +150,28 @@ function InitCode()
 	{
 		const lnParent = idParent.querySelector("code")
 		code.lnParents.push(lnParent as HTMLElement)
-
-		//const lines = idParent.querySelectorAll(".line")
-		//code.lns.concat(lines as unknown as HTMLElement[])
 	}
 
 	if (code.lnParents)
 	{
 		const css = document.styleSheets[0];
 		css.insertRule(".line { cursor: pointer; }", css.cssRules.length);
-		css.insertRule(".cl { cursor: auto; }", css.cssRules.length);
 
 		for (const lnParent of code.lnParents)
 		{
-			lnParent.addEventListener("mousedown", BeginSelection, { passive: true })
-			//lnParent.style.pointerEvents = "auto"
-			//lnParent.style.cursor = "pointer"
+			lnParent.addEventListener("mousedown",  BeginSelection, { passive: false })
+			lnParent.addEventListener("touchstart", BeginSelection, { passive: false })
 		}
 
-		document.addEventListener("mousedown", DisableSelection, { passive: true })
-		document.addEventListener("mouseup", EnableSelection, { passive: true })
-		window.addEventListener("hashchange", SelectionFromHash, { passive: true })
-		window.addEventListener("resize", SetScrollTargetPos, { passive: true })
+		document.addEventListener("mousedown",   DisableSelection, { passive: true })
+		document.addEventListener("touchstart",  DisableSelection, { passive: true })
+		document.addEventListener("mouseup",     EnableSelection,  { passive: true })
+		document.addEventListener("dragend",     EnableSelection,  { passive: true })
+		document.addEventListener("touchend",    EnableSelection,  { passive: true })
+		document.addEventListener("touchcancel", EnableSelection,  { passive: true })
+
+		window.addEventListener("hashchange", SelectionFromHash,  { passive: true })
+		window.addEventListener("resize",     SetScrollTargetPos, { passive: true })
 
 		// Need an element because Ctrl+L Enter in Firefox will not invoke javascript
 		code.scrollTarget = document.createElement("null")
@@ -202,6 +205,7 @@ function EnableSelection()
 
 function DisableSelection()
 {
+	if (code.click) return
 	assert(code.lnParents)
 
 	for (const lnParent of code.lnParents)
@@ -281,19 +285,53 @@ function SetSelection(hl?: CodeHighlight)
 			changes.set(prevHl.lines[i], true)
 	}
 
-
 	for (const [e, v] of changes)
 		e.classList.toggle("hl", v)
 }
 
-function BeginSelection(e: MouseEvent)
+function BeginSelection(e: MouseEvent | TouchEvent)
 {
-	if (e.button != 0) return
+	const target = e.target as HTMLElement
+	const isLn = target.classList.contains("line")
+	if (!isLn && !code.click) return
 
-	const line     = e.target as HTMLElement
+	e.preventDefault()
+
+	const click: CodeClick = {
+		prevLocation: new URL(location.toString()),
+		id:           0,
+		startX:       0,
+		startY:       0,
+		dist:         0,
+		setHash: {
+			duration: 100,
+			lastTime: 0,
+			timeout:  0,
+		},
+	}
+
+	if (e instanceof MouseEvent)
+	{
+		const id = -1 - e.button
+		if (code.click) { code.click.id = id; EndSelection(e); return }
+		if (!isLn) return
+		if (e.button != 0) return
+
+		click.id = id
+	}
+	else
+	{
+		if (code.click) return
+		if (!isLn) return
+
+		const touch = e.changedTouches[0]
+		click.id = touch.identifier
+		click.startX = touch.clientX
+		click.startY = touch.clientY
+	}
+	code.click = click
+
 	const lnParent = e.currentTarget as HTMLElement
-	if (!line.classList.contains("line")) return
-
 	let idParent = lnParent
 	while (!idParent.id)
 		idParent = idParent.parentElement!
@@ -307,31 +345,54 @@ function BeginSelection(e: MouseEvent)
 		}
 	}
 
-	code.click = {
-		prevLocation: new URL(location.toString()),
-		distSq:       0,
-		setHash: {
-			duration: 100,
-			lastTime: 0,
-			timeout:  0,
-		},
-	}
-
 	const hl = CreateSelection(idParent)
-	hl.start = Array.from(hl.lines).indexOf(line)
+	hl.start = Array.from(hl.lines).indexOf(target)
 	SetSelection(hl)
 	CalculateHash()
 	SetHash()
 	SetScrollTargetId()
 
-	document.addEventListener("mousemove", UpdateSelection, { passive: true })
-	document.addEventListener("mouseup",   EndSelection, { passive: true })
+	document.addEventListener("mousemove",   UpdateSelection, { passive: false })
+	document.addEventListener("touchmove",   UpdateSelection, { passive: false })
+	document.addEventListener("mouseup",     EndSelection,    { passive: false })
+	document.addEventListener("touchend",    EndSelection,    { passive: false })
+	document.addEventListener("touchcancel", EndSelection,    { passive: false })
 }
 
-function UpdateSelection(e: MouseEvent)
+function UpdateSelection(e: MouseEvent | TouchEvent)
 {
+	e.preventDefault()
 	assert(code.click)
 	assert(code.hl)
+
+	let y = 0
+	if (e instanceof MouseEvent)
+	{
+		const id = -1 - e.button
+		if (code.click.id < 0)
+		{
+			// Browsers are ass and can send mousedown without mouseup
+			const button = -1 - code.click.id
+			const down = e.button == button || e.buttons & (1 << button)
+			if (!down) { code.click.id = id; EndSelection(e); return }
+		}
+
+		if (id != code.click.id) return
+		y = e.clientY
+		code.click.dist += Math.abs(e.movementX)
+		code.click.dist += Math.abs(e.movementY)
+	}
+	else
+	{
+		let touch: Touch | undefined;
+		for (const ct of e.changedTouches)
+			touch = ct.identifier == code.click.id ? ct : touch
+		if (!touch) return
+
+		y = touch.clientY
+		code.click.dist += Math.abs(touch.clientX - code.click.startX)
+		code.click.dist += Math.abs(touch.clientY - code.click.startY)
+	}
 
 	let nr = 0
 	let no = 0
@@ -342,18 +403,18 @@ function UpdateSelection(e: MouseEvent)
 		if (o >= no)
 		{
 			const rect = line.getBoundingClientRect()
-			if (i < code.hl.start && e.y <  rect.bottom) { nr = r; no = o; }
-			if (i > code.hl.start && e.y >= rect.top)    { nr = r; no = o; }
+			if (i < code.hl.start && y <  rect.bottom) { nr = r; no = o; }
+			if (i > code.hl.start && y >= rect.top)    { nr = r; no = o; }
 		}
 	}
 
 	const oo = Math.abs(code.hl.radius)
 	const os = Math.sign(code.hl.radius) || 1
 	const ns = Math.sign(nr) || 1
-	const nr2 = ns == os ? nr : 0
 
-	if (no < oo)
+	if (no < oo || ns != os)
 	{
+		const nr2 = ns == os ? nr : 0
 		for (let i = code.hl.radius; i != nr2; i -= os)
 			code.hl.lines[code.hl.start + i].classList.remove("hl")
 		code.hl.radius = nr2
@@ -367,21 +428,35 @@ function UpdateSelection(e: MouseEvent)
 	SetHash()
 	SetScrollTargetPos()
 	SetScrollTargetId()
-
-	code.click.distSq += Math.abs(e.movementX) + Math.abs(e.movementY)
 }
 
-function EndSelection(e: MouseEvent)
+function EndSelection(e: MouseEvent | TouchEvent)
 {
-	if (e.button != 0) return
-	assert(code.click)
+	if (!code.click) return
+	e.preventDefault()
 	assert(code.hl)
 
-	document.removeEventListener("mousemove", UpdateSelection)
-	document.removeEventListener("mouseup",   EndSelection)
+	if (e instanceof MouseEvent)
+	{
+		const id = -1 - e.button
+		if (id != code.click.id) return
+	}
+	else
+	{
+		let touch: Touch | undefined;
+		for (const ct of e.changedTouches)
+			touch = ct.identifier == code.click.id ? ct : touch
+		if (!touch) return
+	}
+
+	document.removeEventListener("mousemove",   UpdateSelection)
+	document.removeEventListener("touchmove",   UpdateSelection)
+	document.removeEventListener("mouseup",     EndSelection)
+	document.removeEventListener("touchend",    EndSelection)
+	document.removeEventListener("touchcancel", EndSelection)
 
 	let isSame = true
-	isSame &&= code.click.distSq! < 10
+	isSame &&= code.click.dist! < 10
 	isSame &&= code.prevHl?.idParent == code.hl.idParent
 	isSame &&= code.prevHl?.start == code.hl.start
 	isSame &&= code.prevHl?.radius == code.hl.radius
