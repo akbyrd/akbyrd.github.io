@@ -333,12 +333,16 @@ code, .code-copy {
 	}
 
 	.line {
+		border-color: transparent;
+		border-style: solid none;
+		border-width: 1px;
 		display: flex;
+		margin: -2px 0;
 	}
 
 	.line::before {
-		background-color: inherit;
 		border-color: inherit;
+		border-left-style: solid;
 		border-width: 1px;
 		content: counter(line-numbers);
 		left: 0;
@@ -349,47 +353,39 @@ code, .code-copy {
 	}
 
 	.cl {
+		border-color: transparent;
+		border-style: none solid;
+		border-width: 0 1px;
 		counter-increment: line-numbers;
 		cursor: text;
 		flex-grow: 1;
 		padding-right: 8px;
 	}
 
-	.hl {
-		border-right-style: solid;
-		border-width: 1px;
+	.hl::before {
+		border-left-color: var(--code-highlight-border);
+		margin-bottom: -1px;
+		padding-bottom: 1px;
 	}
 
-	.hl::before {
-		border-left-style: solid;
-		padding-left: 7px;
-		padding-bottom: 1px;
+	.hl .cl {
+		border-right-color: var(--code-highlight-border);
 		margin-bottom: -1px;
+		padding-bottom: 1px;
 	}
 
 	.hl:nth-child(1 of .hl) {
-		border-top-style: solid;
-		margin-top: -1px;
+		border-top-color: var(--code-highlight-border);
 		position: relative;
 		z-index: 1;
-
-		.cl {
-			padding-top: 1px;
-			margin-top: -1px;
-		}
 	}
 
 	.hl:nth-last-child(1 of .hl) {
-		border-bottom-style: solid;
-		margin-bottom: -2px;
+		border-bottom-color: var(--code-highlight-border);
+		margin-bottom: -3px;
 		padding-bottom: 1px;
 		position: relative;
 		z-index: 1;
-
-		.cl {
-			padding-bottom: 1px;
-			margin-bottom: -2px;
-		}
 	}
 }
 
@@ -643,7 +639,8 @@ code, .chroma {
 	/* LineLink                 */ .lnlinks         {}
 	/* LineTableTD              */ .lntd            { background-color: var(--code-background); }
 	/* LineTable                */ .lntable         {}
-	/* LineHighlight            */ .hl              { background-color: var(--code-highlight-background); border-color: var(--code-highlight-border); }
+	/* LineHighlight            */ .hl              {}
+	/* LineHighlight            */ .hl .cl          { background-color: var(--code-highlight-background); }
 	/* LineNumbersTable         */ .lnt             {}
 	/* LineNumbers              */ .ln              {}
 	/* LineNumbers              */ .line::before    { background-color: var(--code-background); color: var(--code-line-numbers); }
