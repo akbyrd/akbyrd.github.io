@@ -537,7 +537,10 @@ function SelectionFromHash()
 				SetScrollTargetPos()
 				SetScrollTargetId()
 				if (!history.state?.previouslyVisited)
+				{
+					history.replaceState({ previouslyVisited: true }, "")
 					setTimeout(() => code.scrollTarget!.scrollIntoView(), 1)
+				}
 				return
 			}
 		}
