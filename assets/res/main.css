@@ -364,14 +364,10 @@ code, .code-copy {
 
 	.hl::before {
 		border-left-color: var(--code-highlight-border);
-		margin-bottom: -1px;
-		padding-bottom: 1px;
 	}
 
 	.hl .cl {
 		border-right-color: var(--code-highlight-border);
-		margin-bottom: -1px;
-		padding-bottom: 1px;
 	}
 
 	.hl:nth-child(1 of .hl) {
@@ -382,8 +378,6 @@ code, .code-copy {
 
 	.hl:nth-last-child(1 of .hl) {
 		border-bottom-color: var(--code-highlight-border);
-		margin-bottom: -3px;
-		padding-bottom: 1px;
 		position: relative;
 		z-index: 1;
 	}
