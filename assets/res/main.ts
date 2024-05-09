@@ -101,21 +101,12 @@ type CodeHighlightState =
 	radius:   number,
 }
 
-type Throttle =
-{
-	duration: number,
-	lastTime: number,
-	timeout:  number,
-}
-
 type CodeClick =
 {
-	prevLocation: URL,
-	id:           number,
-	startX:       number,
-	startY:       number,
-	dist:         number,
-	setHash:      Throttle,
+	id:     number,
+	startX: number,
+	startY: number,
+	dist:   number,
 }
 
 type Code =
@@ -127,14 +118,12 @@ type Code =
 	click?:        CodeClick,
 	hl?:           CodeHighlight,
 	prevHl?:       CodeHighlightState,
-	historyState:  Object,
 }
 
 const code: Code = {
 	lnParents: [],
 	lns: [],
 	hash: "",
-	historyState: { previouslyVisited: true },
 }
 
 function InitCode()
@@ -298,16 +287,10 @@ function BeginSelection(e: MouseEvent | TouchEvent)
 	e.preventDefault()
 
 	const click: CodeClick = {
-		prevLocation: new URL(location.toString()),
-		id:           0,
-		startX:       0,
-		startY:       0,
-		dist:         0,
-		setHash: {
-			duration: 100,
-			lastTime: 0,
-			timeout:  0,
-		},
+		id:     0,
+		startX: 0,
+		startY: 0,
+		dist:   0,
 	}
 
 	if (e instanceof MouseEvent)
@@ -349,7 +332,6 @@ function BeginSelection(e: MouseEvent | TouchEvent)
 	hl.start = Array.from(hl.lines).indexOf(target)
 	SetSelection(hl)
 	CalculateHash()
-	SetHash()
 	SetScrollTargetId()
 
 	document.addEventListener("mousemove",   UpdateSelection, { passive: false })
@@ -425,7 +407,6 @@ function UpdateSelection(e: MouseEvent | TouchEvent)
 	code.hl.radius = nr
 
 	CalculateHash()
-	SetHash()
 	SetScrollTargetPos()
 	SetScrollTargetId()
 }
@@ -469,12 +450,11 @@ function EndSelection(e: MouseEvent | TouchEvent)
 	SetScrollTargetPos()
 	SetScrollTargetId()
 
-	history.replaceState(code.historyState, "", code.click.prevLocation)
-	if (code.hash != code.click.prevLocation.hash)
+	if (location.hash != code.hash)
 	{
 		const currLocation = new URL(location.toString())
 		currLocation.hash = code.hash
-		history.pushState(code.historyState, "", currLocation)
+		history.pushState({ previouslyVisited: true }, "", currLocation)
 	}
 
 	code.prevHl = undefined
@@ -530,32 +510,6 @@ function CalculateHash()
 	else
 	{
 		code.hash = ""
-	}
-}
-
-function SetHash()
-{
-	if (!code.click) return
-
-	const now = performance.now()
-	const elapsed = now - code.click.setHash.lastTime;
-	if (elapsed >= code.click.setHash.duration)
-	{
-		clearTimeout(code.click.setHash.timeout)
-		code.click.setHash.timeout = 0
-		code.click.setHash.lastTime = now
-
-		if (location.hash != code.hash)
-		{
-			const currLocation = new URL(location.toString())
-			currLocation.hash = code.hash
-			history.replaceState(code.historyState, "", currLocation)
-		}
-	}
-	else if (!code.click.setHash.timeout)
-	{
-		const remaining = code.click.setHash.duration - elapsed
-		code.click.setHash.timeout = setTimeout(() => SetHash(), remaining)
 	}
 }
 
