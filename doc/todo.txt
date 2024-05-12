@@ -1,7 +1,8 @@
 Posts
 TODO: Code line anchors
 	Mobile
-		Consider spliting mouse and touch functions
+		Update selection when page scrolls
+		Scroll page when selecting
 		Can't long touch in some cases (page first loaded?)
 	Updating the line number is slow
 		Directly calculate?
