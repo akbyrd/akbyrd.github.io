@@ -107,6 +107,7 @@ type CodeClick =
 	startX: number,
 	startY: number,
 	dist:   number,
+	timer:  number,
 }
 
 type Code =
@@ -143,8 +144,8 @@ function InitCode()
 
 	if (code.lnParents)
 	{
-		const css = document.styleSheets[0];
-		css.insertRule(".line { cursor: pointer; }", css.cssRules.length);
+		const css = document.styleSheets[0]
+		css.insertRule(".line { cursor: pointer; }", css.cssRules.length)
 
 		for (const lnParent of code.lnParents)
 		{
@@ -284,37 +285,64 @@ function BeginSelection(e: MouseEvent | TouchEvent)
 	const isLn = target.classList.contains("line")
 	if (!isLn && !code.click) return
 
-	e.preventDefault()
-
 	const click: CodeClick = {
 		id:     0,
 		startX: 0,
 		startY: 0,
 		dist:   0,
+		timer:  0,
 	}
 
 	if (e instanceof MouseEvent)
 	{
+		e.preventDefault()
+
 		const id = -1 - e.button
 		if (code.click) { code.click.id = id; EndSelection(e); return }
 		if (!isLn) return
 		if (e.button != 0) return
 
 		click.id = id
+		code.click = click
 	}
 	else
 	{
-		if (code.click) return
-		if (!isLn) return
+		if (!code.click)
+		{
+			if (!isLn) return
 
-		const touch = e.changedTouches[0]
-		click.id = touch.identifier
-		click.startX = touch.clientX
-		click.startY = touch.clientY
+			const touch = e.changedTouches[0]
+			click.id     = touch.identifier
+			click.startX = touch.clientX
+			click.startY = touch.clientY
+
+			code.click = click
+
+			document.addEventListener("touchend",    EndSelection,    { passive: false })
+			document.addEventListener("touchcancel", EndSelection,    { passive: false })
+			document.addEventListener("touchmove",   UpdateSelection, { passive: false })
+
+			code.click.timer = setTimeout(() => {
+				if (code.click && code.click.dist < 10)
+				{
+					console.log("BeginSelection")
+					code.click.timer = 0
+					e.preventDefault()
+					BeginSelection(e)
+				}
+			}, 250)
+			return
+		}
+		else
+		{
+			let touch: Touch | undefined
+			for (const ct of e.changedTouches)
+				touch = ct.identifier == code.click.id ? ct : touch
+			if (!touch) return
+		}
 	}
-	code.click = click
 
-	const lnParent = e.currentTarget as HTMLElement
+	const lnParent = e.target as HTMLElement
 	let idParent = lnParent
 	while (!idParent.id)
 		idParent = idParent.parentElement!
@@ -334,22 +362,20 @@ function BeginSelection(e: MouseEvent | TouchEvent)
 	CalculateHash()
 	SetScrollTargetId()
 
-	document.addEventListener("mousemove",   UpdateSelection, { passive: false })
-	document.addEventListener("touchmove",   UpdateSelection, { passive: false })
-	document.addEventListener("mouseup",     EndSelection,    { passive: false })
-	document.addEventListener("touchend",    EndSelection,    { passive: false })
-	document.addEventListener("touchcancel", EndSelection,    { passive: false })
+	document.addEventListener("mousemove", UpdateSelection, { passive: false })
+	document.addEventListener("mouseup",   EndSelection,    { passive: false })
 }
 
 function UpdateSelection(e: MouseEvent | TouchEvent)
 {
-	e.preventDefault()
 	assert(code.click)
 	assert(code.hl)
 
 	let y = 0
 	if (e instanceof MouseEvent)
 	{
+		e.preventDefault()
+
 		const id = -1 - e.button
 		if (code.click.id < 0)
 		{
@@ -363,10 +389,11 @@ function UpdateSelection(e: MouseEvent | TouchEvent)
 		y = e.clientY
 		code.click.dist += Math.abs(e.movementX)
 		code.click.dist += Math.abs(e.movementY)
+
 	}
 	else
 	{
-		let touch: Touch | undefined;
+		let touch: Touch | undefined
 		for (const ct of e.changedTouches)
 			touch = ct.identifier == code.click.id ? ct : touch
 		if (!touch) return
@@ -374,6 +401,9 @@ function UpdateSelection(e: MouseEvent | TouchEvent)
 		y = touch.clientY
 		code.click.dist += Math.abs(touch.clientX - code.click.startX)
 		code.click.dist += Math.abs(touch.clientY - code.click.startY)
+		console.log("UpdateSelection")
+		if (code.click.timer) return
+		e.preventDefault()
 	}
 
 	let nr = 0
@@ -414,8 +444,13 @@ function UpdateSelection(e: MouseEvent | TouchEvent)
 function EndSelection(e: MouseEvent | TouchEvent)
 {
 	if (!code.click) return
-	e.preventDefault()
-	assert(code.hl)
+
+	// Prevent mouseup after touchup
+	// Not cancelable when touchmove scrolling
+	if (e.cancelable)
+		e.preventDefault()
+
+	console.log("EndSelection", e.cancelable)
 
 	if (e instanceof MouseEvent)
 	{
@@ -424,41 +459,46 @@ function EndSelection(e: MouseEvent | TouchEvent)
 	}
 	else
 	{
-		let touch: Touch | undefined;
+		let touch: Touch | undefined
 		for (const ct of e.changedTouches)
 			touch = ct.identifier == code.click.id ? ct : touch
 		if (!touch) return
+
+		clearTimeout(code.click.timer)
+		code.click.timer = 0
 	}
+
+	if (code.hl)
+	{
+		let isSame = true
+		isSame &&= code.click.dist! < 10
+		isSame &&= code.prevHl?.idParent == code.hl.idParent
+		isSame &&= code.prevHl?.start == code.hl.start
+		isSame &&= code.prevHl?.radius == code.hl.radius
+		if (isSame)
+			SetSelection(undefined)
+
+		CalculateHash()
+		SetScrollTargetPos()
+		SetScrollTargetId()
+
+		if (location.hash != code.hash)
+		{
+			const currLocation = new URL(location.toString())
+			currLocation.hash = code.hash
+			history.pushState({ previouslyVisited: true }, "", currLocation)
+		}
+
+		code.prevHl = undefined
+	}
+
+	code.click = undefined
 
 	document.removeEventListener("mousemove",   UpdateSelection)
 	document.removeEventListener("touchmove",   UpdateSelection)
 	document.removeEventListener("mouseup",     EndSelection)
 	document.removeEventListener("touchend",    EndSelection)
 	document.removeEventListener("touchcancel", EndSelection)
-
-	let isSame = true
-	isSame &&= code.click.dist! < 10
-	isSame &&= code.prevHl?.idParent == code.hl.idParent
-	isSame &&= code.prevHl?.start == code.hl.start
-	isSame &&= code.prevHl?.radius == code.hl.radius
-	if (isSame)
-	{
-		SetSelection(undefined)
-		CalculateHash()
-	}
-
-	SetScrollTargetPos()
-	SetScrollTargetId()
-
-	if (location.hash != code.hash)
-	{
-		const currLocation = new URL(location.toString())
-		currLocation.hash = code.hash
-		history.pushState({ previouslyVisited: true }, "", currLocation)
-	}
-
-	code.prevHl = undefined
-	code.click = undefined
 }
 
 function SetScrollTargetPos()

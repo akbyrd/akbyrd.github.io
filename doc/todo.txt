@@ -1,17 +1,21 @@
 Posts
 TODO: Code line anchors
+	Mobile
+		Consider spliting mouse and touch functions
+		Can't long touch in some cases (page first loaded?)
+	Updating the line number is slow
+		Directly calculate?
+		All in getBoundingClientRect
 	Test thoroughly again
-	Profile
 
-TODO: Make window resizing maintain scroll position
 TODO: Automatically calculate title
 TODO: Automatically calculate alias from numeric prefix
-TODO: Implement comments (Github, Giscus, Staticman, Custom)
 TODO: Choose a diagram method: goat, mermaid (jerky layout), graphviz, other
-TODO: Add "fix typo" button (https://www.ii.com/vscode-uri-scheme-and-hugo/)
+TODO: Fix warning on checklist checkboxes (chrome)
 TODO: Lazy image loading
 TODO: Implement zoom for images (current page? new page?)
-TODO: Fix warning on checklist checkboxes (chrome)
+TODO: Implement comments (Github, Giscus, Staticman, Custom)
+TODO: Add "fix typo" button (https://www.ii.com/vscode-uri-scheme-and-hugo/)
 
 General
 TODO: Favicon is missing in back/forward menu in firefox
@@ -27,7 +31,8 @@ TODO: Tooltip for emoji (dev only?)
 TODO: Consider other markup languages (Djot, Markdeep, AsciiDoc, rST, Custom)
 TODO: Ensure double tap to zoom works on mobile
 TODO: Try a render hook for images https://gohugo.io/render-hooks/images/
-TODO: Replace syntax highlighting implementation (accuracy, context, inline)
+TODO: Replace syntax highlighting implementation (accuracy, context)
+TODO: Make window resizing maintain scroll position
 
 Details
 TODO: Selection is screwy around details
