@@ -293,13 +293,6 @@ function SetSelection(hl?: CodeHighlight)
 
 function BeginSelection_Mouse(e: MouseEvent)
 {
-	// Browsers are ass and can send mousedown without mouseup
-	if (code.click && !(e.buttons & 1))
-	{
-		EndSelection_Mouse(e)
-		return
-	}
-
 	const target = e.target as HTMLElement
 	const isLn = target.classList.contains("line")
 	if (!isLn || code.click) return
@@ -316,28 +309,42 @@ function BeginSelection_Mouse(e: MouseEvent)
 	document.addEventListener("mousemove", UpdateSelection_Mouse, { passive: false })
 	document.addEventListener("mouseup",   EndSelection_Mouse,    { passive: false })
 
+	window.addEventListener("blur",        EndSelectionImpl_Mouse, { passive: true })
+	window.addEventListener("contextmenu", EndSelectionImpl_Mouse, { passive: true })
+	window.addEventListener("popstate",    EndSelectionImpl_Mouse, { passive: true })
+
 	const lnParent = e.currentTarget as HTMLElement
 	BeginSelection(target, lnParent)
 }
 
 function UpdateSelection_Mouse(e: MouseEvent)
 {
+	if (e.button != 0) return
 	assert(code.click)
 
-	if (e.button != 0) return
 	code.click.dist += Math.abs(e.movementX)
 	code.click.dist += Math.abs(e.movementY)
-
 	UpdateSelection(e.clientY)
 }
 
 function EndSelection_Mouse(e: MouseEvent)
 {
 	if (!code.click) return
-	if (e.button <= 1 && e.buttons & 1) return
+	if (e.button != 0) return
+
+	EndSelectionImpl_Mouse()
+}
+
+function EndSelectionImpl_Mouse()
+{
+	if (!code.click) return
 
 	document.removeEventListener("mousemove", UpdateSelection_Mouse)
 	document.removeEventListener("mouseup",   EndSelection_Mouse)
+
+	window.removeEventListener("blur",        EndSelectionImpl_Mouse)
+	window.removeEventListener("contextmenu", EndSelectionImpl_Mouse)
+	window.removeEventListener("popstate",    EndSelectionImpl_Mouse)
 
 	EndSelection()
 	code.click = undefined
@@ -346,6 +353,7 @@ function EndSelection_Mouse(e: MouseEvent)
 function GetCurrentTouch(e: TouchEvent) : Touch | undefined
 {
 	assert(code.click instanceof CodeClick_Touch)
+
 	for (const touch of e.changedTouches)
 	{
 		if (touch.identifier == code.click.id)
@@ -372,6 +380,10 @@ function BeginSelection_Touch(e: TouchEvent)
 	document.addEventListener("touchend",    EndSelection_Touch,    { passive: false })
 	document.addEventListener("touchcancel", EndSelection_Touch,    { passive: false })
 	document.addEventListener("touchmove",   UpdateSelection_Touch, { passive: false })
+
+	window.addEventListener("blur",        EndSelectionImpl_Touch, { passive: true })
+	window.addEventListener("contextmenu", EndSelectionImpl_Touch, { passive: true })
+	window.addEventListener("popstate",    EndSelectionImpl_Touch, { passive: true })
 
 	code.click.timer = setTimeout(() => {
 		if (!code.click) return
@@ -416,11 +428,22 @@ function EndSelection_Touch(e: TouchEvent)
 	const touch = GetCurrentTouch(e)
 	if (!touch) return
 
+	EndSelectionImpl_Touch()
+}
+
+function EndSelectionImpl_Touch()
+{
+	assert(code.click instanceof CodeClick_Touch)
+
 	clearTimeout(code.click.timer)
 
 	document.removeEventListener("touchmove",   UpdateSelection_Touch)
 	document.removeEventListener("touchend",    EndSelection_Touch)
 	document.removeEventListener("touchcancel", EndSelection_Touch)
+
+	window.removeEventListener("blur",        EndSelectionImpl_Touch)
+	window.removeEventListener("contextmenu", EndSelectionImpl_Touch)
+	window.removeEventListener("popstate",    EndSelectionImpl_Touch)
 
 	EndSelection()
 	code.click = undefined
@@ -513,8 +536,8 @@ function EndSelection()
 
 function SetScrollTargetPos()
 {
-	assert(code.scrollTarget)
 	if (!code.hl) return
+	assert(code.scrollTarget)
 
 	const a   = code.hl.start + 1
 	const b   = code.hl.start + code.hl.radius + 1
