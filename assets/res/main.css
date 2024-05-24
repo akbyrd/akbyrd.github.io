@@ -324,6 +324,7 @@ code, .code-copy {
 		display: block;
 		overflow: auto;
 		scrollbar-width: thin;
+		will-change: translate;
 	}
 
 	code {

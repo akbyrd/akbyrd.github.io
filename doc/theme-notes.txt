@@ -69,3 +69,22 @@ Pointer events come before touch events
 Synthesized mouse events come at the end of the touch interaction
 Synthesized mouse events only for single taps (not after dragging or multiple touches)
 PointerEvent.pointerId and Touch.identifier are the same
+
+
+
+Browser Sniffing
+----------------
+Firefox Desktop  - Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:126.0) Gecko/20100101 Firefox/126.0
+Firefox Mobile   -
+Chrome Desktop   - Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36
+Chrome Mobile    -
+Vivaldi Desktop  - Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+Vivaldi Mobile   -
+Brave Desktop    - Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36
+Brave Mobile     -
+Opera Desktop    - Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 OPR/110.0.0.0
+Opera Mobile     -
+Edge Desktop     - Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36 Edg/125.0.0.0
+Edge Mobile      -
+Safari Desktop   -
+Safari Mobile    -

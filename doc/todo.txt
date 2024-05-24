@@ -1,10 +1,7 @@
 Posts
 TODO: Code line anchors
 
-	Non-passive + preventDefault - lag on slow devices (limit to line numbers)
-	Passive + scrollTo           - still scrolls a little
-	Disable drag on mobile       - makes me sad
-	Two long presses             - still has to prevent scroll
+	Limit events to line numbers
 
 	Prevent horizontal scrolling from line number
 		Disable input on line?
@@ -12,16 +9,6 @@ TODO: Code line anchors
 
 	Figure out lag when dragging horizontally
 		Workaround: don't scroll
-
-	Try pointer instead of touch
-		Slightly newer, but a little more coverage
-		Maybe scrolling is smoother when preventDefault on pointermove
-
-	Scroll jitters a bit
-		A firefox: Y
-		A chrome:  ?
-		L firefox: ?
-		L chrome:  ?
 
 	Mobile
 		Update selection when page scrolls
