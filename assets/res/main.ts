@@ -109,11 +109,11 @@ class CodeClick
 class CodeClick_Touch extends CodeClick
 {
 	lnParent: HTMLElement
-	id:       number = 0
-	startX:   number  = 0
-	startY:   number  = 0
-	timer:    number  = 0
-	active:   boolean = false
+	id:      number  = 0
+	startX:  number  = 0
+	startY:  number  = 0
+	timer:   number  = 0
+	active:  boolean = false
 
 	constructor(lnParent: HTMLElement)
 	{
@@ -298,16 +298,16 @@ function BeginSelection_Mouse(e: MouseEvent)
 	if (!isLn || code.click) return
 	if (e.button != 0) return
 
-	// Prevent click from selecting text (sometimes)
-	e.preventDefault()
+	// Prevent click from sometimes selecting text
+	if (e.cancelable)
+		e.preventDefault()
 
 	code.click = {
-		id:   e.button,
 		dist: 0,
 	}
 
-	document.addEventListener("mousemove", UpdateSelection_Mouse, { passive: false })
-	document.addEventListener("mouseup",   EndSelection_Mouse,    { passive: false })
+	document.addEventListener("mousemove", UpdateSelection_Mouse, { passive: true })
+	document.addEventListener("mouseup",   EndSelection_Mouse,    { passive: true })
 
 	window.addEventListener("blur",        EndSelectionImpl_Mouse, { passive: true })
 	window.addEventListener("contextmenu", EndSelectionImpl_Mouse, { passive: true })
@@ -377,16 +377,14 @@ function BeginSelection_Touch(e: TouchEvent)
 	code.click.startY   = touch.clientY
 	code.click.lnParent = e.currentTarget as HTMLElement
 
+	document.addEventListener("touchmove",   UpdateSelection_Touch, { passive: false })
 	document.addEventListener("touchend",    EndSelection_Touch,    { passive: false })
 	document.addEventListener("touchcancel", EndSelection_Touch,    { passive: false })
-	document.addEventListener("touchmove",   UpdateSelection_Touch, { passive: false })
 
-	window.addEventListener("blur",        EndSelectionImpl_Touch, { passive: true })
-	window.addEventListener("contextmenu", EndSelectionImpl_Touch, { passive: true })
-	window.addEventListener("popstate",    EndSelectionImpl_Touch, { passive: true })
+	window.addEventListener("blur",     EndSelectionImpl_Touch, { passive: true })
+	window.addEventListener("popstate", EndSelectionImpl_Touch, { passive: true })
 
 	code.click.timer = setTimeout(() => {
-		if (!code.click) return
 		assert(code.click instanceof CodeClick_Touch)
 
 		code.click.timer = 0
@@ -405,12 +403,18 @@ function UpdateSelection_Touch(e: TouchEvent)
 	const touch = GetCurrentTouch(e)
 	if (!touch) return
 
+	if (!code.click.active)
+	{
+		EndSelectionImpl_Touch()
+		return
+	}
+
 	code.click.dist += Math.abs(touch.clientX - code.click.startX)
 	code.click.dist += Math.abs(touch.clientY - code.click.startY)
-	if (!code.click.active) return
 
 	// Prevent touchmove from scrolling
-	e.preventDefault()
+	if (e.cancelable)
+		e.preventDefault()
 
 	UpdateSelection(touch.clientY)
 }

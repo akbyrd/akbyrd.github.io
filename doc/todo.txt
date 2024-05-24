@@ -1,5 +1,28 @@
 Posts
 TODO: Code line anchors
+
+	Non-passive + preventDefault - lag on slow devices (limit to line numbers)
+	Passive + scrollTo           - still scrolls a little
+	Disable drag on mobile       - makes me sad
+	Two long presses             - still has to prevent scroll
+
+	Prevent horizontal scrolling from line number
+		Disable input on line?
+		Capture input?
+
+	Figure out lag when dragging horizontally
+		Workaround: don't scroll
+
+	Try pointer instead of touch
+		Slightly newer, but a little more coverage
+		Maybe scrolling is smoother when preventDefault on pointermove
+
+	Scroll jitters a bit
+		A firefox: Y
+		A chrome:  ?
+		L firefox: ?
+		L chrome:  ?
+
 	Mobile
 		Update selection when page scrolls
 		Scroll page when selecting
@@ -44,6 +67,7 @@ TODO: Improve about page content
 TODO: Add my rss list
 
 Testing / Compatibility
+TODO: Theme transition isn't smooth on mobile
 TODO: Remove nesting/& (2024), :has (2024), :not (2021) selectors, nth-child (2023)
 TODO: Test in safari
 TODO: Test apple touch icon
