@@ -1,23 +1,9 @@
 Posts
 TODO: Code line anchors
-
-	Limit events to line numbers
-
-	Prevent horizontal scrolling from line number
-		Disable input on line?
-		Capture input?
-
-	Figure out lag when dragging horizontally
-		Workaround: don't scroll
-
 	Mobile
 		Update selection when page scrolls
 		Scroll page when selecting
 		Can't long touch in some cases (page first loaded?)
-	Updating the line number is slow
-		Directly calculate?
-		All in getBoundingClientRect
-	Test thoroughly again
 
 TODO: Automatically calculate title
 TODO: Automatically calculate alias from numeric prefix
@@ -25,8 +11,8 @@ TODO: Choose a diagram method: goat, mermaid (jerky layout), graphviz, other
 TODO: Fix warning on checklist checkboxes (chrome)
 TODO: Lazy image loading
 TODO: Implement zoom for images (current page? new page?)
-TODO: Implement comments (Github, Giscus, Staticman, Custom)
 TODO: Add "fix typo" button (https://www.ii.com/vscode-uri-scheme-and-hugo/)
+TODO: Implement comments (Github, Giscus, Staticman, Custom)
 
 General
 TODO: Favicon is missing in back/forward menu in firefox
@@ -67,6 +53,10 @@ TODO: Add syntax highlighting samples test page
 TODO: 1 frame of missing text in firefox
 TODO: https://jigsaw.w3.org/css-validator/
 TODO: https://validator.w3.org/
+
+Optimization
+TODO: Reduce classes used for syntax highlighting (stutter on firefox)
+TODO: Updating the line number is slow (Directly calculate? All in getBoundingClientRect?)
 
 Theme
 TODO: Pay a UI designer for a review and recommendations

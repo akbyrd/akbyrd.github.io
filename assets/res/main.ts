@@ -165,13 +165,6 @@ function InitCode()
 			lnParent.addEventListener("touchstart", BeginSelection_Touch, { passive: false })
 		}
 
-		document.addEventListener("mousedown",   DisableSelection, { passive: true })
-		document.addEventListener("touchstart",  DisableSelection, { passive: true })
-		document.addEventListener("mouseup",     EnableSelection,  { passive: true })
-		document.addEventListener("dragend",     EnableSelection,  { passive: true })
-		document.addEventListener("touchend",    EnableSelection,  { passive: true })
-		document.addEventListener("touchcancel", EnableSelection,  { passive: true })
-
 		window.addEventListener("hashchange", SelectionFromHash,  { passive: true })
 		window.addEventListener("resize",     SetScrollTargetPos, { passive: true })
 
@@ -181,7 +174,6 @@ function InitCode()
 		document.body.insertAdjacentElement("beforeend", code.scrollTarget)
 
 		SelectionFromHash()
-		EnableSelection()
 	}
 }
 
@@ -195,23 +187,6 @@ function CopyCode(e: Event)
 		if (code.textContent)
 			navigator.clipboard.writeText(code.textContent)
 	}
-}
-
-function EnableSelection()
-{
-	assert(code.lnParents)
-
-	for (const lnParent of code.lnParents)
-		lnParent.style.pointerEvents = "auto"
-}
-
-function DisableSelection()
-{
-	if (code.click) return
-	assert(code.lnParents)
-
-	for (const lnParent of code.lnParents)
-		lnParent.style.pointerEvents = "none"
 }
 
 function CreateSelection(idParent: HTMLElement)
