@@ -103,7 +103,8 @@ type CodeHighlightState =
 
 class CodeClick
 {
-	dist: number = 0
+	dist:    number = 0
+	clientY: number = 0
 }
 
 class CodeClick_Touch extends CodeClick
@@ -279,6 +280,7 @@ function BeginSelection_Mouse(e: MouseEvent)
 
 	code.click = {
 		dist: 0,
+		clientY: e.clientY,
 	}
 
 	document.addEventListener("mousemove", UpdateSelection_Mouse, { passive: true })
@@ -297,9 +299,18 @@ function UpdateSelection_Mouse(e: MouseEvent)
 	if (e.button != 0) return
 	assert(code.click)
 
+	// Workaround for browser issues where mouse up events are not sent
+	if (!(e.buttons & 0x1))
+	{
+		EndSelection_Mouse(e)
+		return
+	}
+
 	code.click.dist += Math.abs(e.movementX)
 	code.click.dist += Math.abs(e.movementY)
-	UpdateSelection(e.clientY)
+	code.click.clientY = e.clientY
+
+	UpdateSelection()
 }
 
 function EndSelection_Mouse(e: MouseEvent)
@@ -386,12 +397,13 @@ function UpdateSelection_Touch(e: TouchEvent)
 
 	code.click.dist += Math.abs(touch.clientX - code.click.startX)
 	code.click.dist += Math.abs(touch.clientY - code.click.startY)
+	code.click.clientY = touch.clientY
 
 	// Prevent touchmove from scrolling
 	if (e.cancelable)
 		e.preventDefault()
 
-	UpdateSelection(touch.clientY)
+	UpdateSelection()
 }
 
 function EndSelection_Touch(e: TouchEvent)
@@ -428,8 +440,16 @@ function EndSelectionImpl_Touch()
 	code.click = undefined
 }
 
+function UpdateSelection_Scroll()
+{
+	assert(code.hl)
+	UpdateSelection()
+}
+
 function BeginSelection(line: HTMLElement, lnParent: HTMLElement)
 {
+	document.addEventListener("scroll", UpdateSelection_Scroll, { passive: true })
+
 	let idParent = lnParent
 	while (!idParent.id)
 		idParent = idParent.parentElement!
@@ -450,9 +470,10 @@ function BeginSelection(line: HTMLElement, lnParent: HTMLElement)
 	SetScrollTargetId()
 }
 
-function UpdateSelection(y: number)
+function UpdateSelection()
 {
 	assert(code.hl)
+	assert(code.click)
 
 	let nr = 0
 	let no = 0
@@ -462,6 +483,7 @@ function UpdateSelection(y: number)
 		const o = Math.abs(r)
 		if (o >= no)
 		{
+			const y = code.click.clientY
 			const rect = line.getBoundingClientRect()
 			if (i < code.hl.start && y <  rect.bottom) { nr = r; no = o; }
 			if (i > code.hl.start && y >= rect.top)    { nr = r; no = o; }
@@ -490,6 +512,8 @@ function EndSelection()
 	assert(code.click)
 
 	if (!code.hl) return
+
+	document.removeEventListener("scroll", UpdateSelection_Scroll)
 
 	let isSame = true
 	isSame &&= code.click.dist! < 10

@@ -356,7 +356,7 @@ code, .code-copy {
 	.cl {
 		border-color: transparent;
 		border-style: none solid;
-		border-width: 0 1px;
+		border-width: 0 1px 0 0;
 		counter-increment: line-numbers;
 		cursor: text;
 		flex-grow: 1;

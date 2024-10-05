@@ -1,7 +1,8 @@
 Posts
 TODO: Code line anchors
 	Mobile
-		Update selection when page scrolls
+		test on chrome mobile
+		test on chrome desktop
 		Scroll page when selecting
 		Can't long touch in some cases (page first loaded?)
 

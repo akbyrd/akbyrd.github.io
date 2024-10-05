@@ -1,0 +1,13 @@
+Browsers are awful.
+
+Most Android browsers seem to have problems with mouse events on the left side of the screen.
+Possibly due to that space being used for swipe gestures? Potentially fixed on newer versions of
+Android.
+* Occurs on Pixel 5 with Android 14.
+* Doesn't occur on LG G7 ThinQ with Android 9.
+* Occurs on Firefox, Chrome, DuckDuckGo
+* Does not ooccur on Opera
+
+Firefox on Android stops sending mouse, touch, or pointer events if the scroll wheel is used or a
+touch occurs while a mouse button is held. This workaround mostly recovers, but we can still get
+stuck in line selection mode until the mouse is moved.
