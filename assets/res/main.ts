@@ -115,7 +115,7 @@ class CodeClick
 	clientY:     number  = 0
 	lastT:       number  = 0
 	scrollTimer: number  = 0
-	scrollAccum: number  = 0
+	scrollDest:  number  = 0
 	cancel:      boolean = false
 }
 
@@ -289,7 +289,7 @@ function BeginSelection_Mouse(e: MouseEvent)
 		clientY:     e.clientY,
 		lastT:       performance.now(),
 		scrollTimer: 0,
-		scrollAccum: 0,
+		scrollDest:  0,
 		cancel:      false,
 	}
 
@@ -378,7 +378,7 @@ function BeginSelection_Touch(e: TouchEvent)
 		clientY:     e.changedTouches[0].clientY,
 		lastT:       performance.now(),
 		scrollTimer: 0,
-		scrollAccum: 0,
+		scrollDest:  0,
 		cancel:      false,
 
 		lnParent:    e.currentTarget as HTMLElement,
@@ -466,17 +466,9 @@ function EndSelectionImpl_Touch()
 	code.click = undefined
 }
 
-function UpdateSelection_Scroll()
-{
-	assert(code.hl)
-	UpdateSelection()
-}
-
 function BeginSelection(line: HTMLElement, lnParent: HTMLElement)
 {
 	assert(code.click)
-
-	document.addEventListener("scroll", UpdateSelection_Scroll, { passive: true })
 
 	let idParent = lnParent
 	while (!idParent.id)
@@ -497,8 +489,11 @@ function BeginSelection(line: HTMLElement, lnParent: HTMLElement)
 	CalculateHash()
 	SetScrollTargetId()
 
+	code.click.scrollDest = window.scrollY
 	code.click.scrollTimer = setInterval(() => {
 		assert(code.click)
+
+		UpdateSelection()
 
 		const height = document.documentElement.clientHeight
 		const y = code.click.clientY / height
@@ -507,35 +502,23 @@ function BeginSelection(line: HTMLElement, lnParent: HTMLElement)
 		const speed = 4.0 * threshold * height
 
 		let amount = 0
-		if (false)
-		{
-			amount = Math.abs(y - 0.5)
-			amount = clamp01((amount - 0.5) / threshold + 1)
-			amount = Math.sign(y - 0.5)
-			amount = Math.pow(amount, 3) // must be odd
-		}
-		else
-		{
-			amount -= clamp01((0 - y) / threshold + 1)
-			amount += clamp01((y - 1) / threshold + 1)
-			amount = Math.pow(amount, 3) // must be odd
-		}
+		amount -= clamp01((0 - y) / threshold + 1)
+		amount += clamp01((y - 1) / threshold + 1)
+		amount = Math.pow(amount, 3) // must be odd
 
 		const now = performance.now()
 		const dt = (now - code.click.lastT) / 1000
 		code.click.lastT = now
 
-		code.click.scrollAccum += speed * amount * dt
-		amount = Math.trunc(code.click.scrollAccum)
-		code.click.scrollAccum -= amount
-
-		window.scrollBy({
-			top: amount,
-			behavior: "instant",
+		code.click.scrollDest += speed * amount * dt
+		window.scrollTo({
+			top: code.click.scrollDest,
+			behavior: "smooth",
 		})
 	}, 1)
 }
 
+// TODO: Optimize this
 function UpdateSelection()
 {
 	assert(code.hl)
@@ -579,7 +562,6 @@ function EndSelection()
 
 	if (!code.hl) return
 
-	document.removeEventListener("scroll", UpdateSelection_Scroll)
 	clearInterval(code.click.scrollTimer)
 
 	if (!code.click.cancel)
