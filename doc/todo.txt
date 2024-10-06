@@ -6,7 +6,10 @@ TODO: Code line anchors
 		test on edge desktop touch
 
 		Scroll page when selecting
+			Scrolling isn't smooth on mobile
+
 		Fix slight scroll on first slection after reload (firefox only?)
+			edge jitters slightly sometimes. related?
 
 		Desktop test cases
 			down, m/r/b/f down
@@ -22,6 +25,8 @@ TODO: Code line anchors
 			mouse, touch
 			touch, mouse
 
+TODO: There's 1 pixel of clickable space around the first and last lines when highlighted
+TODO: Support Shift + Click for line selection
 TODO: Optimize UpdateSelection
 TODO: Automatically calculate title
 TODO: Automatically calculate alias from numeric prefix

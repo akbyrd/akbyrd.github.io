@@ -7,6 +7,11 @@ function assert(value: unknown): asserts value
 function assertType<T>(value: unknown): asserts value is T {
 }
 
+function clamp01(x: number)
+{
+	return Math.max(0, Math.min(1, x))
+}
+
 // -------------------------------------------------------------------------------------------------
 // Theme Toggle
 
@@ -106,9 +111,12 @@ type CodeHighlightState =
 
 class CodeClick
 {
-	dist:    number  = 0
-	clientY: number  = 0
-	cancel:  boolean = false
+	dist:        number  = 0
+	clientY:     number  = 0
+	lastT:       number  = 0
+	scrollTimer: number  = 0
+	scrollAccum: number  = 0
+	cancel:      boolean = false
 }
 
 class CodeClick_Touch extends CodeClick
@@ -277,9 +285,12 @@ function BeginSelection_Mouse(e: MouseEvent)
 		e.preventDefault()
 
 	code.click = {
-		dist: 0,
-		clientY: e.clientY,
-		cancel: false,
+		dist:        0,
+		clientY:     e.clientY,
+		lastT:       performance.now(),
+		scrollTimer: 0,
+		scrollAccum: 0,
+		cancel:      false,
 	}
 
 	document.addEventListener("mousemove",   UpdateSelection_Mouse,  { passive: true })
@@ -363,16 +374,19 @@ function BeginSelection_Touch(e: TouchEvent)
 	if (!isLn || code.click) return
 
 	const c : CodeClick_Touch = {
-		dist:     0,
-		clientY:  e.changedTouches[0].clientY,
-		cancel:   false,
+		dist:        0,
+		clientY:     e.changedTouches[0].clientY,
+		lastT:       performance.now(),
+		scrollTimer: 0,
+		scrollAccum: 0,
+		cancel:      false,
 
-		lnParent: e.currentTarget as HTMLElement,
-		id:       e.changedTouches[0].identifier,
-		startX:   e.changedTouches[0].clientX,
-		startY:   e.changedTouches[0].clientY,
-		timer:    0,
-		active:   false,
+		lnParent:    e.currentTarget as HTMLElement,
+		id:          e.changedTouches[0].identifier,
+		startX:      e.changedTouches[0].clientX,
+		startY:      e.changedTouches[0].clientY,
+		timer:       0,
+		active:      false,
 	}
 	code.click = c
 	assertType<CodeClick_Touch>(code.click)
@@ -460,6 +474,8 @@ function UpdateSelection_Scroll()
 
 function BeginSelection(line: HTMLElement, lnParent: HTMLElement)
 {
+	assert(code.click)
+
 	document.addEventListener("scroll", UpdateSelection_Scroll, { passive: true })
 
 	let idParent = lnParent
@@ -480,6 +496,44 @@ function BeginSelection(line: HTMLElement, lnParent: HTMLElement)
 	SetSelection(hl)
 	CalculateHash()
 	SetScrollTargetId()
+
+	code.click.scrollTimer = setInterval(() => {
+		assert(code.click)
+
+		const height = document.documentElement.clientHeight
+		const y = code.click.clientY / height
+
+		const threshold = 0.15
+		const speed = 4.0 * threshold * height
+
+		let amount = 0
+		if (false)
+		{
+			amount = Math.abs(y - 0.5)
+			amount = clamp01((amount - 0.5) / threshold + 1)
+			amount = Math.sign(y - 0.5)
+			amount = Math.pow(amount, 3) // must be odd
+		}
+		else
+		{
+			amount -= clamp01((0 - y) / threshold + 1)
+			amount += clamp01((y - 1) / threshold + 1)
+			amount = Math.pow(amount, 3) // must be odd
+		}
+
+		const now = performance.now()
+		const dt = (now - code.click.lastT) / 1000
+		code.click.lastT = now
+
+		code.click.scrollAccum += speed * amount * dt
+		amount = Math.trunc(code.click.scrollAccum)
+		code.click.scrollAccum -= amount
+
+		window.scrollBy({
+			top: amount,
+			behavior: "instant",
+		})
+	}, 1)
 }
 
 function UpdateSelection()
@@ -526,6 +580,7 @@ function EndSelection()
 	if (!code.hl) return
 
 	document.removeEventListener("scroll", UpdateSelection_Scroll)
+	clearInterval(code.click.scrollTimer)
 
 	if (!code.click.cancel)
 	{
