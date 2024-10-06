@@ -1,11 +1,28 @@
 Posts
 TODO: Code line anchors
 	Mobile
-		test on chrome mobile
-		test on chrome desktop
-		Scroll page when selecting
-		Can't long touch in some cases (page first loaded?)
+		test on firefox desktop touch
+		test on chrome desktop touch
+		test on edge desktop touch
 
+		Scroll page when selecting
+		Fix slight scroll on first slection after reload (firefox only?)
+
+		Desktop test cases
+			down, m/r/b/f down
+			down, arrow/page/home/end
+			down, wheel scroll
+			down, mclick scroll
+			down, drag off window, up
+			down, middle, drag off window, up
+			refresh, down
+
+		Mobile test cases
+			Desktop cases with mouse
+			mouse, touch
+			touch, mouse
+
+TODO: Optimize UpdateSelection
 TODO: Automatically calculate title
 TODO: Automatically calculate alias from numeric prefix
 TODO: Choose a diagram method: goat, mermaid (jerky layout), graphviz, other
