@@ -7,6 +7,11 @@ function assert(value: unknown): asserts value
 function assertType<T>(value: unknown): asserts value is T {
 }
 
+function clamp(x: number, min: number, max: number)
+{
+	return Math.max(min, Math.min(max, x))
+}
+
 function clamp01(x: number)
 {
 	return Math.max(0, Math.min(1, x))
@@ -96,8 +101,8 @@ type CodeHighlight =
 {
 	intrinsic: number[],
 	idParent:  HTMLElement,
-	lnStart:   number,
 	lines:     NodeListOf<HTMLElement>,
+	lnStart:   number,
 	start:     number,
 	radius:    number,
 }
@@ -203,8 +208,8 @@ function CreateSelection(idParent: HTMLElement)
 		const hl: CodeHighlight = {
 			intrinsic: code.hl.intrinsic,
 			idParent:  code.hl.idParent,
-			lnStart:   code.hl.lnStart,
 			lines:     code.hl.lines,
+			lnStart:   code.hl.lnStart,
 			start:     0,
 			radius:    0,
 		}
@@ -215,8 +220,8 @@ function CreateSelection(idParent: HTMLElement)
 		const hl: CodeHighlight = {
 			intrinsic: new Array<number>,
 			idParent:  idParent,
-			lnStart:   parseInt(idParent.style.getPropertyValue("--ln-start")) || 1,
 			lines:     idParent.querySelectorAll<HTMLElement>(".line"),
+			lnStart:   parseInt(idParent.style.getPropertyValue("--ln-start")) || 1,
 			start:     0,
 			radius:    0,
 		}
@@ -484,16 +489,12 @@ function BeginSelection(line: HTMLElement, lnParent: HTMLElement)
 	}
 
 	const hl = CreateSelection(idParent)
-	hl.start = Array.from(hl.lines).indexOf(line)
+	hl.start = CalculateLine(hl, code.click.clientY)
 	SetSelection(hl)
-	CalculateHash()
-	SetScrollTargetId()
 
 	code.click.scrollDest = window.scrollY
 	code.click.scrollTimer = setInterval(() => {
 		assert(code.click)
-
-		UpdateSelection()
 
 		const height = document.documentElement.clientHeight
 		const y = code.click.clientY / height
@@ -510,38 +511,48 @@ function BeginSelection(line: HTMLElement, lnParent: HTMLElement)
 		const dt = (now - code.click.lastT) / 1000
 		code.click.lastT = now
 
+		// TODO: scrollTo breaks all other scrolling
 		code.click.scrollDest += speed * amount * dt
 		window.scrollTo({
 			top: code.click.scrollDest,
 			behavior: "smooth",
 		})
+
+		// TODO: Consider moving this back to a scroll listener. We don't need to update it this often
+		UpdateSelection()
 	}, 1)
 }
 
-// TODO: Optimize this
+function CalculateLine(hl: CodeHighlight, clientY: number)
+{
+	// NOTE: Assume all lines are the same size, equally spaced, and potentially overlapping
+	const rect0 = hl.lines[0].getBoundingClientRect()
+	let lnHeight = rect0.height
+	if (hl.lines.length > 1)
+	{
+		const rectN = hl.lines[1].getBoundingClientRect()
+		lnHeight = rectN.top - rect0.top
+	}
+
+	let ln = Math.floor((clientY - Math.floor(rect0.top)) / lnHeight)
+	ln = clamp(ln, 0, hl.lines.length - 1)
+	return ln
+}
+
 function UpdateSelection()
 {
 	assert(code.hl)
 	assert(code.click)
 
-	let nr = 0
-	let no = 0
-	for (const [i, line] of code.hl.lines.entries())
-	{
-		const r = i - code.hl.start
-		const o = Math.abs(r)
-		if (o >= no)
-		{
-			const y = code.click.clientY
-			const rect = line.getBoundingClientRect()
-			if (i < code.hl.start && y <  rect.bottom) { nr = r; no = o; }
-			if (i > code.hl.start && y >= rect.top)    { nr = r; no = o; }
-		}
-	}
+	// n = new, o = old
+	// r = radius, o = offset, s = sign
 
+	const ln = CalculateLine(code.hl, code.click.clientY)
+	const nr = ln - code.hl.start
+	const no = Math.abs(nr)
+	const ns = Math.sign(nr) || 1
 	const oo = Math.abs(code.hl.radius)
 	const os = Math.sign(code.hl.radius) || 1
-	const ns = Math.sign(nr) || 1
 
 	if (no < oo || ns != os)
 	{

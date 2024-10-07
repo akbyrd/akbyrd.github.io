@@ -24,7 +24,7 @@ Some `code` embedded in a line of normal text: `{ "label": "hugo build" }` \
 Some `code` embedded in a line of normal text: {{< hl json >}}{ "label": "hugo build" }{{< /hl >}}
 
 ### Standard
-```json {lineanchors=json, id=CodeStandard}
+```json {id=CodeStandard}
 {
 	"label": "hugo build",
 	"type": "shell",
@@ -33,7 +33,7 @@ Some `code` embedded in a line of normal text: {{< hl json >}}{ "label": "hugo b
 ```
 
 ### Highlighted
-```cpp {lineanchors=cpp, lineNoStart=999, hl_lines="1-2", #CodeHighlighted}
+```cpp {lineNoStart=999, hl_lines="1-2", #CodeHighlighted}
 // long long long long long long long long long long long long long long long long long long long long
 inline u32 IndexToHandle(u32 index, u8 generation)
 {
@@ -41,6 +41,15 @@ inline u32 IndexToHandle(u32 index, u8 generation)
 	u32 handle = ((index + 1) << IndexShift) | generation;
 	return handle;
 }
+```
+
+### Single Line
+```cpp {#CodeSingleLine}
+// hello
+```
+
+### Empty
+```cpp {#CodeEmpty}
 ```
 
 ### Characters

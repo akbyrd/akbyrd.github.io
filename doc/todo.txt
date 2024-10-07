@@ -5,12 +5,6 @@ TODO: Code line anchors
 		test on chrome desktop touch
 		test on edge desktop touch
 
-		Scroll page when selecting
-			Scrolling isn't smooth on mobile
-
-		Fix slight scroll on first slection after reload (firefox only?)
-			edge jitters slightly sometimes. related?
-
 		Desktop test cases
 			down, m/r/b/f down
 			down, arrow/page/home/end
@@ -25,9 +19,13 @@ TODO: Code line anchors
 			mouse, touch
 			touch, mouse
 
+TODO: Test auto-scroll in all browser combinations
+TODO: Don't auto-scroll past code blocks
+TODO: Fix slight scroll on first slection after reload (firefox only?)
+	edge jitters slightly sometimes. related?
+
 TODO: There's 1 pixel of clickable space around the first and last lines when highlighted
 TODO: Support Shift + Click for line selection
-TODO: Optimize UpdateSelection
 TODO: Automatically calculate title
 TODO: Automatically calculate alias from numeric prefix
 TODO: Choose a diagram method: goat, mermaid (jerky layout), graphviz, other
@@ -79,7 +77,6 @@ TODO: https://validator.w3.org/
 
 Optimization
 TODO: Reduce classes used for syntax highlighting (stutter on firefox)
-TODO: Updating the line number is slow (Directly calculate? All in getBoundingClientRect?)
 
 Theme
 TODO: Pay a UI designer for a review and recommendations
