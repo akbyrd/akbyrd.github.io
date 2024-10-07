@@ -471,9 +471,17 @@ function EndSelectionImpl_Touch()
 	code.click = undefined
 }
 
+function UpdateSelection_Scroll()
+{
+	assert(code.hl)
+	UpdateSelection()
+}
+
 function BeginSelection(line: HTMLElement, lnParent: HTMLElement)
 {
 	assert(code.click)
+
+	document.addEventListener("scroll", UpdateSelection_Scroll, { passive: true })
 
 	let idParent = lnParent
 	while (!idParent.id)
@@ -517,26 +525,7 @@ function BeginSelection(line: HTMLElement, lnParent: HTMLElement)
 			top: code.click.scrollDest,
 			behavior: "smooth",
 		})
-
-		// TODO: Consider moving this back to a scroll listener. We don't need to update it this often
-		UpdateSelection()
 	}, 1)
-}
-
-function CalculateLine(hl: CodeHighlight, clientY: number)
-{
-	// NOTE: Assume all lines are the same size, equally spaced, and potentially overlapping
-	const rect0 = hl.lines[0].getBoundingClientRect()
-	let lnHeight = rect0.height
-	if (hl.lines.length > 1)
-	{
-		const rectN = hl.lines[1].getBoundingClientRect()
-		lnHeight = rectN.top - rect0.top
-	}
-
-	let ln = Math.floor((clientY - Math.floor(rect0.top)) / lnHeight)
-	ln = clamp(ln, 0, hl.lines.length - 1)
-	return ln
 }
 
 function UpdateSelection()
@@ -573,6 +562,7 @@ function EndSelection()
 
 	if (!code.hl) return
 
+	document.removeEventListener("scroll", UpdateSelection_Scroll)
 	clearInterval(code.click.scrollTimer)
 
 	if (!code.click.cancel)
@@ -598,6 +588,22 @@ function EndSelection()
 	}
 
 	code.prevHl = undefined
+}
+
+function CalculateLine(hl: CodeHighlight, clientY: number)
+{
+	// NOTE: Assume all lines are the same size, equally spaced, and potentially overlapping
+	const rect0 = hl.lines[0].getBoundingClientRect()
+	let lnHeight = rect0.height
+	if (hl.lines.length > 1)
+	{
+		const rectN = hl.lines[1].getBoundingClientRect()
+		lnHeight = rectN.top - rect0.top
+	}
+
+	let ln = Math.floor((clientY - Math.floor(rect0.top)) / lnHeight)
+	ln = clamp(ln, 0, hl.lines.length - 1)
+	return ln
 }
 
 function SetScrollTargetPos()
