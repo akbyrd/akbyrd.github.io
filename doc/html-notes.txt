@@ -1,4 +1,4 @@
-Compatability
+Compatibility
 -------------
 Aiming for 6 years based on browsers on caniuse.com
 
@@ -44,6 +44,16 @@ Performance
 -----------
 https://developer.yahoo.com/performance/rules.html
 https://cliffle.com/blog/making-website-faster/
+
+
+
+Animation
+---------
+All can be delayed by repaint
+Must use smooth scrolling to be async with repaint
+ 5ms - setInterval
+11ms - requestAnimationFrame
+ 0ms - MessageChannel
 
 
 

@@ -17,6 +17,11 @@ function clamp01(x: number)
 	return Math.max(0, Math.min(1, x))
 }
 
+function lerp(a: number, b: number, t: number)
+{
+	return (1 - t) * a + t * b
+}
+
 // -------------------------------------------------------------------------------------------------
 // Theme Toggle
 
@@ -120,8 +125,9 @@ class CodeClick
 	clientY:     number  = 0
 	lastT:       number  = 0
 	scrollTimer: number  = 0
-	scrollDest:  number  = 0
+	scrollAccum: number  = 0
 	cancel:      boolean = false
+	channel?:    MessageChannel
 }
 
 class CodeClick_Touch extends CodeClick
@@ -294,7 +300,7 @@ function BeginSelection_Mouse(e: MouseEvent)
 		clientY:     e.clientY,
 		lastT:       performance.now(),
 		scrollTimer: 0,
-		scrollDest:  0,
+		scrollAccum: 0,
 		cancel:      false,
 	}
 
@@ -383,7 +389,7 @@ function BeginSelection_Touch(e: TouchEvent)
 		clientY:     e.changedTouches[0].clientY,
 		lastT:       performance.now(),
 		scrollTimer: 0,
-		scrollDest:  0,
+		scrollAccum: 0,
 		cancel:      false,
 
 		lnParent:    e.currentTarget as HTMLElement,
@@ -473,7 +479,8 @@ function EndSelectionImpl_Touch()
 
 function UpdateSelection_Scroll()
 {
-	assert(code.hl)
+	assert(code.click)
+
 	UpdateSelection()
 }
 
@@ -481,7 +488,7 @@ function BeginSelection(line: HTMLElement, lnParent: HTMLElement)
 {
 	assert(code.click)
 
-	document.addEventListener("scroll", UpdateSelection_Scroll, { passive: true })
+	//document.addEventListener("scroll", UpdateSelection_Scroll, { passive: true })
 
 	let idParent = lnParent
 	while (!idParent.id)
@@ -500,32 +507,112 @@ function BeginSelection(line: HTMLElement, lnParent: HTMLElement)
 	hl.start = CalculateLine(hl, code.click.clientY)
 	SetSelection(hl)
 
-	code.click.scrollDest = window.scrollY
-	code.click.scrollTimer = setInterval(() => {
-		assert(code.click)
-
-		const height = document.documentElement.clientHeight
-		const y = code.click.clientY / height
+	function Scroll(dt: number, mul: number)
+	{
+		//assert(code.click)
+		if (!code.click) return
 
 		const threshold = 0.15
-		const speed = 4.0 * threshold * height
+		const height    = document.documentElement.clientHeight
+		const y         = code.click.clientY / height
 
 		let amount = 0
 		amount -= clamp01((0 - y) / threshold + 1)
 		amount += clamp01((y - 1) / threshold + 1)
 		amount = Math.pow(amount, 3) // must be odd
 
-		const now = performance.now()
-		const dt = (now - code.click.lastT) / 1000
-		code.click.lastT = now
+		// NOTE: Must use smooth scrolling so scrolling isn't blocked by rendering. This callback is
+		// still blocked by repainting though, so it's still not perfectly smooth.
+		code.click.scrollAccum += 1 * 512 * threshold * amount
+		//code.click.scrollAccum += 64 * 512 * threshold * amount * dt * mul
+		if (top)
+		{
+			const top = Math.trunc(code.click.scrollAccum)
+			code.click.scrollAccum -= top
 
-		// TODO: scrollTo breaks all other scrolling
-		code.click.scrollDest += speed * amount * dt
-		window.scrollTo({
-			top: code.click.scrollDest,
-			behavior: "smooth",
-		})
-	}, 1)
+			window.scrollBy({
+				top: top,
+				behavior: "smooth",
+			})
+		}
+	}
+
+	switch (1)
+	{
+		case 0:
+		{
+			let dt = 0
+			code.click.lastT = performance.now() // TODO
+			code.click.scrollTimer = setInterval(() => {
+				if (!code.click) return
+
+				const now = performance.now()
+				const ndt = (now - code.click.lastT) / 1000
+				if (dt == 0) dt = ndt
+				dt = lerp(dt, ndt, 1 / 100)
+				code.click.lastT = now
+				console.log("a", dt, ndt)
+
+				Scroll(dt, 1)
+			})
+			break;
+		}
+		case 1:
+		{
+			let dt = 0
+			code.click.lastT = performance.now() // TODO
+			function f(now: DOMHighResTimeStamp) {
+				if (!code.click) return
+
+				const ndt = (now - code.click.lastT) / 1000
+				code.click.lastT = now
+				if (false)
+				{
+					console.log("b1", dt, ndt)
+					if (dt == 0) dt = ndt
+					dt = lerp(dt, ndt, 1 / 100)
+				}
+				else
+				{
+					console.log("b2", dt, ndt)
+					dt = ndt
+				}
+
+				Scroll(dt, 1)
+				code.click.scrollTimer = requestAnimationFrame(f)
+			}
+			code.click.scrollTimer = requestAnimationFrame(f)
+			break;
+		}
+		case 2:
+		{
+			let dt = 0
+			code.click.lastT = performance.now() // TODO
+			code.click.channel = new MessageChannel()
+			code.click.channel.port1.onmessage = () => {
+				if (!code.click)
+				{
+					code.click.channel!.port1.onmessage = null
+					return
+				}
+
+				const now = performance.now()
+				const ndt = (now - code.click.lastT) / 1000
+				if (ndt >= 0.01)
+				{
+					//if (dt == 0) dt = ndt
+					//dt = lerp(dt, ndt, 1 / 100)
+					dt = ndt
+					code.click.lastT = now
+					console.log("c", dt, ndt)
+					Scroll(dt, 1)
+				}
+				code.click.channel!.port2.postMessage(null)
+			}
+			code.click.channel.port2.postMessage(null)
+			break;
+		}
+	}
 }
 
 function UpdateSelection()
@@ -564,6 +651,13 @@ function EndSelection()
 
 	document.removeEventListener("scroll", UpdateSelection_Scroll)
 	clearInterval(code.click.scrollTimer)
+	cancelAnimationFrame(code.click.scrollTimer)
+	if (code.click.channel)
+	{
+		code.click.channel.port1.onmessage = null
+		code.click.channel.port1.close()
+		code.click.channel = undefined
+	}
 
 	if (!code.click.cancel)
 	{
