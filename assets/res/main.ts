@@ -124,6 +124,7 @@ class CodeClick
 	dist:        number  = 0
 	clientY:     number  = 0
 	lastT:       number  = 0
+	dt:          number  = 0
 	scrollTimer: number  = 0
 	scrollAccum: number  = 0
 	cancel:      boolean = false
@@ -141,6 +142,7 @@ class CodeClick_Touch extends CodeClick
 
 type Code =
 {
+	isFirefox:     boolean,
 	scrollTarget?: HTMLElement,
 	lnParents:     HTMLElement[],
 	lns:           HTMLElement[],
@@ -151,13 +153,16 @@ type Code =
 }
 
 const code: Code = {
+	isFirefox: false,
 	lnParents: [],
-	lns: [],
-	hash: "",
+	lns:       [],
+	hash:      "",
 }
 
 function InitCode()
 {
+	code.isFirefox = navigator.userAgent.includes("Firefox/")
+
 	// Hook up code copy buttons
 	const buttons = document.getElementsByClassName("code-copy")
 	for (const button of buttons)
@@ -297,7 +302,8 @@ function BeginSelection_Mouse(e: MouseEvent)
 	code.click = {
 		dist:        0,
 		clientY:     e.clientY,
-		lastT:       performance.now(),
+		lastT:       0,
+		dt:          0,
 		scrollTimer: 0,
 		scrollAccum: 0,
 		cancel:      false,
@@ -386,7 +392,8 @@ function BeginSelection_Touch(e: TouchEvent)
 	const c : CodeClick_Touch = {
 		dist:        0,
 		clientY:     e.changedTouches[0].clientY,
-		lastT:       performance.now(),
+		lastT:       0,
+		dt:          0,
 		scrollTimer: 0,
 		scrollAccum: 0,
 		cancel:      false,
@@ -519,19 +526,37 @@ function BeginSelection(line: HTMLElement, lnParent: HTMLElement)
 		amount += clamp01((y - 1) / threshold + 1)
 		amount = Math.pow(amount, 3) // must be odd
 
-		code.click.scrollAccum += 100 * amount
+		const now = performance.now()
+		const ndt = (now - code.click.lastT) / 1000
+		code.click.dt = lerp(code.click.dt, ndt, 0.01)
+		code.click.lastT = now
+
+		let behavior: ScrollBehavior
+		if (code.isFirefox)
+		{
+			// NOTE: Instant scrolling looks extremely bad on Firefox Android. It's also blocked by
+			// rendering. Using dt with smooth scrolling also looks bad. This approach will not have
+			// consistent scroll speed, but seems like the lesser of 3 evils.
+			code.click.scrollAccum += 80 * amount
+			behavior = "smooth"
+		}
+		else
+		{
+			code.click.scrollAccum += 800 * amount * code.click.dt
+			behavior = "instant"
+		}
+
 		const top = Math.trunc(code.click.scrollAccum)
 		code.click.scrollAccum -= top
 
-		if (top)
-		{
-			window.scrollBy({
-				top: top,
-				behavior: "smooth",
-			})
-		}
+		window.scrollBy({
+			top: top,
+			behavior: behavior,
+		})
 		code.click.scrollTimer = requestAnimationFrame(AutoScroll)
 	}
+
+	code.click.lastT = performance.now()
 	code.click.scrollTimer = requestAnimationFrame(AutoScroll)
 }
 

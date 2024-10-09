@@ -19,7 +19,6 @@ TODO: Code line anchors
 			mouse, touch
 			touch, mouse
 
-TODO: Test auto-scroll in all browser combinations
 TODO: It's still possible to scroll + select with touch on Firefox on Android
 TODO: Don't auto-scroll past code blocks
 TODO: Fix slight scroll on first slection after reload (firefox only?)
@@ -35,6 +34,8 @@ TODO: Lazy image loading
 TODO: Implement zoom for images (current page? new page?)
 TODO: Add "fix typo" button (https://www.ii.com/vscode-uri-scheme-and-hugo/)
 TODO: Implement comments (Github, Giscus, Staticman, Custom)
+TODO: Rethink line selection (2 long presses?)
+TODO: Rethink auto-scroll (smooth, by line, wait for scrollend or custom timer)
 
 General
 TODO: Favicon is missing in back/forward menu in firefox
