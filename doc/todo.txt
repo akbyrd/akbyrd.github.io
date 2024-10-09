@@ -25,7 +25,6 @@ TODO: Fix slight scroll on first slection after reload (firefox only?)
 	edge jitters slightly sometimes. related?
 
 TODO: There's 1 pixel of clickable space around the first and last lines when highlighted
-TODO: Support Shift + Click for line selection
 TODO: Automatically calculate title
 TODO: Automatically calculate alias from numeric prefix
 TODO: Choose a diagram method: goat, mermaid (jerky layout), graphviz, other
@@ -36,6 +35,7 @@ TODO: Add "fix typo" button (https://www.ii.com/vscode-uri-scheme-and-hugo/)
 TODO: Implement comments (Github, Giscus, Staticman, Custom)
 TODO: Rethink line selection (2 long presses?)
 TODO: Rethink auto-scroll (smooth, by line, wait for scrollend or custom timer)
+TODO: Consider Shift + Click for line selection
 
 General
 TODO: Favicon is missing in back/forward menu in firefox

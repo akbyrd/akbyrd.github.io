@@ -318,7 +318,7 @@ function BeginSelection_Mouse(e: MouseEvent)
 	window  .addEventListener("popstate",    CancelSelection_Mouse,  { passive: true })
 
 	const lnParent = e.currentTarget as HTMLElement
-	BeginSelection(target, lnParent)
+	BeginSelection(lnParent)
 }
 
 function UpdateSelection_Mouse(e: MouseEvent)
@@ -421,7 +421,7 @@ function BeginSelection_Touch(e: TouchEvent)
 		if (code.click.dist < 10)
 		{
 			code.click.active = true
-			BeginSelection(target, code.click.lnParent)
+			BeginSelection(code.click.lnParent)
 		}
 	}, 250)
 }
@@ -490,7 +490,7 @@ function UpdateSelection_Scroll()
 	UpdateSelection()
 }
 
-function BeginSelection(line: HTMLElement, lnParent: HTMLElement)
+function BeginSelection(lnParent: HTMLElement)
 {
 	assert(code.click)
 
