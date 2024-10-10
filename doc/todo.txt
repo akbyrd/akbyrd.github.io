@@ -20,7 +20,6 @@ TODO: Code line anchors
 			touch, mouse
 
 TODO: It's still possible to scroll + select with touch on Firefox on Android
-TODO: Don't auto-scroll past code blocks
 TODO: Fix slight scroll on first slection after reload (firefox only?)
 	edge jitters slightly sometimes. related?
 

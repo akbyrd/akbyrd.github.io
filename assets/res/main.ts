@@ -546,11 +546,16 @@ function BeginSelection(lnParent: HTMLElement)
 			behavior = "instant"
 		}
 
-		const top = Math.trunc(code.click.scrollAccum)
-		code.click.scrollAccum -= top
+		let scroll = Math.trunc(code.click.scrollAccum)
+		code.click.scrollAccum -= scroll
+
+		const rect = code.hl!.idParent.getBoundingClientRect()
+		const minUp = Math.min(0, rect.top    - (0 + threshold) * height)
+		const maxDn = Math.max(0, rect.bottom - (1 - threshold) * height)
+		scroll = clamp(scroll, minUp, maxDn)
 
 		window.scrollBy({
-			top: top,
+			top: scroll,
 			behavior: behavior,
 		})
 		code.click.scrollTimer = requestAnimationFrame(AutoScroll)
