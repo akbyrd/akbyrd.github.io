@@ -285,7 +285,7 @@ ul, ol, li {
 /* Code */
 
 code, .code-copy {
-	font-family: Code;
+	font-family: code;
 	font-feature-settings: "ss01";
 	font-size-adjust: ex-height 0.48;
 	font-size: 11pt;
@@ -602,7 +602,7 @@ code, .code-copy {
 	a {
 		display: block;
 		font-size: 44px;
-		font-family: Code;
+		font-family: code;
 		font-size: 44px;
 		text-decoration: none;
 	}
@@ -629,20 +629,15 @@ code, .chroma {
 	color: var(--code-default);
 
 	/* Other                    */ .x               { color: var(--code-invalid); }
-	/* Error                    */ .err             {}
+	/* Error                    */ .err             { color: var(--code-invalid); }
 	/* CodeLine                 */ .cl              { color: var(--code-default); }
-	/* LineLink                 */ .lnlinks         {}
-	/* LineTableTD              */ .lntd            { background-color: var(--code-background); }
-	/* LineTable                */ .lntable         {}
-	/* LineHighlight            */ .hl              {}
+	/* LineLink                 */ .lnlinks         { color: var(--code-invalid); }
 	/* LineHighlight            */ .hl .cl          { background-color: var(--code-highlight-background); }
-	/* LineNumbersTable         */ .lnt             {}
-	/* LineNumbers              */ .ln              {}
 	/* LineNumbers              */ .line::before    { background-color: var(--code-background); color: var(--code-line-numbers); }
 	/* LineNumbers Highlight    */ .line.hl::before { background-color: var(--code-highlight-background); }
 	/* Line                     */ .line            { color: var(--code-default); }
 	/* Keyword                  */ .k               { color: var(--code-keywords); }
-	/* KeywordConstant          */ .kc              { color: var(--code-invalid); }
+	/* KeywordConstant          */ .kc              { color: var(--code-literals); }
 	/* KeywordDeclaration       */ .kd              { color: var(--code-invalid); }
 	/* KeywordNamespace         */ .kn              { color: var(--code-invalid); }
 	/* KeywordPseudo            */ .kp              { color: var(--code-invalid); }
@@ -650,7 +645,7 @@ code, .chroma {
 	/* KeywordType              */ .kt              { color: var(--code-types); }
 	/* Name                     */ .n               { color: var(--code-default); }
 	/* NameAttribute            */ .na              { color: var(--code-keywords); }
-	/* NameBuiltin              */ .nb              { color: var(--code-literals); }
+	/* NameBuiltin              */ .nb              { color: var(--code-keywords); }
 	/* NameBuiltinPseudo        */ .bp              { color: var(--code-invalid); }
 	/* NameClass                */ .nc              { color: var(--code-types); }
 	/* NameConstant             */ .no              { color: var(--code-invalid); }
@@ -661,10 +656,10 @@ code, .chroma {
 	/* NameFunctionMagic        */ .fm              { color: var(--code-invalid); }
 	/* NameLabel                */ .nl              { color: var(--code-labels); }
 	/* NameNamespace            */ .nn              { color: var(--code-invalid); }
-	/* NameOther                */ .nx              { color: var(--code-invalid); }
+	/* NameOther                */ .nx              { color: var(--code-variables); }
 	/* NameProperty             */ .py              { color: var(--code-invalid); }
 	/* NameTag                  */ .nt              { color: var(--code-variables); }
-	/* NameVariable             */ .nv              { color: var(--code-invalid); }
+	/* NameVariable             */ .nv              { color: var(--code-variables); }
 	/* NameVariableClass        */ .vc              { color: var(--code-invalid); }
 	/* NameVariableGlobal       */ .vg              { color: var(--code-invalid); }
 	/* NameVariableInstance     */ .vi              { color: var(--code-invalid); }
@@ -685,7 +680,7 @@ code, .chroma {
 	/* LiteralStringRegex       */ .sr              { color: var(--code-invalid); }
 	/* LiteralStringSingle      */ .s1              { color: var(--code-invalid); }
 	/* LiteralStringSymbol      */ .ss              { color: var(--code-invalid); }
-	/* LiteralNumber            */ .m               { color: var(--code-invalid); }
+	/* LiteralNumber            */ .m               { color: var(--code-literals); }
 	/* LiteralNumberBin         */ .mb              { color: var(--code-literals); }
 	/* LiteralNumberFloat       */ .mf              { color: var(--code-literals); }
 	/* LiteralNumberHex         */ .mh              { color: var(--code-literals); }

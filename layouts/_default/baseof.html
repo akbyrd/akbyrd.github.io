@@ -13,10 +13,7 @@
 	<link rel="icon" href="{{ .RelPermalink }}" sizes="32x32"{{ .Integrity }}>
 	{{- end }}
 	{{- with partial "resource" "res/favicon.svg" }}
-	<link rel="icon" href="{{ .RelPermalink }}" size="any" type="image/svg+xml"{{ .Integrity }}>
-	{{- end }}
-	{{- with partial "resource" "res/apple-touch-icon.png" }}
-	<link rel="apple-touch-icon" href="{{ .RelPermalink }}"{{ .Integrity }}>
+	<link rel="icon" href="{{ .RelPermalink }}" sizes="any" type="image/svg+xml"{{ .Integrity }}>
 	{{- end }}
 	{{- with partial "resource" "res/main.css" }}
 	<link rel="stylesheet" href="{{ .RelPermalink }}"{{ .Integrity }}>
@@ -25,8 +22,8 @@
 	<script src="{{ .RelPermalink }}" async{{ .Integrity }}></script>
 	{{- end }}
 
-	{{ $woff2 := partial "resource" "res/Code.woff2" }}
-	{{- $woff := partial "resource" "res/Code.woff" }}
+	{{ $woff2 := partial "resource" "res/code.woff2" }}
+	{{- $woff := partial "resource" "res/code.woff" }}
 	{{- $hasSymbols := strings.FindRE "\\p{Co}" (.Page.Content | htmlUnescape) 1 }}
 	{{- $hasCode := strings.Contains .Page.Content "<code>" -}}
 	{{- if or $hasSymbols $hasCode -}}
@@ -35,7 +32,7 @@
 	{{ end -}}
 	<style>
 		@font-face {
-			font-family: "Code";
+			font-family: "code";
 			unicode-range: U+0000-00a0, U+f046b, U+f033b, U+f02a4, U+f0ad1, U+f0544, U+f01ee, U+f4bb;
 			src:
 				url("{{ $woff2.RelPermalink }}") format("woff2"),

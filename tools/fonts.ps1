@@ -1,5 +1,5 @@
 $codeIn  = "assets\res\InconsolataNerdFontMono-Regular.ttf"
-$codeOut = "assets\res\Code.woff", "assets\res\Code.woff2"
+$codeOut = "assets\res\code.woff", "assets\res\code.woff2"
 
 foreach ($out in $codeOut)
 {

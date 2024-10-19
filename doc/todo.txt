@@ -20,10 +20,6 @@ TODO: Code line anchors
 			touch, mouse
 
 TODO: It's still possible to scroll + select with touch on Firefox on Android
-TODO: Fix slight scroll on first slection after reload (firefox only?)
-	edge jitters slightly sometimes. related?
-
-TODO: There's 1 pixel of clickable space around the first and last lines when highlighted
 TODO: Automatically calculate title
 TODO: Automatically calculate alias from numeric prefix
 TODO: Choose a diagram method: goat, mermaid (jerky layout), graphviz, other
@@ -35,9 +31,9 @@ TODO: Implement comments (Github, Giscus, Staticman, Custom)
 TODO: Rethink line selection (2 long presses?)
 TODO: Rethink auto-scroll (smooth, by line, wait for scrollend or custom timer)
 TODO: Consider Shift + Click for line selection
+TODO: There's 1 pixel of clickable space around the first and last lines when highlighted
 
 General
-TODO: Favicon is missing in back/forward menu in firefox
 TODO: Use partialCached (should cache each unique invocation)
 TODO: Move resource renaming to a shared template
 TODO: Minify html in production builds (vscode tasks and github actions)
@@ -60,6 +56,7 @@ TODO: Fix outline z on details
 Content
 TODO: Improve about page content
 TODO: Add my rss list
+TODO: Input on Windows
 
 Testing / Compatibility
 TODO: Theme transition isn't smooth on mobile
@@ -78,6 +75,7 @@ TODO: https://validator.w3.org/
 
 Optimization
 TODO: Reduce classes used for syntax highlighting (stutter on firefox)
+TODO: Improve rendering perf of code (grid? (has border-collapse) less html?)
 
 Theme
 TODO: Pay a UI designer for a review and recommendations
