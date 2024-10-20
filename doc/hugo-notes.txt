@@ -9,6 +9,16 @@ Measure Perf - hugo --templateMetrics --templateMetricsHints
 
 
 
+Terminology
+-----------
+Template    - (layouts)                           - File with go template {{ ... }}
+Archetype   - (layouts/page|posts)                - Template for new content files
+Shortcode   - (layouts/shortcodes)                - Template usable in markdown
+Partial     - (layouts/partials)                  - Template usable from shortcodes, templates, render hooks, and other partials
+Render Hook - (layouts/_default/_markup/render-*) - Template that renders markdown to html
+
+
+
 Shortcodes
 ----------
 {{% shortcode %}} contains markdown

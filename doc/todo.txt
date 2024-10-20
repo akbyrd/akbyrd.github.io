@@ -20,8 +20,6 @@ TODO: Code line anchors
 			touch, mouse
 
 TODO: It's still possible to scroll + select with touch on Firefox on Android
-TODO: Automatically calculate title
-TODO: Automatically calculate alias from numeric prefix
 TODO: Choose a diagram method: goat, mermaid (jerky layout), graphviz, other
 TODO: Fix warning on checklist checkboxes (chrome)
 TODO: Lazy image loading
@@ -34,7 +32,6 @@ TODO: Consider Shift + Click for line selection
 TODO: There's 1 pixel of clickable space around the first and last lines when highlighted
 
 General
-TODO: Use partialCached (should cache each unique invocation)
 TODO: Move resource renaming to a shared template
 TODO: Minify html in production builds (vscode tasks and github actions)
 TODO: Sitemap (remove posts and tests)
