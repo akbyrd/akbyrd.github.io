@@ -1,0 +1,13 @@
+{{- $text := index . 0 }}
+{{- $tabs := index . 1 }}
+{{- $indent := strings.Repeat $tabs "\t" }}
+
+{{- if gt $tabs 0 }}
+	{{- $text = replaceRE "(?m)^" $indent $text }}
+{{- else }}
+	{{- $remove := printf "(?m)^%s" $indent }}
+	{{- $text = replaceRE $remove "" $text }}
+{{- end }}
+
+{{- $text = replaceRE `(?m)\s+$` "\n" $text }}
+{{- return $text }}

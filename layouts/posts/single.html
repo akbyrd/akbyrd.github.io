@@ -1,22 +1,23 @@
 {{- define "head" }}
-	{{- if .Page.Store.Get "hasMermaid" }}
-
-	<script type="module">
-		import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';
-		mermaid.initialize({ startOnLoad: true });
-	</script>
-	{{- end }}
+{{- if .Page.Store.Get "hasMermaid" }}
+		<script type="module">
+			import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';
+			mermaid.initialize({ startOnLoad: true });
+		</script>
+{{- end }}
 {{- end }}
 
 {{- define "main" }}
 {{- if not (or .Draft .Date) }}
-{{- errorf "Non-draft posts must have a date. File: %s" .File.Path }}
+	{{- errorf "Non-draft posts must have a date. File: %s" .File.Path }}
 {{- end }}
+
 {{- if not (or .Draft .Summary) }}
-{{- errorf "Non-draft posts must have a summary. File: %s" .File.Path }}
+	{{- errorf "Non-draft posts must have a summary. File: %s" .File.Path }}
 {{- end }}
+
 {{- if not (or .Draft .Aliases) }}
-{{- errorf "Non-draft posts must have an alias. File: %s" .File.Path }}
+	{{- errorf "Non-draft posts must have an alias. File: %s" .File.Path }}
 {{- end }}
 		<h1 class="post-title">
 			{{ .LinkTitle }}
@@ -24,7 +25,7 @@
 			<time class="post-time" datetime="{{ .Format "2006-01-02" }}">{{ .Format "Jan 2, 2006" }}</time>
 			{{- else }}
 			<time class="post-time"></time>
-			{{- end -}}
+			{{- end }}
 		</h1>
-		{{ .Content }}
-{{- end }}
+{{ partial "indent" (slice .Content 2) | chomp | safeHTML }}
+{{- end -}}
