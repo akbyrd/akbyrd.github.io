@@ -26,7 +26,6 @@
 			{{- $safe = replace $safe "/" "f" }}
 			{{- $safe = replace $safe "=" "e" }}
 			{{- $file = replaceRE `\.([^.]*\z)` (printf "-%s.$1" $safe) $file }}
-			{{- $file = replaceRE `\.ts\z` ".js" $file }}
 		{{- end }}
 
 		{{- $file = printf "%s%s" $path $file }}

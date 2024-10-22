@@ -41,13 +41,13 @@
 			"label": "build-project",
 			"detail": "hugo build (staging)",
 			"type": "shell",
-			"command": "hugo -e staging --cleanDestinationDir --printPathWarnings",
+			"command": "hugo -e staging --cleanDestinationDir --printPathWarnings --minify",
 		},
 		{
 			"label": "build-solution",
 			"detail": "hugo build (production)",
 			"type": "shell",
-			"command": "hugo -e production --cleanDestinationDir --printPathWarnings",
+			"command": "hugo -e production --cleanDestinationDir --printPathWarnings --minify",
 		},
 		{
 			"label": "test-file",
@@ -59,13 +59,13 @@
 			"label": "test-project",
 			"detail": "hugo test (staging)",
 			"type": "shell",
-			"command": "hugo server --bind 0.0.0.0 -e staging --cleanDestinationDir --printPathWarnings --disableFastRender --noHTTPCache",
+			"command": "hugo server --bind 0.0.0.0 -e staging --cleanDestinationDir --printPathWarnings --disableFastRender --noHTTPCache --minify",
 		},
 		{
 			"label": "test-solution",
 			"detail": "hugo test (production)",
 			"type": "shell",
-			"command": "hugo server --bind 0.0.0.0 -e production --cleanDestinationDir --printPathWarnings --disableFastRender --noHTTPCache",
+			"command": "hugo server --bind 0.0.0.0 -e production --cleanDestinationDir --printPathWarnings --disableFastRender --noHTTPCache --minify",
 		},
 		{
 			"label": "profile-solution",
