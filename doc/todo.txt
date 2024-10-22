@@ -32,6 +32,7 @@ TODO: Consider Shift + Click for line selection
 TODO: There's 1 pixel of clickable space around the first and last lines when highlighted
 
 General
+TODO: Fix github actions warnings
 TODO: Sitemap (remove posts and tests)
 TODO: RSS / Atom (update link on about)
 TODO: Add search support
