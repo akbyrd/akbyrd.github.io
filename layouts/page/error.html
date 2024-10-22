@@ -1,0 +1,3 @@
+{{- define "main" }}
+{{ partial "indent" (slice .Content 2) | chomp | safeHTML }}
+{{- end }}

@@ -122,6 +122,7 @@ html * {
 /* Shared / Standard */
 
 html {
+	height: 100%;
 	padding-left: clamp(0px, 100vw - 100%, 100% - var(--max-width));
 	scrollbar-color: var(--scrollbar) var(--background);
 }
@@ -424,6 +425,32 @@ code, .code-copy {
 				transition-property: opacity, outline-color, outline-offset;
 			}
 		}
+	}
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* Error Pages */
+
+body.error {
+	display: flex;
+	flex-direction: column;
+	height: 80%;
+
+	main {
+		align-items: center;
+		display: flex;
+		flex-grow: 1;
+		justify-content: center;
+
+		p {
+			font-size: 96pt;
+			line-height: 80%;
+			margin: 0;
+		}
+	}
+
+	footer {
+		display: none;
 	}
 }
 

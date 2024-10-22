@@ -34,7 +34,6 @@ TODO: There's 1 pixel of clickable space around the first and last lines when hi
 General
 TODO: Sitemap (remove posts and tests)
 TODO: RSS / Atom (update link on about)
-TODO: github 404 page
 TODO: Add search support
 TODO: Math formatting (load only when used)
 TODO: Tooltip for emoji (dev only?)
