@@ -16,5 +16,5 @@
 			<time class="post-time"></time>
 			{{- end }}
 		</h1>
-{{ partial "indent" (slice .Content 2) | chomp | safeHTML }}
+		{{ .Content }}
 {{- end }}
