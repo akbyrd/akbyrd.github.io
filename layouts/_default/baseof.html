@@ -11,6 +11,9 @@
 	<meta name="theme-color" content="#212121" />
 	<meta name="theme-color" media="(prefers-color-scheme: light)" content="#bdbdbd" />
 
+	{{ with .Site.Home.OutputFormats.Get "rss" -}}
+		<link rel="{{ .Rel }}" type="{{ .MediaType.Type }}" href="{{ .RelPermalink }}">
+	{{- end }}
 	{{ with partial "resource" (dict "Name" "favicon.ico" "Rename" false) -}}
 	<link rel="icon" href="{{ .RelPermalink }}" sizes="32x32"{{ .Integrity }}>
 	{{- end }}

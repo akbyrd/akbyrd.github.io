@@ -37,6 +37,8 @@ draft = true
 	- Some errors don't occur in a rebuild but occur in (e.g. `REF_NOT_FOUND`)
 - Unintuitive: ref from non-draft to draft
 - Bugs & development philosophy. `summaryLength` doesn't work properly with headings and lists. No interest in fixing. Get a very "good enough" vibe from developers.
+- Devs frequently terse to the point of being unhelpful, occasionally rude
+	- https://discourse.gohugo.io/t/how-can-i-change-the-rss-url/118/11
 - Confusing naming
 	_index.md vs index.md
 	OrderedTaxonomy/WeightedPages .Page vs .Pages https://gohugo.io/templates/taxonomy-templates/#orderedtaxonomy

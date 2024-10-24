@@ -33,6 +33,12 @@ TODO: There's 1 pixel of clickable space around the first and last lines when hi
 
 General
 TODO: RSS / Atom (update link on about)
+	Main image
+	Post image
+	Exclude pages
+	RSS docs
+	Atom or RSS?
+
 TODO: Add search support
 TODO: Math formatting (load only when used)
 TODO: Tooltip for emoji (dev only?)
@@ -65,6 +71,7 @@ TODO: Add syntax highlighting samples test page
 TODO: 1 frame of missing text in firefox
 TODO: https://jigsaw.w3.org/css-validator/
 TODO: https://validator.w3.org/
+TODO: https://validator.w3.org/feed/
 
 Optimization
 TODO: Reduce classes used for syntax highlighting (stutter on firefox)

@@ -12,16 +12,17 @@ markup.goldmark.parser.attribute.block = true
 markup.goldmark.parser.wrapStandAloneImageWithinParagraph = false
 markup.highlight.noClasses = false
 
+# Rename RSS to feed.xml
+outputFormats.RSS.mediatype = "application/rss"
+outputFormats.RSS.baseName = "feed"
+
 # Disable unnecessary RSS files
 outputs.home = ['html']
+outputs.section = ['html']
 outputs.taxonomy = ['html']
 outputs.term = ['html']
 
 params.social.twitter = 'abyrd89'
-
-# Remove the folder and numeric prefix from page URLs
-permalinks.posts = '/:slug/'
-permalinks.tests = '/:slug/'
 
 # Disable potential tracking and cookies
 privacy.disqus.disable = true
@@ -37,8 +38,6 @@ privacy.vimeo.disable = true
 privacy.vimeo.enableDNT = true
 privacy.youtube.disable = true
 privacy.youtube.privacyEnhanced = true
-
-services.rss.limit = -1
 
 # Disable default taxonomies (category, series, and tag)
 taxonomies = {}
