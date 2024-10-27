@@ -1,11 +1,14 @@
 {{- define "main" }}
-		<h1 class="post-title">
-			{{ .LinkTitle }}
-			{{- with .Date }}
-			<time class="post-time" datetime="{{ .Format "2006-01-02" }}">{{ .Format "Jan 2, 2006" }}</time>
-			{{- else }}
-			<time class="post-time"></time>
-			{{- end }}
-		</h1>
+
+{{- if not (or .Draft .Title) }}
+	{{- errorf "Non-draft pages must have a title. File: %s" .File.Path }}
+{{- end }}
+
+{{- if .Params.atom }}
+	{{- if not (or .Draft .Date) }}
+		{{- errorf "Non-draft atom feed entries must have a date. File: %s" .File.Path }}
+	{{- end }}
+{{- end }}
+
 		{{ .Content }}
 {{- end }}
