@@ -14,7 +14,7 @@ Systems programmer in the game industry. Interested in game engines, data orient
 {{< about-links.inline >}}
 <ul class="about-link-container">
 	<li>
-		<a href="../posts/index.xml" title="RSS">
+		<a href="{{ (.Site.Home.OutputFormats.Get "atom").RelPermalink }}" title="RSS">
 			<p style="background-image: linear-gradient(#ee802f80, #ee802f80);">&#xf046b;</p>
 		</a>
 	</li>

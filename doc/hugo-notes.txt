@@ -55,6 +55,26 @@ Category - Built- in taxonomy
 
 
 
+Layout Template Locations
+-------------------------
+home
+layouts[/{<type>|_default}]/{<layout>|index|<kind>|list}.<format>
+(                           ^---------------------------^         optional for rss)
+(         ^----^             ^------^                             unknown for rss)
+
+section
+layouts/{<type>|<section>|<kind>|/_default}/{<layout>|<section>|<kind>|list}.<format>
+(                                           ^-------------------------------^         optional for rss )
+(                                                     ^-------^                       not valid for rss)
+(        ^----^                              ^------^                                 unknown for rss)
+
+single
+layouts/{<section>|_default}/{<layout>|single}.<format>
+(                                      ^                is missing kind)
+(        ^                                              is type applicable to pages?)
+
+
+
 
 Files
 -----

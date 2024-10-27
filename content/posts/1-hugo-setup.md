@@ -39,10 +39,14 @@ draft = true
 - Bugs & development philosophy. `summaryLength` doesn't work properly with headings and lists. No interest in fixing. Get a very "good enough" vibe from developers.
 - Devs frequently terse to the point of being unhelpful, occasionally rude
 	- https://discourse.gohugo.io/t/how-can-i-change-the-rss-url/118/11
+	- https://github.com/gohugoio/hugo/issues/3356#issuecomment-294560139
 - Confusing naming
 	_index.md vs index.md
 	OrderedTaxonomy/WeightedPages .Page vs .Pages https://gohugo.io/templates/taxonomy-templates/#orderedtaxonomy
 - https://commaok.xyz/post/on_hugo/
+- safeHTML and being defensive against yourself
+	{{ printf `<?xml version="1.0" encoding="utf-8"?>` | safeHTML }}
+	files entire purpose is to render HTML / XML
 
 ## Misc
 - Even Better TOML supports Hugo out of the box (but doesn't say it does)

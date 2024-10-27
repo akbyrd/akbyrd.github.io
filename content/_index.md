@@ -1,5 +1,5 @@
 +++
 title = 'akbyrd'
 date = 2023-12-10
-outputs = [ 'html', 'rss' ]
+outputs = [ 'html', 'atom' ]
 +++

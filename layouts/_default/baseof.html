@@ -2,17 +2,17 @@
 <html class="theme-system" lang="en-us" dir="ltr">
 
 <head>
-	{{ if .Title }}
+	{{ if .Title -}}
 	<title>{{ .Title }}</title>
-	{{ end }}
+	{{- end }}
 
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1" />
 	<meta name="theme-color" content="#212121" />
 	<meta name="theme-color" media="(prefers-color-scheme: light)" content="#bdbdbd" />
 
-	{{ with .Site.Home.OutputFormats.Get "rss" -}}
-		<link rel="{{ .Rel }}" type="{{ .MediaType.Type }}" href="{{ .RelPermalink }}">
+	{{ with .Site.Home.OutputFormats.Get "atom" -}}
+		{{ (printf `<link rel="%s" href="%s" type="%s">` .Rel .RelPermalink .MediaType) | safeHTML }}
 	{{- end }}
 	{{ with partial "resource" (dict "Name" "favicon.ico" "Rename" false) -}}
 	<link rel="icon" href="{{ .RelPermalink }}" sizes="32x32"{{ .Integrity }}>

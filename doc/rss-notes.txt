@@ -1,12 +1,15 @@
 Resources
 ---------
-http://johnpanzer.com/RSSAtomFeedsBestPractices/
-http://validator.w3.org/feed/
-https://www.ietf.org/rfc/rfc4287.txt
-http://www.atomenabled.org/
-https://www.feedvalidator.org/
-https://intertwingly.net/slides/2006/AtomInASeaOfRSS/
+http://www.intertwingly.net/wiki/pie/Rss20AndAtom10Compared
+
 https://kevincox.ca/2022/05/06/rss-feed-best-practices/
+https://aboutfeeds.com/
+	https://chrismorgan.info/blog/tags/make/feed.xml
+https://roastidio.us/lint
+https://www.rssboard.org/media-rss
+
+http://validator.w3.org/feed/
+https://www.feedvalidator.org/
 
 
 
@@ -17,24 +20,3 @@ RSS Image
    {{ printf "<![CDATA[<img src=\"%s\"/> ]]/>" $.Params.thumbnail }}
    {{ .Content | html }}
 </description>
-
-Atom
-<?xml version="1.0" encoding="UTF-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
-	<title>{{FEED_NAME}}</title>
-	<id>{{HOMEPAGE_URL}}</id>
-	<link rel="alternate" href="{{HOMEPAGE_URL}}"/>
-	<link rel="self" href="{{FEED_URL}}"/>
-	<updated>{{LAST_UPDATE_TIME in RFC3339 format}}</updated>
-	<author>
-		<name>{{AUTHOR_NAME}}</name>
-	</author>
-	<entry>
-		<title>{{ENTRY.TITLE}}</title>
-		<link rel="alternate" type="text/html" href="{{ENTRY.HTML_URL}}"/>
-		<id>{{ENTRY.PERMALINK}}</id>
-		<published>{{ENTRY.FIRST_POST_TIME in RFC3339 format}}</published>
-		<updated>{{ENTRY.LAST_UPDATE_TIME in RFC3339 format}}</updated>
-		<content type="html">{{ENTRY.HTML}}</content>
-	</entry>
-</feed>

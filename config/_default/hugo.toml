@@ -4,6 +4,7 @@ title = 'akbyrd'
 
 cleanDestinationDir = true
 disableHugoGeneratorInject = true
+disableKinds = ['RSS']
 enableEmoji = true
 enableGitInfo = true
 enableInlineShortcodes = true
@@ -12,15 +13,11 @@ markup.goldmark.parser.attribute.block = true
 markup.goldmark.parser.wrapStandAloneImageWithinParagraph = false
 markup.highlight.noClasses = false
 
-# Rename RSS to feed.xml
-outputFormats.RSS.mediatype = "application/rss"
-outputFormats.RSS.baseName = "feed"
-
-# Disable unnecessary RSS files
-outputs.home = ['html']
-outputs.section = ['html']
-outputs.taxonomy = ['html']
-outputs.term = ['html']
+# Add Atom output format
+mediaTypes.'application/atom+xml'.suffixes = ['xml']
+outputFormats.atom.baseName = 'feed'
+outputFormats.atom.mediaType = 'application/atom+xml'
+outputFormats.atom.permalinkable = true
 
 params.social.twitter = 'abyrd89'
 
