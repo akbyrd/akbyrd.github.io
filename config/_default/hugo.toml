@@ -8,6 +8,7 @@ disableKinds = ['RSS']
 enableEmoji = true
 enableGitInfo = true
 enableInlineShortcodes = true
+enableRobotsTXT = true
 markup.goldmark.renderer.unsafe = true # allow html
 markup.goldmark.parser.attribute.block = true
 markup.goldmark.parser.wrapStandAloneImageWithinParagraph = false

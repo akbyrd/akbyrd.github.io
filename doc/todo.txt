@@ -41,14 +41,15 @@ TODO: RSS / Atom
 	[x] Update link on about page
 	[x] Remove RSS config and layout
 	----
-	[ ] Disable minify on feed for testing
-	[ ] Inoreader - Title isn't working
-	[ ] Inoreader - Icon idn't working
-	[ ] Validator - doesn't find feed
-	[-] Validator - wrong date format
-	[ ] Validator - undefined elements p, h2, h3
-	[ ] Validator - mismatched tag
-	[-] Validator - something about relative href on self link
+	[-] Disable minify on feed for testing
+	[x] Inoreader - Title isn't working
+	[x] Inoreader - Icon idn't working
+	[x] Inoreader - Content doesn't render
+	[x] Validator - wrong date format
+	[x] Validator - undefined elements p, h2, h3
+	[x] Validator - something about relative href on self link
+	[x] Validator - doesn't find feed
+	[x] Validator - mismatched tag
 	---
 	[ ] Atom docs
 	[ ] Main image (create a png. font isn't available for the svg)
@@ -65,7 +66,7 @@ TODO: Tooltip for emoji (dev only?)
 TODO: Consider other markup languages (Djot, Markdeep, AsciiDoc, rST, Custom)
 TODO: Ensure double tap to zoom works on mobile
 TODO: Try a render hook for images https://gohugo.io/render-hooks/images/
-TODO: Replace syntax highlighting implementation (accuracy, context)
+TODO: Replace syntax highlighting implementation (use compiler, support inline code)
 TODO: Make window resizing maintain scroll position
 
 Details
@@ -77,6 +78,9 @@ TODO: Improve about page content
 TODO: Add my rss list
 TODO: Input on Windows
 TODO: Blog roll
+
+Workflow
+TODO: Run github workflow locally to reduce deployment testing iteration time
 
 Testing / Compatibility
 TODO: Theme transition isn't smooth on mobile
@@ -108,6 +112,3 @@ TODO: Pick a font for body text
 TODO: Pick a color scheme
 TODO: Add text selection color
 TODO: Light theme for code
-
-Wishlist
-TODO: Improve syntax highlighting (use compiler, support inline code)

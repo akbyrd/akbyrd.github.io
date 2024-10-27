@@ -2,31 +2,32 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 	<title>{{ .Title }}</title>
 	{{ with .OutputFormats.Get "html" -}}
-	<link rel="alternate" href="{{ .RelPermalink }}"/>
+	<link rel="alternate" href="{{ .Permalink }}"/>
 	{{ end -}}
 	<link rel="self" href="{{ .Permalink }}" />
 	<id>{{ .Permalink }}</id>
 	<updated>{{ .Site.Lastmod.Format "2006-01-02T15:04:05-07:00" }}</updated>
-	<icon>{{ resources.Get "res/favicon.svg" }}</icon>
+	<icon>{{ (resources.Get "res/favicon.svg").Permalink }}</icon>
 	<author>
 		<name>Adam K. Byrd</name>
 		{{ with .OutputFormats.Get "html" -}}
 		<uri>{{ .Permalink }}</uri>
 		{{- end }}
 	</author>
-	{{- range where .RegularPagesRecursive ".Params.atom" true}}
+	{{- range where .RegularPagesRecursive ".Params.atom" true }}
+	{{- if .OutputFormats }}
+	{{- $output := .OutputFormats.Get "html" }}
 
 	<entry>
 		<title>{{ .Title }}</title>
-		{{ with index .OutputFormats 0 -}}
-		<link rel="alternate" type="{{ .MediaType }}" href="{{ .RelPermalink }}"/>
-		{{ end -}}
+		<link rel="alternate" type="{{ $output.MediaType.Type }}" href="{{ .Permalink }}"/>
 		<id>{{ .Permalink }}</id>
 		{{ with .PublishDate -}}
 		<published>{{ .Format "2006-01-02T15:04:05-07:00" | safeHTML }}</published>
 		{{ end -}}
 		<updated>{{ .Lastmod.Format "2006-01-02T15:04:05-07:00" | safeHTML }}</updated>
-		<content>{{ .Content }}</content>
+		<content type="html">{{ printf `<![CDATA[%s]]>` .Content | safeHTML }}</content>
 	</entry>
+	{{- end }}
 	{{- end }}
 </feed>

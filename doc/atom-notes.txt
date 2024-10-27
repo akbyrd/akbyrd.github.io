@@ -24,3 +24,13 @@ Unless otherwise specified, all values must be plain text (i.e., no entity-encod
 xml:lang may be used to identify the language of any human readable text.
 xml:base may be used to control how relative URIs are resolved.
 Feed icon should be square
+
+
+
+Readers
+-------
+W3 Validator
+	Requires robots.txt permission
+Inoreader
+	Uses favicon for detected feed icon
+	Uses link title for detected feed name
