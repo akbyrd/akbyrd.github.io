@@ -41,8 +41,17 @@ TODO: RSS / Atom
 	[x] Update link on about page
 	[x] Remove RSS config and layout
 	----
+	[ ] Disable minify on feed for testing
+	[ ] Inoreader - Title isn't working
+	[ ] Inoreader - Icon idn't working
+	[ ] Validator - doesn't find feed
+	[-] Validator - wrong date format
+	[ ] Validator - undefined elements p, h2, h3
+	[ ] Validator - mismatched tag
+	[-] Validator - something about relative href on self link
+	---
 	[ ] Atom docs
-	[x] Main image
+	[ ] Main image (create a png. font isn't available for the svg)
 	[ ] Post image
 	[ ] Language?
 	----

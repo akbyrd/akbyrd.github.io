@@ -1,7 +1,6 @@
 +++
 title = 'Test Page'
 date = 2023-12-10
-slug = 'test-page'
 +++
 
 
