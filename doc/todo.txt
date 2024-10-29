@@ -51,9 +51,16 @@ TODO: RSS / Atom
 	[x] Validator - doesn't find feed
 	[x] Validator - mismatched tag
 	---
+	<content type="xhtml" xml:lang="en"
+		xml:base="https://web.archive.org/web/20110926231958/http://diveintomark.org/">
+		<div xmlns="http://www.w3.org/1999/xhtml">
+			<p><i>[Update: The Atom draft is finished.]</i></p>
+		</div>
+	</content>
+
 	[ ] Atom docs
-	[ ] Main image (create a png. font isn't available for the svg)
-	[ ] Post image
+	[-] Main image (create a png. font isn't available for the svg)
+	[-] Post image
 	[ ] Language?
 	----
 	[ ] Split feed into multiple files?

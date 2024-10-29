@@ -58,8 +58,9 @@
 	{{ $integrity = ` crossorigin="anonymous"` | safeHTMLAttr }}
 	{{ end }}
 
+	{{ $permalink := $resource.Permalink }}
 	{{ $relPermalink := $resource.RelPermalink }}
-	{{ $ret = dict "Resource" $resource "Short" $short "Long" $long "Integrity" $integrity "RelPermalink" $relPermalink }}
+	{{ $ret = dict "Resource" $resource "Short" $short "Long" $long "Integrity" $integrity "Permalink" $permalink "RelPermalink" $relPermalink }}
 {{ end }}
 
 {{ return $ret }}

@@ -15,7 +15,7 @@ markup.goldmark.parser.wrapStandAloneImageWithinParagraph = false
 markup.highlight.noClasses = false
 
 # Add Atom output format
-mediaTypes.'application/atom+xml'.suffixes = ['xml']
+mediaTypes.'application/atom+xml'.suffixes = ['atom']
 outputFormats.atom.baseName = 'feed'
 outputFormats.atom.mediaType = 'application/atom+xml'
 outputFormats.atom.permalinkable = true
