@@ -8,7 +8,7 @@ function Generate-Favicons
 	$python      = "$inkscapeDir\bin\python.exe"
 	$scour       = "$inkscapeDir\share\inkscape\extensions\output_scour.py"
 
-	$assets       = "themes\akbyrd\assets"
+	$assets       = "assets"
 	$output_svg   = "$assets\res\favicon.svg"
 	$output_ico   = "$assets\favicon.ico"
 	$output_apple = "$assets\res\apple-touch-icon.png"
