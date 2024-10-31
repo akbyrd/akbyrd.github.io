@@ -21,3 +21,28 @@ foreach ($out in $codeOut)
 	$size = (Get-Item $out).Length / 1024
 	Write-Host ("{0,-12} {1,5:0.0} kb" -f $name, $size)
 }
+
+$mathIn  = "assets\res\latinmodern-math.otf"
+$mathOut = "assets\res\math.woff", "assets\res\math.woff2"
+
+foreach ($out in $mathOut)
+{
+	$ext = Split-Path -Extension $out
+	$ext = $ext.substring(1)
+
+	fonttools `
+		subset `
+		$mathIn `
+		--output-file=$out `
+		--flavor=$ext `
+		--layout-features='*' `
+		--unicodes='*' `
+		--drop-tables+="FFTM, GlyphOrder" `
+		--no-recalc-bounds `
+		--no-recalc-timestamp `
+		--with-zopfli
+
+	$name = Split-Path -Leaf $out
+	$size = (Get-Item $out).Length / 1024
+	Write-Host ("{0,-12} {1,5:0.0} kb" -f $name, $size)
+}

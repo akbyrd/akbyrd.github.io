@@ -1,16 +1,12 @@
 To Do
 -----
-Client side (mathjax) or server side (svg)
-Client
-	Requires javascript
-	Slower
-	Page reflow
-	Copyable?
-Server
-	Copyable?
-	Page reflow?
-MathML / MathML Core
-	Super new (Jan 2023)
+[x] Offline render MathML
+[ ] Offline render SVG
+[x] Add math font
+[x] Add math styles
+[ ] Add copy button
+[ ] Reduce font size
+[ ] Revise style
 
 
 
@@ -21,8 +17,9 @@ MathML with SVG fallback
 Compare sizes
 Check for MathML support
 Prefer MathML, fall back to SVG
-Copy button
+Style math
 Add math font (Latin Modern?)
+Copy button
 
 
 
@@ -40,3 +37,5 @@ Resources
 https://misha.brukman.net/blog/2022/04/writing-math-with-hugo/
 https://mertbakir.gitlab.io/hugo/math-typesetting-in-hugo/
 https://developer.mozilla.org/en-US/docs/Web/MathML
+https://www.gust.org.pl/projects/e-foundry/lm-math
+https://github.com/fred-wang/MathFonts

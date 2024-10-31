@@ -12,3 +12,4 @@
 {{- $result = replaceRE "</span>$" "" $result }}
 
 {{- $result | safeHTML -}}
+{{ .Page.Store.Set "hasMath" true }}

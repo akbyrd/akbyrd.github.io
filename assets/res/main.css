@@ -596,6 +596,25 @@ body.error {
 }
 
 /* ---------------------------------------------------------------------------------------------- */
+/* Math */
+
+math {
+	background-color: var(--code-background);
+	border-color: var(--outline);
+	border-style: solid;
+	border-width: 1px;
+	font-family: math;
+
+	&[display="block"] {
+		padding: 8px;
+	}
+
+	&:not([display="block"]) {
+		padding: 1px 3px 1px 3px;
+	}
+}
+
+/* ---------------------------------------------------------------------------------------------- */
 /* About */
 
 .about-pic-container {

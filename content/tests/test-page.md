@@ -382,7 +382,9 @@ int main() {}
 
 ## Math
 ### Inline
-Nearby $a^*=x-b^*$ text.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. \
+Aenean sagittis porttitor nisl, $a^*=x-b^*$ at congue sem rutrum lobortis. \
+Phasellus suscipit libero odio, sed vulputate nisi euismod eu.
 
 ### Block
 $$
