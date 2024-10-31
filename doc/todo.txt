@@ -74,6 +74,7 @@ TODO: https://www.feedvalidator.org/
 
 Optimization
 TODO: Reduce classes used for syntax highlighting (stutter on firefox)
+TODO: "css overflow auto causing jitter"?
 TODO: Improve rendering perf of code (grid? (has border-collapse) less html?)
 
 Theme

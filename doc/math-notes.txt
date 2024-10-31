@@ -1,0 +1,39 @@
+To Do
+-----
+Client side (mathjax) or server side (svg)
+Client
+	Requires javascript
+	Slower
+	Page reflow
+	Copyable?
+Server
+	Copyable?
+	Page reflow?
+MathML / MathML Core
+	Super new (Jan 2023)
+
+
+
+Plan
+----
+Offline rendering only
+MathML with SVG fallback
+Compare sizes
+Check for MathML support
+Prefer MathML, fall back to SVG
+Copy button
+
+
+
+Misc
+----
+transform.Math is for server side / offline rendering
+
+Integrity Hash
+$ curl '<URL>' -o - | openssl dgst -sha384 -binary - | openssl base64 -A
+
+
+
+Resources
+---------
+https://misha.brukman.net/blog/2022/04/writing-math-with-hugo/

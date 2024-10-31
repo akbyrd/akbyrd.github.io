@@ -9,9 +9,19 @@ enableEmoji = true
 enableGitInfo = true
 enableInlineShortcodes = true
 enableRobotsTXT = true
+
 markup.goldmark.renderer.unsafe = true # allow html
 markup.goldmark.parser.attribute.block = true
 markup.goldmark.parser.wrapStandAloneImageWithinParagraph = false
+markup.goldmark.extensions.extras.delete.enable = true
+markup.goldmark.extensions.extras.insert.enable = true
+markup.goldmark.extensions.extras.mark.enable = true
+markup.goldmark.extensions.extras.subscript.enable = true
+markup.goldmark.extensions.extras.superscript.enable = true
+markup.goldmark.extensions.passthrough.enable = true
+markup.goldmark.extensions.passthrough.delimiters.block = [['$$', '$$']]
+markup.goldmark.extensions.passthrough.delimiters.inline = [['$', '$']]
+
 markup.highlight.noClasses = false
 
 # Add Atom output format

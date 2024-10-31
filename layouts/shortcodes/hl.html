@@ -1,3 +1,7 @@
 {{- $lang := or (.Get 0) "" }}
-{{- $opts := dict "hl_inline" true "lineNumbersInTable" false }}
-{{- (highlight .Inner $lang $opts) -}}
+{{- if eq $lang "math" }}
+	{{ partial "math.html" (dict "Inner" .Inner "Block" false) }}
+{{- else }}
+	{{- $opts := dict "hl_inline" true "lineNumbersInTable" false }}
+	{{- (highlight .Inner $lang $opts) -}}
+{{- end -}}
