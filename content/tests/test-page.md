@@ -381,21 +381,10 @@ int main() {}
 
 
 ## Math
-### Inline - Shortcode
-Nearby {{< hl math >}}a^*=x-b^*{{< /hl >}} text.
-
-### Inline - Passthrough
+### Inline
 Nearby $a^*=x-b^*$ text.
 
-### Block - Math
-```math
-\begin{aligned}
-KL(\hat{y} || y) &= \sum_{c=1}^{M}\hat{y}_c \log{\frac{\hat{y}_c}{y_c}} \\
-JS(\hat{y} || y) &= \frac{1}{2}(KL(y||\frac{y+\hat{y}}{2}) + KL(\hat{y}||\frac{y+\hat{y}}{2}))
-\end{aligned}
-```
-
-### Block - Passthrough
+### Block
 $$
 \begin{aligned}
 KL(\hat{y} || y) &= \sum_{c=1}^{M}\hat{y}_c \log{\frac{\hat{y}_c}{y_c}} \\

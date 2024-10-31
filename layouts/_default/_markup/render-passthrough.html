@@ -1,1 +1,14 @@
-{{ partial "math.html" (dict "Inner" .Inner "Block" (eq .Type "block")) }}
+{{ $block := false -}}
+{{ if eq .Type "block" -}}
+	{{ $block = true -}}
+{{ end -}}
+
+{{ $opts := dict "output" "mathml" "displayMode" $block -}}
+{{ $result := transform.ToMath .Inner $opts }}
+{{ $result = $result.Value }}
+
+{{- /* Remove unnecessary span */}}
+{{- $result = replaceRE `^<span [^>]*>` "" $result }}
+{{- $result = replaceRE "</span>$" "" $result }}
+
+{{- $result | safeHTML -}}

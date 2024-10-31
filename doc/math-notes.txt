@@ -22,6 +22,7 @@ Compare sizes
 Check for MathML support
 Prefer MathML, fall back to SVG
 Copy button
+Add math font (Latin Modern?)
 
 
 
@@ -37,3 +38,5 @@ $ curl '<URL>' -o - | openssl dgst -sha384 -binary - | openssl base64 -A
 Resources
 ---------
 https://misha.brukman.net/blog/2022/04/writing-math-with-hugo/
+https://mertbakir.gitlab.io/hugo/math-typesetting-in-hugo/
+https://developer.mozilla.org/en-US/docs/Web/MathML
