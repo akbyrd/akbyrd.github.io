@@ -36,10 +36,18 @@ foreach ($out in $mathOut)
 		--output-file=$out `
 		--flavor=$ext `
 		--layout-features='*' `
-		--unicodes='*' `
 		--drop-tables+="FFTM, GlyphOrder" `
 		--no-recalc-bounds `
 		--no-recalc-timestamp `
+		--unicodes="u0020-007f" <# 18kb Basic Latin #> `
+		<#--unicodes="u00a0-00ff" <# 13kb Latin-1 Supplement #> `
+		--unicodes="u0370-03ff" <# 16kb Greek and Coptic #> `
+		<#--unicodes="u2070-209f" <#  0kb Superscripts and Subscripts #> `
+		<#--unicodes="u2100-214f" <# 16kb Letterlike Symbols #> `
+		<#--unicodes="u2190-21ff" <# 14kb Arrows #> `
+		--unicodes="u2200-22ff" <# 18kb Mathematical Operators #> `
+		<#--unicodes="u2600-26ff" <#  3kb Miscellaneous Symbols #> `
+		<#--unicodes="u27c0-27ef" <#  4kb Miscellaneous Mathematical Symbols-A #> `
 		--with-zopfli
 
 	$name = Split-Path -Leaf $out

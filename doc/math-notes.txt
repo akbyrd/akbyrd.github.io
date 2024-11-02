@@ -1,7 +1,8 @@
 To Do
 -----
-[ ] Use CSS fallback for MathML
 [ ] Reduce font file size (use katex's fonts?)
+[ ] Chrome is not using font file
+[ ] Use CSS fallback for MathML
 [ ] Test with Edge
 [ ] Add copy button
 
