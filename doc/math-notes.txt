@@ -1,16 +1,9 @@
 To Do
 -----
-[x] Offline render MathML
 [ ] Offline render SVG
-[x] Add math font
-[x] Add math styles
 [ ] Add copy button
 [ ] Reduce font file size
-[x] Revise style
 [ ] Fix chrome rendering (alignment and font)
-[x] Fix overflow on firefox
-[x] Improve cursor
-[ ] Fix font color in light theme
 
 
 
