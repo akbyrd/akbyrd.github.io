@@ -1,29 +1,17 @@
 To Do
 -----
-[ ] Offline render SVG
+[ ] Use CSS fallback for MathML
+[ ] Reduce font file size (use katex's fonts?)
+[ ] Test with Edge
 [ ] Add copy button
-[ ] Reduce font file size
-[ ] Fix chrome rendering (alignment and font)
-
-
-
-Plan
-----
-Offline rendering only
-MathML with SVG fallback
-Compare sizes
-Check for MathML support
-Prefer MathML, fall back to SVG
-Style math
-Add math font (Latin Modern?)
-Copy button
 
 
 
 Issues
 ------
-Firefox will not wrap long inline equations.
-The entire equation will wrap as a unit, but it will not break up the equation.
+Firefox doesn't support `overflow-wrap: anywhere;` (entire equation will still wrap)
+Chrome doesn't support columnalign (or just about any attributes)
+Firefox doesn't support `position: absolute` on <mtd> (e.g. line numbers)
 
 
 
@@ -33,6 +21,10 @@ transform.Math is for server side / offline rendering
 
 Integrity Hash
 $ curl '<URL>' -o - | openssl dgst -sha384 -binary - | openssl base64 -A
+
+CSS fallback
+https://github.com/fred-wang/mathml.css
+<script src="https://fred-wang.github.io/mathml.css/mspace.js"></script>
 
 
 

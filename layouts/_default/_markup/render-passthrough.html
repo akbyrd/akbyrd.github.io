@@ -1,15 +1,29 @@
-{{ $block := false -}}
-{{ if eq .Type "block" -}}
-	{{ $block = true -}}
-{{ end -}}
+{{- $result := "" }}
 
-{{ $opts := dict "output" "mathml" "displayMode" $block -}}
-{{ $result := transform.ToMath .Inner $opts }}
-{{ $result = $result.Value }}
+{{- if eq .Type "block" -}}
+	{{- $opts := dict "output" "mathml" "displayMode" true }}
+	{{- $result = (transform.ToMath .Inner $opts).Value }}
 
-{{- /* Remove unnecessary span */}}
-{{- $class := printf `class="math %s"` .Type }}
-{{- $result = replaceRE `class="katex"` $class $result }}
+	{{- /* Change span to div */}}
+	{{- $result = replaceRE `^<span` `<div` $result }}
+	{{- $result = replaceRE `span>$` `div>` $result }}
+
+	{{- /* Change class to math */}}
+	{{- $result = replaceRE `class="katex"` `class="math"` $result }}
+{{- else }}
+	{{- $opts := dict "output" "mathml" "displayMode" false }}
+	{{- $result = (transform.ToMath .Inner $opts).Value }}
+
+	{{- /* Remove span */}}
+	{{- $result = replaceRE `^<span class="katex">` `` $result }}
+	{{- $result = replaceRE `</span>$` `` $result }}
+{{- end }}
+
+{{- /* Remove empty rows */}}
+{{- $result = replaceRE `<mrow></mrow>` "" $result }}
+
+{{- /* Remove empty cells */}}
+{{- $result = replaceRE `<mtd class ?="mtr-glue"></mtd>` "" $result }}
 
 {{- $result | safeHTML -}}
 {{ .Page.Store.Set "hasMath" true }}

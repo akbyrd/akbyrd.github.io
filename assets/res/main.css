@@ -609,16 +609,27 @@ math {
 	mrow {
 		cursor: text;
 	}
+
+	mtr {
+		mtd:not([class]) {
+			text-align: right;
+		}
+
+		mtd:not([class]) + mtd:not([class]) {
+			text-align: left;
+		}
+	}
 }
 
-.math.block {
+div.math {
 	display: block;
+	margin: 20px 0;
 	overflow: auto;
 	padding: 8px;
 	scrollbar-width: thin;
 }
 
-.math.inline {
+math:not([display]) {
 	padding: 1px 3px;
 }
 

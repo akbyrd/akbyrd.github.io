@@ -47,6 +47,11 @@ draft = true
 - safeHTML and being defensive against yourself
 	{{ printf `<?xml version="1.0" encoding="utf-8"?>` | safeHTML }}
 	files entire purpose is to render HTML / XML
+- Security model
+	Focused on protecting users from themselves. Not actually useful to me.
+	Never getting a way to shell out to other tools during build
+	https://github.com/gohugoio/hugo/issues/9460#issuecomment-1029051191
+	https://github.com/gohugoio/hugo/pull/7529#issuecomment-1111384963
 
 ## Misc
 - Even Better TOML supports Hugo out of the box (but doesn't say it does)
