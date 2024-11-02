@@ -5,8 +5,12 @@ To Do
 [x] Add math font
 [x] Add math styles
 [ ] Add copy button
-[ ] Reduce font size
-[ ] Revise style
+[ ] Reduce font file size
+[x] Revise style
+[ ] Fix chrome rendering (alignment and font)
+[x] Fix overflow on firefox
+[x] Improve cursor
+[ ] Fix font color in light theme
 
 
 
@@ -20,6 +24,13 @@ Prefer MathML, fall back to SVG
 Style math
 Add math font (Latin Modern?)
 Copy button
+
+
+
+Issues
+------
+Firefox will not wrap long inline equations.
+The entire equation will wrap as a unit, but it will not break up the equation.
 
 
 

@@ -27,11 +27,12 @@
 	<script src="{{ .RelPermalink }}" async{{ .Integrity }}></script>
 	{{- end }}
 
-	{{ $woff2 := partial "resource" "res/code.woff2" }}
+	{{- $woff2 := partial "resource" "res/code.woff2" }}
 	{{- $woff := partial "resource" "res/code.woff" }}
 	{{- $hasSymbols := strings.FindRE "\\p{Co}" (.Page.Content | htmlUnescape) 1 }}
-	{{- $hasCode := strings.Contains .Page.Content "<code>" -}}
-	{{- if or $hasSymbols $hasCode -}}
+	{{- $hasCode := strings.Contains .Page.Content "<code>" }}
+	{{- if or $hasSymbols $hasCode }}
+
 	<link rel="preload" as="font" href="{{ $woff2.RelPermalink }}" type="font/woff2"{{ $woff2.Integrity }}>
 	<link href="{{ $woff.RelPermalink }}" type="font/woff"{{ $woff.Integrity }}>
 	<style>
@@ -42,12 +43,13 @@
 			url("{{ $woff2.RelPermalink }}") format("woff2"),
 			url("{{ $woff.RelPermalink }}") format("woff");
 		}
-		</style>
-	{{ end -}}
+	</style>
+	{{- end }}
 
-	{{ if .Page.Store.Get "hasMath" }}
+	{{- if .Page.Store.Get "hasMath" }}
 	{{- $woff2 := partial "resource" "res/math.woff2" }}
 	{{- $woff := partial "resource" "res/math.woff" }}
+
 	<link rel="preload" as="font" href="{{ $woff2.RelPermalink }}" type="font/woff2"{{ $woff2.Integrity }}>
 	<link href="{{ $woff.RelPermalink }}" type="font/woff"{{ $woff.Integrity }}>
 	<style>
@@ -75,6 +77,7 @@
 	</script>
 
 	{{- if .Page.Store.Get "hasMermaid" }}
+
 	<script type="module">
 		import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';
 		mermaid.initialize({ startOnLoad: true });

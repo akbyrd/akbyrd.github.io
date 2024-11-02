@@ -8,8 +8,8 @@
 {{ $result = $result.Value }}
 
 {{- /* Remove unnecessary span */}}
-{{- $result = replaceRE `^<span [^>]*>` "" $result }}
-{{- $result = replaceRE "</span>$" "" $result }}
+{{- $class := printf `class="math %s"` .Type }}
+{{- $result = replaceRE `class="katex"` $class $result }}
 
 {{- $result | safeHTML -}}
 {{ .Page.Store.Set "hasMath" true }}
