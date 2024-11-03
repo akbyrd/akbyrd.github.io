@@ -346,7 +346,7 @@ code {
 	border-color: var(--outline);
 	border-style: solid;
 	border-width: 1px;
-	padding: 1px 3px 1px 3px;
+	padding: 1px 3px;
 	position: relative;
 	bottom: 1px;
 	white-space: break-spaces;
@@ -601,29 +601,6 @@ body.error {
 /* ---------------------------------------------------------------------------------------------- */
 /* Math */
 
-math {
-	font-family: math2;
-	font-size: 16pt;
-
-	annotation {
-		display: none;
-	}
-
-	mrow {
-		cursor: text;
-	}
-
-	mtr {
-		mtd:not([class]) {
-			text-align: right;
-		}
-
-		mtd:not([class]) + mtd:not([class]) {
-			text-align: left;
-		}
-	}
-}
-
 div.math {
 	display: block;
 	margin: 20px 0;
@@ -631,15 +608,82 @@ div.math {
 	padding: 8px;
 	position: relative;
 	scrollbar-width: thin;
+
+	.copy-block {
+		right: 0;
+		top: 0;
+	}
 }
 
-math:not([display]) {
-	padding: 1px 3px;
+@supports (display: math) {
+	math {
+		font-family: math2;
+		font-size: 16pt;
+		padding: 0 2px;
+
+		mrow {
+			cursor: text;
+		}
+
+		mtr {
+			mtd:not([class]) {
+				text-align: right;
+			}
+
+			mtd:not([class]) + mtd:not([class]) {
+				text-align: left;
+			}
+		}
+
+		annotation {
+			display: none;
+		}
+	}
 }
 
-.math .copy-block {
-	right: 0;
-	top: 0;
+@supports not (display: math) {
+	div.math {
+		border-color: red;
+		border-style: solid;
+		border-width: 1px;
+	}
+
+	math:not([display]) annotation {
+		border-color: red;
+		border-style: solid;
+		border-width: 1px;
+
+		padding: 1px 3px;
+		position: relative;
+		bottom: 1px;
+		white-space: break-spaces;
+
+		hyphenate-character: "";
+		@supports not (hyphenate-character: "") {
+			hyphens: manual;
+		}
+	}
+
+	math {
+		* {
+			display: none;
+			text-align: center;
+		}
+
+		semantics {
+			display: initial;
+		}
+
+		annotation {
+			display: initial;
+			font-family: code;
+			font-feature-settings: "ss01";
+			font-size-adjust: ex-height 0.48;
+			font-size: 11pt;
+			line-height: 19px;
+			white-space: pre;
+		}
+	}
 }
 
 /* ---------------------------------------------------------------------------------------------- */

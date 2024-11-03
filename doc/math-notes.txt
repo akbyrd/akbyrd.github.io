@@ -1,6 +1,5 @@
 To Do
 -----
-[ ] Show annotation if MathML isn't supported
 [ ] Use CSS fallback for MathML
 
 

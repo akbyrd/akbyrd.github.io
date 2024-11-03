@@ -61,3 +61,25 @@ Misc
 ----
 Embedding a page with a seamless iframe
 https://stackoverflow.com/a/1118715/986007
+
+
+
+Text Wrapping
+-------------
+white-space          - 2015 text-wrap + white-space-collapse
+word-break           - 2015 {break-all, break-word} break between or inside words (without moving word to new line)
+overflow-wrap        - 2018 {anywhere, break-word} break between or inside words (after moving word to new line)
+word-wrap            - ---- Non-standard alias of overflow-wrap
+line-break           - 2020 For CJK breaking
+hyphens              - 2023 {manual, auto} allows words to break across lines. Requires lang attribute.
+white-space-collapse - 2024 {break-spaces} provides line breaks at white space
+text-wrap            - 2024 text-wrap-mode + text-wrap-style
+text-wrap-mode       - ---- enable or disable wrapping
+text-wrap-style      - ---- {auto, balance, stable} set wrapping logic
+
+https://jsfiddle.net/kesr2Ltf/14/
+
+tl;dr
+overflow-wrap: break-word or anywhere
+hyphens: auto
+lang="en-US"

@@ -32,7 +32,6 @@
 {{- $result = replaceRE `<mtr` "\n<mtr" $result }}
 {{- $result = replaceRE `<mtd` "\n<mtd" $result }}
 {{- $result = replaceRE `<semantics>` "\n<semantics>\n" $result }}
-{{- $result = replaceRE `</semantics>` "\n</semantics>\n" $result }}
 {{- $result = replaceRE `<annotation` "\n<annotation" $result }}
 
 {{- /* Remove empty rows */}}

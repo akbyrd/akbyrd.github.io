@@ -38,12 +38,10 @@ TODO: Make window resizing maintain scroll position
 TODO: Try a render hook for images https://gohugo.io/render-hooks/images/
 TODO: Add search support
 TODO: Replace syntax highlighting implementation (use compiler, support inline code)
+
+Atom
 TODO: Add an XML stylesheet (.xsl) to Atom feed
 TODO: Split Atom feed into multiple files
-
-Details
-TODO: Selection is screwy around details
-TODO: Fix outline z on details
 
 Content
 TODO: Improve about page content
@@ -51,10 +49,26 @@ TODO: Add my rss list
 TODO: Input on Windows
 TODO: Blog roll
 
-Workflow
-TODO: Run github workflow locally to reduce deployment testing iteration time
+Details
+TODO: Selection is screwy around details
+TODO: Fix outline z on details
+
+Optimization
+TODO: Reduce classes used for syntax highlighting (stutter on firefox)
+TODO: "css overflow auto causing jitter"?
+TODO: Improve rendering perf of code (grid? (has border-collapse) less html?)
+
+Theme
+TODO: Pay a UI designer for a review and recommendations
+TODO: Read about meterial design https://m3.material.io/
+TODO: Pick a font for headers (ensure no padding built into characters)
+TODO: Pick a font for body text
+TODO: Pick a color scheme
+TODO: Add text selection color
+TODO: Light theme for code
 
 Testing / Compatibility
+TODO: Split up test pages
 TODO: Theme transition isn't smooth on mobile
 TODO: Remove nesting/& (2024), :has (2024), :not (2021) selectors, nth-child (2023)
 TODO: Test in safari
@@ -72,16 +86,5 @@ TODO: https://validator.w3.org/feed/
 TODO: https://roastidio.us/lint
 TODO: https://www.feedvalidator.org/
 
-Optimization
-TODO: Reduce classes used for syntax highlighting (stutter on firefox)
-TODO: "css overflow auto causing jitter"?
-TODO: Improve rendering perf of code (grid? (has border-collapse) less html?)
-
-Theme
-TODO: Pay a UI designer for a review and recommendations
-TODO: Read about meterial design https://m3.material.io/
-TODO: Pick a font for headers (ensure no padding built into characters)
-TODO: Pick a font for body text
-TODO: Pick a color scheme
-TODO: Add text selection color
-TODO: Light theme for code
+Workflow
+TODO: Run github workflow locally to reduce deployment testing iteration time
