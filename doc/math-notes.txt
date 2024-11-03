@@ -1,9 +1,7 @@
 To Do
 -----
-[ ] Reduce font file size (use katex's fonts?)
+[ ] Show annotation if MathML isn't supported
 [ ] Use CSS fallback for MathML
-[ ] Test with Edge
-[ ] Add copy button
 
 
 

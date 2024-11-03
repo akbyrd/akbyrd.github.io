@@ -163,10 +163,22 @@ function InitCode()
 {
 	code.isFirefox = navigator.userAgent.includes("Firefox/")
 
-	// Hook up code copy buttons
-	const buttons = document.getElementsByClassName("code-copy")
-	for (const button of buttons)
-		button.addEventListener("click", CopyCode, { passive: true })
+	// Hook up code and math copy buttons
+	const codeButtons = document.querySelectorAll(".highlight > .copy-block")
+	const mathButtons = document.querySelectorAll(".math > .copy-block")
+	if ("clipboard" in navigator)
+	{
+		for (const button of codeButtons)
+			button.addEventListener("click", CopyCode, { passive: true })
+
+		for (const button of mathButtons)
+			button.addEventListener("click", CopyMath, { passive: true })
+	}
+	else
+	{
+		const css = document.styleSheets[0]
+		css.insertRule(".copy-block { display: none; }", css.cssRules.length)
+	}
 
 	// Hook up line number selection
 	const idParents = document.querySelectorAll(".highlight")
@@ -201,14 +213,20 @@ function InitCode()
 
 function CopyCode(e: Event)
 {
-	if ("clipboard" in navigator)
-	{
-		const button = e.currentTarget as HTMLElement
-		const pre = button.previousElementSibling!
-		const code = pre.querySelector("code")!
-		if (code.textContent)
-			navigator.clipboard.writeText(code.textContent)
-	}
+	const button = e.currentTarget as HTMLElement
+	const pre = button.previousElementSibling!
+	const code = pre.querySelector("code")!
+	if (code.textContent)
+		navigator.clipboard.writeText(code.textContent)
+}
+
+function CopyMath(e: Event)
+{
+	const button = e.currentTarget as HTMLElement
+	const pre = button.previousElementSibling!
+	const math = pre.querySelector("annotation")!
+	if (math.textContent)
+		navigator.clipboard.writeText(math.textContent.trim())
 }
 
 function CreateSelection(idParent: HTMLElement)

@@ -192,6 +192,49 @@ button {
 	cursor: pointer;
 }
 
+.copy-block {
+	height: 36px;
+	position: absolute;
+	right: -1px;
+	top: -1px;
+	user-select: none;
+	width: 36px;
+	z-index: 1;
+
+	p {
+		background-color: var(--code-highlight-background);
+		border: 1px solid var(--outline);
+		display: block;
+		font-size: 28px;
+		justify-content: center;
+		line-height: 34px;
+		margin: 0;
+		opacity: 0%;
+		pointer-events: none;
+		text-align: center;
+		transition-duration: 100ms;
+		transition-timing-function: ease-out;
+
+		button:hover & {
+			opacity: 100%;
+		}
+
+		button:focus-visible & {
+			opacity: 100%;
+			transition-duration: 200ms;
+			transition-property: opacity, outline-color, outline-offset;
+		}
+
+		@supports not selector(:focus-visible) {
+			button:focus & {
+				opacity: 100%;
+				transition-duration: 200ms;
+				transition-property: opacity, outline-color, outline-offset;
+			}
+		}
+	}
+}
+
 details {
 	display: block;
 	margin: 20px 0;
@@ -285,12 +328,15 @@ ul, ol, li {
 /* ---------------------------------------------------------------------------------------------- */
 /* Code */
 
-code, .code-copy {
+code, .code-font {
 	font-family: code;
 	font-feature-settings: "ss01";
 	font-size-adjust: ex-height 0.48;
 	font-size: 11pt;
 	line-height: 19px;
+}
+
+code {
 	tab-size: 4;
 	white-space: pre;
 }
@@ -382,49 +428,6 @@ code, .code-copy {
 		border-bottom-color: var(--code-highlight-border);
 		position: relative;
 		z-index: 1;
-	}
-}
-
-.code-copy {
-	height: 36px;
-	position: absolute;
-	right: -1px;
-	top: -1px;
-	user-select: none;
-	width: 36px;
-	z-index: 1;
-
-	p {
-		background-color: var(--code-highlight-background);
-		border: 1px solid var(--outline);
-		display: block;
-		font-size: 28px;
-		justify-content: center;
-		line-height: 34px;
-		margin: 0;
-		opacity: 0%;
-		pointer-events: none;
-		text-align: center;
-		transition-duration: 100ms;
-		transition-timing-function: ease-out;
-
-		button:hover & {
-			opacity: 100%;
-		}
-
-		button:focus-visible & {
-			opacity: 100%;
-			transition-duration: 200ms;
-			transition-property: opacity, outline-color, outline-offset;
-		}
-
-		@supports not selector(:focus-visible) {
-			button:focus & {
-				opacity: 100%;
-				transition-duration: 200ms;
-				transition-property: opacity, outline-color, outline-offset;
-			}
-		}
 	}
 }
 
@@ -626,11 +629,17 @@ div.math {
 	margin: 20px 0;
 	overflow: auto;
 	padding: 8px;
+	position: relative;
 	scrollbar-width: thin;
 }
 
 math:not([display]) {
 	padding: 1px 3px;
+}
+
+.math .copy-block {
+	right: 0;
+	top: 0;
 }
 
 /* ---------------------------------------------------------------------------------------------- */

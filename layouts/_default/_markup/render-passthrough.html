@@ -1,23 +1,39 @@
 {{- $result := "" }}
+{{- $inner := replaceRE `(?s)^\n(.*?)\n*$` `$1` .Inner }}
 
 {{- if eq .Type "block" -}}
 	{{- $opts := dict "output" "mathml" "displayMode" true }}
-	{{- $result = (transform.ToMath .Inner $opts).Value }}
+	{{- $result = (transform.ToMath $inner $opts).Value }}
 
 	{{- /* Change span to div */}}
-	{{- $result = replaceRE `^<span` `<div` $result }}
-	{{- $result = replaceRE `span>$` `div>` $result }}
+	{{- $result = replaceRE "^<span" "<div" $result }}
+	{{- $result = replaceRE "span>$" "div>" $result }}
 
 	{{- /* Change class to math */}}
 	{{- $result = replaceRE `class="katex"` `class="math"` $result }}
+
+	{{- /* Add copy button */}}
+	{{- $tail := `<button class="copy-block code-font require-js" type="button" aria-label="Copy"><p>&#xf4bb;</p></button>` }}
+	{{- $tail = printf "\n%s\n</div>" $tail }}
+	{{- $result = replaceRE `</div>$` $tail $result }}
+
+	{{- /* New lines for readbility in development */}}
+	{{- $result = replaceRE `<math` "\n<math" $result }}
 {{- else }}
 	{{- $opts := dict "output" "mathml" "displayMode" false }}
-	{{- $result = (transform.ToMath .Inner $opts).Value }}
+	{{- $result = (transform.ToMath $inner $opts).Value }}
 
 	{{- /* Remove span */}}
 	{{- $result = replaceRE `^<span class="katex">` `` $result }}
 	{{- $result = replaceRE `</span>$` `` $result }}
 {{- end }}
+
+{{- /* New lines for readbility in development */}}
+{{- $result = replaceRE `<mtr` "\n<mtr" $result }}
+{{- $result = replaceRE `<mtd` "\n<mtd" $result }}
+{{- $result = replaceRE `<semantics>` "\n<semantics>\n" $result }}
+{{- $result = replaceRE `</semantics>` "\n</semantics>\n" $result }}
+{{- $result = replaceRE `<annotation` "\n<annotation" $result }}
 
 {{- /* Remove empty rows */}}
 {{- $result = replaceRE `<mrow></mrow>` "" $result }}
