@@ -13,12 +13,16 @@
 
 {{- $result := (transform.HighlightCodeBlock .).Wrapped }}
 
+{{- /* Set classes */}}
+{{- $result = replaceRE `class="highlight` `class="container code block` $result }}
+{{- $result = replaceRE `class="chroma` `class="chroma text special code block` $result }}
+
 {{- /* Add some newlines */}}
 {{- $result = replaceRE `^(<div [^>]*>)` "$1\n" $result }}
 {{- $result = replaceRE "</div>$" "\n</div>\n" $result }}
 
 {{- /* Add copy button */}}
-{{- $btnFmt := `<button class="copy-block code-font require-js" type="button" aria-label="Copy"><p>&#xf4bb;</p></button>$2$1` }}
+{{- $btnFmt := `<button class="copy-block text special require-js" type="button" aria-label="Copy"><p>&#xf4bb;</p></button>$2$1` }}
 {{- $result = replaceRE `(</div>(\n))` $btnFmt $result }}
 
 {{- /* Remove some junk */}}

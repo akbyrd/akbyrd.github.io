@@ -164,8 +164,8 @@ function InitCode()
 	code.isFirefox = navigator.userAgent.includes("Firefox/")
 
 	// Hook up code and math copy buttons
-	const codeButtons = document.querySelectorAll(".highlight > .copy-block")
-	const mathButtons = document.querySelectorAll(".math > .copy-block")
+	const codeButtons = document.querySelectorAll(".container.code > .copy-block")
+	const mathButtons = document.querySelectorAll(".container.math > .copy-block")
 	if ("clipboard" in navigator)
 	{
 		for (const button of codeButtons)
@@ -181,7 +181,7 @@ function InitCode()
 	}
 
 	// Hook up line number selection
-	const idParents = document.querySelectorAll(".highlight")
+	const idParents = document.querySelectorAll(".container.code")
 	for (const idParent of idParents)
 	{
 		const lnParent = idParent.querySelector("code")

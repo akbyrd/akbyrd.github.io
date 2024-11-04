@@ -9,11 +9,13 @@
 	{{- $result = replaceRE "^<span" "<div" $result }}
 	{{- $result = replaceRE "span>$" "div>" $result }}
 
-	{{- /* Change class to math */}}
+	{{- /* Set classes */}}
 	{{- $result = replaceRE `class="katex"` `class="math"` $result }}
+	{{- $result = replaceRE `<div` `<div class="container math block"` $result }}
+	{{- $result = replaceRE `<math` `<math class="text special math block"` $result }}
 
 	{{- /* Add copy button */}}
-	{{- $tail := `<button class="copy-block code-font require-js" type="button" aria-label="Copy"><p>&#xf4bb;</p></button>` }}
+	{{- $tail := `<button class="copy-block text special require-js" type="button" aria-label="Copy"><p>&#xf4bb;</p></button>` }}
 	{{- $tail = printf "\n%s\n</div>" $tail }}
 	{{- $result = replaceRE `</div>$` $tail $result }}
 
@@ -22,6 +24,9 @@
 {{- else }}
 	{{- $opts := dict "output" "mathml" "displayMode" false }}
 	{{- $result = (transform.ToMath $inner $opts).Value }}
+
+	{{- /* Set classes */}}
+	{{- $result = replaceRE `<math` `<math class="container text special math inline"` $result }}
 
 	{{- /* Remove span */}}
 	{{- $result = replaceRE `^<span class="katex">` `` $result }}
