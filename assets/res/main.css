@@ -297,12 +297,12 @@ ul, ol, li {
 }
 
 .copy-block {
-	height: 36px;
 	position: absolute;
 	right: -1px;
 	top: -1px;
 	user-select: none;
-	width: 36px;
+	height: 33.5px;
+	width: 33.5px;
 	z-index: 1;
 
 	p {
@@ -312,6 +312,7 @@ ul, ol, li {
 		font-size: 28px;
 		justify-content: center;
 		line-height: 34px;
+		height: 33.5px;
 		margin: 0;
 		opacity: 0%;
 		pointer-events: none;
@@ -395,7 +396,7 @@ code {
 	code {
 		display: block;
 		min-width: fit-content;
-		padding: 7px 0 8px 0;
+		padding: 9px 0 8px 0;
 	}
 
 	.line {
