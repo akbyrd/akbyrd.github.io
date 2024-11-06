@@ -396,7 +396,7 @@ code {
 	code {
 		display: block;
 		min-width: fit-content;
-		padding: 9px 0 8px 0;
+		padding: 8px 0;
 	}
 
 	.line {

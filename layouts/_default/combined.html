@@ -1,0 +1,9 @@
+{{- define "main" }}
+	{{- $page := . }}
+	{{- $pages := (sort .CurrentSection.Pages "File.Path" "asc") }}
+	{{- range $pages }}
+		{{- if not (eq . $page) }}
+		{{- .Content }}
+		{{- end }}
+	{{- end }}
+{{- end }}

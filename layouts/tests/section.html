@@ -1,0 +1,12 @@
+{{- define "main" }}
+		<ul class="post-list">
+			{{- $pages := (sort .Pages "File.Path" "asc") }}
+			{{- range $pages }}
+			<li class="post-list-item">
+				<a class="post-link" href="{{ .RelPermalink }}">
+					<h1 class="post-title">{{ .LinkTitle }}</h1>
+				</a>
+			</li>
+			{{- end }}
+		</ul>
+{{- end }}
