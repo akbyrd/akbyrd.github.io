@@ -23,6 +23,39 @@ function lerp(a: number, b: number, t: number)
 }
 
 // -------------------------------------------------------------------------------------------------
+// Feature Detection
+
+function InitFeatures()
+{
+	document.body.insertAdjacentHTML("afterbegin",
+		"<div style=' \
+			border: 0; \
+			clip: rect(0 0 0 0); \
+			height: 1px; \
+			margin: -1px; \
+			overflow: hidden; \
+			padding: 0; \
+			position: absolute; \
+			width: 1px; \
+		'> \
+			<math xmlns='http://www.w3.org/1998/Math/MathML'> \
+				<mspace height='23px' width='77px'></mspace> \
+			</math> \
+		</div>");
+
+	const div = document.body.firstElementChild!
+	const mspace = div.firstElementChild!.firstElementChild!
+	const rect = mspace.getBoundingClientRect()
+	document.body.removeChild(div)
+
+	if (Math.abs(rect.height - 23) > 1 || Math.abs(rect.width - 77) > 1)
+	{
+		const html = document.getElementsByTagName("html")[0]
+		html.classList.add("no-mathml")
+	}
+}
+
+// -------------------------------------------------------------------------------------------------
 // Theme Toggle
 
 const theme = {
@@ -759,6 +792,7 @@ function SelectionFromHash()
 
 function Initialize()
 {
+	InitFeatures()
 	InitTheme()
 	InitImages()
 	InitCode()

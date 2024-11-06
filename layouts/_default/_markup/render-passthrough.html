@@ -5,19 +5,19 @@
 	{{- $opts := dict "output" "mathml" "displayMode" true }}
 	{{- $result = (transform.ToMath $inner $opts).Value }}
 
-	{{- /* Change span to div */}}
+	{{- /* Change span to 2 divs */}}
 	{{- $result = replaceRE "^<span" "<div" $result }}
 	{{- $result = replaceRE "span>$" "div>" $result }}
-
-	{{- /* Set classes */}}
-	{{- $result = replaceRE `class="katex"` `class="math"` $result }}
-	{{- $result = replaceRE `<div` `<div class="container math block"` $result }}
-	{{- $result = replaceRE `<math` `<math class="text special math block"` $result }}
 
 	{{- /* Add copy button */}}
 	{{- $tail := `<button class="copy-block text special require-js" type="button" aria-label="Copy"><p>&#xf4bb;</p></button>` }}
 	{{- $tail = printf "\n%s\n</div>" $tail }}
 	{{- $result = replaceRE `</div>$` $tail $result }}
+
+	{{- /* Add a second div and set classes */}}
+	{{- $result = replaceRE `<div class="katex">` `<div class="container math block"><div class="scroll">` $result }}
+	{{- $result = replaceRE `</div>` `</div></div>` $result }}
+	{{- $result = replaceRE `<math` `<math class="text special"` $result }}
 
 	{{- /* New lines for readbility in development */}}
 	{{- $result = replaceRE `<math` "\n<math" $result }}

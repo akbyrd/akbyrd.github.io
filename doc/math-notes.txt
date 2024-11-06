@@ -1,14 +1,9 @@
-To Do
------
-[ ] Use CSS fallback for MathML
-
-
-
 Issues
 ------
 Firefox doesn't support `overflow-wrap: anywhere;` (entire equation will still wrap)
+Firefox doesn't support `position: absolute;` on <mtd> (e.g. line numbers)
+Firefox doesn't support `display: math;` which makes support detection impossible
 Chrome doesn't support columnalign (or just about any attributes)
-Firefox doesn't support `position: absolute` on <mtd> (e.g. line numbers)
 
 
 
@@ -22,6 +17,13 @@ $ curl '<URL>' -o - | openssl dgst -sha384 -binary - | openssl base64 -A
 CSS fallback
 https://github.com/fred-wang/mathml.css
 <script src="https://fred-wang.github.io/mathml.css/mspace.js"></script>
+
+
+
+Detection
+---------
+https://github.com/fred-wang/mathml.css/blob/gh-pages/mspace.js
+https://github.com/Modernizr/Modernizr/blob/master/feature-detects/mathml.js
 
 
 

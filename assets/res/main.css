@@ -139,53 +139,6 @@ body {
 	max-width: var(--max-width);
 }
 
-.block {
-	display: block;
-}
-
-.inline {
-	display: inline;
-}
-
-.container.block {
-	margin: 20px 0;
-	position: relative;
-}
-
-.text, body {
-	color: var(--text);
-	font-family: serif;
-	hyphens: auto;
-	line-height: 1.3;
-	overflow-wrap: break-word;
-	text-align: justify;
-	text-shadow: 1px 1px 6px var(--text-shadow);
-}
-
-.text.special, :not(pre) > code {
-	font-family: code;
-	font-feature-settings: "ss01";
-	font-size-adjust: ex-height 0.48;
-	font-size: 11pt;
-	line-height: 19px;
-}
-
-.text.special.inline, :not(pre) > code {
-	padding: 1px 3px;
-	position: relative;
-	bottom: 1px;
-	white-space: break-spaces;
-	hyphenate-character: "";
-	@supports not (hyphenate-character: "") {
-		hyphens: manual;
-	}
-}
-
-.text.special.block {
-	overflow: auto;
-	scrollbar-width: thin;
-}
-
 div {
 	display: block;
 	margin: 20px 0;
@@ -241,6 +194,108 @@ button {
 	cursor: pointer;
 }
 
+details {
+	display: block;
+	margin: 20px 0;
+
+	summary {
+		cursor: pointer;
+		display: block;
+		font-family: sans-serif;
+		font-size: 14pt;
+		font-weight: bold;
+		border: 1px solid var(--outline);
+		padding: 4px 6px;
+		user-select: none;
+		transition-duration: 100ms;
+		transition-property: background-color;
+
+		&:hover {
+			background-color: var(--outline);
+		}
+
+		details[open] & {
+			margin-bottom: -21px;
+		}
+	}
+}
+
+img {
+	align-items: center;
+	display: flex;
+	justify-content: space-evenly;
+	overflow: auto;
+}
+
+p {
+	display: block;
+	margin: 20px 0;
+
+	a {
+		color: var(--accent);
+	}
+}
+
+pre {
+	white-space: pre;
+}
+
+table    { display: table; }
+tbody    { display: table-row-group; }
+thead    { display: table-header-group; }
+tfoot    { display: table-footer-group; }
+tr       { display: table-row; }
+td       { display: table-cell; }
+colgroup { display: table-column-group; }
+col      { display: table-column; }
+caption  { display: table-caption; }
+
+ul, ol, li {
+	display: block;
+}
+
+.block {
+	display: block;
+}
+
+.inline {
+	display: inline;
+}
+
+.container.block {
+	margin: 20px 0;
+	position: relative;
+}
+
+.text, body {
+	color: var(--text);
+	font-family: serif;
+	hyphens: auto;
+	line-height: 1.3;
+	overflow-wrap: break-word;
+	text-align: justify;
+	text-shadow: 1px 1px 6px var(--text-shadow);
+}
+
+.text.special, :not(pre) > code {
+	font-family: code;
+	font-feature-settings: "ss01";
+	font-size-adjust: ex-height 0.48;
+	font-size: 11pt;
+	line-height: 19px;
+}
+
+.text.special.inline, :not(pre) > code {
+	padding: 1px 3px;
+	position: relative;
+	bottom: 1px;
+	white-space: break-spaces;
+	hyphenate-character: "";
+	@supports not (hyphenate-character: "") {
+		hyphens: manual;
+	}
+}
+
 .copy-block {
 	height: 36px;
 	position: absolute;
@@ -284,32 +339,6 @@ button {
 	}
 }
 
-details {
-	display: block;
-	margin: 20px 0;
-
-	summary {
-		cursor: pointer;
-		display: block;
-		font-family: sans-serif;
-		font-size: 14pt;
-		font-weight: bold;
-		border: 1px solid var(--outline);
-		padding: 4px 6px;
-		user-select: none;
-		transition-duration: 100ms;
-		transition-property: background-color;
-
-		&:hover {
-			background-color: var(--outline);
-		}
-
-		details[open] & {
-			margin-bottom: -21px;
-		}
-	}
-}
-
 .image-background {
 	display: block;
 	margin: 0 auto;
@@ -317,40 +346,6 @@ details {
 	outline-offset: 0px;
 	overflow: hidden;
 	width: fit-content;
-}
-
-img {
-	align-items: center;
-	display: flex;
-	justify-content: space-evenly;
-	overflow: auto;
-}
-
-p {
-	display: block;
-	margin: 20px 0;
-
-	a {
-		color: var(--accent);
-	}
-}
-
-pre {
-	white-space: pre;
-}
-
-table    { display: table; }
-tbody    { display: table-row-group; }
-thead    { display: table-header-group; }
-tfoot    { display: table-footer-group; }
-tr       { display: table-row; }
-td       { display: table-cell; }
-colgroup { display: table-column-group; }
-col      { display: table-column; }
-caption  { display: table-caption; }
-
-ul, ol, li {
-	display: block;
 }
 
 .fade-in {
@@ -369,6 +364,11 @@ ul, ol, li {
 		opacity: 100%;
 		scale: 100%;
 	}
+}
+
+.scroll {
+	overflow: auto;
+	scrollbar-width: thin;
 }
 
 /* ---------------------------------------------------------------------------------------------- */
@@ -619,63 +619,70 @@ body.error {
 /* ---------------------------------------------------------------------------------------------- */
 /* Math */
 
-.text.special.math {
+.text.special.math.inline {
 	white-space: normal;
 }
 
-.text.special.math.inline {
-	semantics > * {
-		white-space: break-spaces;
-	}
+.text.special.math.inline semantics > * {
+	white-space: break-spaces;
 }
 
-.text.special.math.block {
-	semantics {
-		padding: 8px;
-		min-width: fit-content;
-		display: block;
-	}
-
-	semantics > * {
-		white-space: pre;
-	}
+.math.block .scroll {
+	margin: 0;
 }
 
-@supports (display: math) {
-	math {
-		font-family: math2;
-		font-size: 16pt;
-
-		mrow {
-			cursor: text;
-		}
-
-		mtr {
-			mtd:not([class]) {
-				text-align: right;
-			}
-
-			mtd:not([class]) + mtd:not([class]) {
-				text-align: left;
-			}
-		}
-
-		semantics > annotation {
-			display: none;
-		}
-	}
+.math.block,
+.math.block .scroll,
+.math.block math,
+.math.block semantics {
+	white-space: normal;
 }
 
-@supports not (display: math) {
-	.container.math {
-		border-color: red;
-		border-style: solid;
-		border-width: 1px;
+.math.block math {
+	display: block;
+	min-width: fit-content;
+	padding: 8px;
+	text-align: center;
+}
 
-		semantics > :not(annotation) {
-			display: none;
-		}
-	}
+.math.block mrow {
+	cursor: text;
+}
+
+.math.block mtr mtd:not([class]) {
+	text-align: right;
+}
+
+.math.block mtr mtd:not([class]) + mtd:not([class]) {
+	text-align: left;
+}
+
+.math.block semantics > * {
+	white-space: pre;
+}
+
+.math semantics > :not(annotation) {
+	font-family: math2;
+	font-size: 16pt;
+	line-height: unset;
+}
+
+html:not(.no-mathml) math semantics > annotation {
+	display: none;
+}
+
+html.no-mathml .container.math {
+	border-color: var(--outline);
+	border-style: solid;
+	border-width: 1px;
+}
+
+html.no-mathml .math.block math {
+	text-align: left;
+}
+
+html.no-mathml math semantics > :not(annotation) {
+	display: none;
 }
 
 /* ---------------------------------------------------------------------------------------------- */

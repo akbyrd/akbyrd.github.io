@@ -28,9 +28,7 @@
 		<published>{{ .Format "2006-01-02T15:04:05-07:00" | safeHTML }}</published>
 		{{ end -}}
 		<updated>{{ .Lastmod.Format "2006-01-02T15:04:05-07:00" | safeHTML }}</updated>
-		<content type="xhtml">
-			<div xmlns="http://www.w3.org/1999/xhtml">{{ .Content }}</div>
-		</content>
+		<content type="html">{{ printf `<![CDATA[%s]]>` .Content | safeHTML }}</content>
 	</entry>
 	{{- end }}
 	{{- end }}

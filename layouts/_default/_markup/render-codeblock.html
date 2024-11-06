@@ -15,7 +15,7 @@
 
 {{- /* Set classes */}}
 {{- $result = replaceRE `class="highlight` `class="container code block` $result }}
-{{- $result = replaceRE `class="chroma` `class="chroma text special code block` $result }}
+{{- $result = replaceRE `class="chroma` `class="chroma text special code block scroll` $result }}
 
 {{- /* Add some newlines */}}
 {{- $result = replaceRE `^(<div [^>]*>)` "$1\n" $result }}
