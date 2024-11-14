@@ -1,0 +1,37 @@
+Approaches
+----------
+1 - giscus
+	site: 50.90 kB
+	giscus: 124.96 kB
+	Might pull in MathJax and other dependencies
+
+2 - giscus self hosted
+	requires a server (e.g. https://vercel.com/)
+	requires learning how it works
+
+3 - Read only comments, link to discussions page
+	Query requires authentication
+
+4 - Link to discussions page
+	Can't see on page
+
+
+
+To Do
+-----
+Choose: button only (none), read only (device flow), interactive (giscus)
+Test the device flow. Is it one time only?
+Investigate a custom server for OAuth
+
+
+
+Resources
+---------
+https://bartoszgorka.com/github-discussion-comments-for-jekyll-blog
+https://www.aleksandrhovhannisyan.com/blog/static-site-comments-github-issues/
+https://www.aleksandrhovhannisyan.com/blog/jekyll-comment-system-github-issues/
+https://aristath.github.io/blog/static-site-comments-using-github-issues-api
+https://dc25.github.io/myBlog/2017/06/24/using-github-comments-in-a-jekyll-blog.html
+https://github.com/dc25/minimaWithGithubComments
+https://donw.io/post/github-comments/
+https://docs.github.com/en/graphql/guides/using-the-graphql-api-for-discussions

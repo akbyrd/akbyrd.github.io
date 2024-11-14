@@ -196,6 +196,18 @@ function InitCode()
 {
 	code.isFirefox = navigator.userAgent.includes("Firefox/")
 
+	var css = null as CSSStyleSheet | null
+	const cssName = `${window.location.origin}/res/main`
+	for (const styleSheet of document.styleSheets)
+	{
+		if (styleSheet.href?.startsWith(cssName))
+		{
+			css = styleSheet
+			break
+		}
+	}
+	assert(css)
+
 	// Hook up code and math copy buttons
 	const codeButtons = document.querySelectorAll(".container.code > .copy-block")
 	const mathButtons = document.querySelectorAll(".container.math > .copy-block")
@@ -209,8 +221,7 @@ function InitCode()
 	}
 	else
 	{
-		const css = document.styleSheets[0]
-		css.insertRule(".copy-block { display: none; }", css.cssRules.length)
+		css?.insertRule(".copy-block { display: none; }", css.cssRules.length)
 	}
 
 	// Hook up line number selection
@@ -223,8 +234,7 @@ function InitCode()
 
 	if (code.lnParents)
 	{
-		const css = document.styleSheets[0]
-		css.insertRule(".line { cursor: pointer; }", css.cssRules.length)
+		css?.insertRule(".line { cursor: pointer; }", css.cssRules.length)
 
 		for (const lnParent of code.lnParents)
 		{
@@ -788,6 +798,99 @@ function SelectionFromHash()
 }
 
 // -------------------------------------------------------------------------------------------------
+// Comments
+
+function InitComments()
+{
+	const query = `
+		query {
+			repository(owner: "akbyrd", name: "akbyrd.github.io") {
+				discussion(number: 2) {
+					id
+					title
+					bodyHTML
+					createdAt
+					updatedAt
+					author {
+						login
+						avatarUrl
+						url
+					}
+					comments(first: 100) {
+						totalCount
+						nodes {
+							id
+							bodyHTML
+							createdAt
+							updatedAt
+							author {
+								login
+								avatarUrl
+								url
+							}
+							reactions(first: 100) {
+							totalCount
+							nodes {
+								content
+								user {
+									login
+								}
+							}
+							}
+						}
+					}
+					reactions(first: 100) {
+						totalCount
+						nodes {
+							content
+							user {
+								login
+							}
+						}
+					}
+				}
+			}
+		}`
+
+	async function Execute()
+	{
+		const commentsParent = document.getElementById("comments")
+		if (!commentsParent)
+			return
+
+		const variables: Record<string, any> = {}
+		const response = await fetch("https://api.github.com/graphql",
+		{
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				"Authorization": `Bearer <snip>`,
+			},
+			body: JSON.stringify({
+				query,
+				variables,
+			}),
+		})
+
+		const responseJSON = await response.json()
+		if (!responseJSON)
+			return
+
+		if (responseJSON.errors)
+		{
+			for (const error of responseJSON.errors)
+				console.error(error.message)
+			return
+		}
+
+		const comment = responseJSON.data.repository.discussion.comments.nodes[0]
+		commentsParent.innerHTML = comment.bodyHTML
+	};
+
+	Execute()
+}
+
+// -------------------------------------------------------------------------------------------------
 // Initialization
 
 function Initialize()
@@ -796,6 +899,7 @@ function Initialize()
 	InitTheme()
 	InitImages()
 	InitCode()
+	InitComments()
 }
 
 document.readyState !== "complete"

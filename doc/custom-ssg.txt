@@ -8,6 +8,8 @@ Ideas & Requirements
 * Incremental builds with web server
 * Render HTML properly indented for readability (still minify for production)
 * Hot reload for the generator itself
+* Compiles to WASM an runs in browser
+	* Dependencies must compile to WASM as well
 
 
 
@@ -18,3 +20,4 @@ Motivation
 * HTML classes for any element (namely, inline ones)
 * HTML formatting for readability
 * Simplicity
+* Render dynamic content like comments (WASM)

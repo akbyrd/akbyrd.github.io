@@ -90,7 +90,7 @@
 <body class="{{ or .Page.Layout .Page.Kind }}">
 	<header>
 		<nav class="header">
-			<a class="header-title" href="{{ site.Home.RelPermalink}}">{{ site.Title }}</a>
+			<a class="header-title" href="{{ site.Home.RelPermalink }}">{{ site.Title }}</a>
 			<p class="header-theme-label" for="header-theme-button"></p>
 			<button class="header-theme-button require-js" id="header-theme-button" type="button" aria-label="Toggle Theme">
 {{/**/}}
@@ -104,6 +104,30 @@
 
 	<main>
 		{{- block "main" . }}{{ end }}
+
+		{{- if .Page.Params.comments }}
+		<section id="comments">
+		</section>
+
+		<script src="https://giscus.app/client.js"
+			data-repo="akbyrd/akbyrd.github.io"
+			data-repo-id="MDEwOlJlcG9zaXRvcnkxODQzNDA3NTc="
+			data-category="Blog Post Comments"
+			data-category-id="DIC_kwDOCvzRFc4CbiP0"
+			data-mapping="pathname"
+			data-strict="1"
+			data-reactions-enabled="1"
+			data-emit-metadata="0"
+			data-input-position="bottom"
+			{{- with partial "resource" "res/comments.css" }}
+			data-theme="{{ .Permalink }}"
+			{{- end }}
+			data-lang="en"
+			data-loading="lazy"
+			crossorigin="anonymous"
+			async>
+		</script>
+		{{- end }}
 	</main>
 
 	<footer>

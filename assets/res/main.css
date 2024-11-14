@@ -13,6 +13,8 @@ html {
 	--accent-fade: #007fd4a0;
 
 	--dark-background:   #212121;
+	--dark-background-2: #2a2a2a;
+	--dark-background-3: #313131;
 	--dark-draft-stripe: #2c2c2c;
 	--dark-text:         #bdbdbd;
 	--dark-text-detail:  #616161;
@@ -21,6 +23,8 @@ html {
 	--dark-scrollbar:    #767676;
 
 	--light-background:   #bdbdbd;
+	--light-background-2: #b8b8b8;
+	--light-background-3: #b3b3b3;
 	--light-draft-stripe: #a0a0a0;
 	--light-text:         #212121;
 	--light-text-detail:  #404040;
@@ -49,6 +53,8 @@ html {
 
 .theme-system, .theme-dark {
 	--background:   var(--dark-background);
+	--background-2: var(--dark-background-2);
+	--background-3: var(--dark-background-3);
 	--draft-stripe: var(--dark-draft-stripe);
 	--text:         var(--dark-text);
 	--text-detail:  var(--dark-text-detail);
@@ -59,6 +65,8 @@ html {
 
 .theme-light {
 	--background:   var(--light-background);
+	--background-2: var(--light-background-2);
+	--background-3: var(--light-background-3);
 	--draft-stripe: var(--light-draft-stripe);
 	--text:         var(--light-text);
 	--text-detail:  var(--light-text-detail);
@@ -448,6 +456,50 @@ code {
 		position: relative;
 		z-index: 1;
 	}
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* Comments */
+
+div.giscus {
+	margin: 40px 0;
+}
+
+.giscus-frame {
+	outline-style: none;
+}
+
+.comment {
+	background-color: var(--background-2);
+	border-color: var(--outline);
+	border-style: solid;
+	border-width: 1px;
+	padding: 8px;
+}
+
+.comment .highlight pre,
+.comment .js-display-math {
+	background-color: var(--code-background);
+	border-color: var(--outline);
+	border-style: solid;
+	border-width: 1px;
+
+	will-change: translate;
+
+	display: block;
+	min-width: fit-content;
+	padding: 8px;
+
+	cursor: text;
+	white-space: pre;
+}
+
+.comment .js-inline-math {
+	background-color: var(--code-background);
+	border-color: var(--outline);
+	border-style: solid;
+	border-width: 1px;
+	white-space: pre;
 }
 
 /* ---------------------------------------------------------------------------------------------- */

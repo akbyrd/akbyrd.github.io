@@ -1,4 +1,28 @@
 Posts
+TODO: Choose a diagram method: goat, mermaid (jerky layout), graphviz, other
+TODO: Fix warning on checklist checkboxes (chrome)
+TODO: Lazy image loading
+TODO: Implement zoom for images (current page? new page?)
+TODO: Add "fix typo" button (https://www.ii.com/vscode-uri-scheme-and-hugo/)
+TODO: Implement comments (Github, Giscus, Staticman, Custom)
+
+General
+TODO: Try a render hook for images https://gohugo.io/render-hooks/images/
+TODO: Add search support
+TODO: Figure out how to unscale borders
+
+Atom
+TODO: Add an XML stylesheet (.xsl) to Atom feed
+TODO: Split Atom feed into multiple files
+
+Code
+TODO: Replace syntax highlighting implementation (use compiler, support inline code)
+TODO: It's still possible to scroll + select with touch on Firefox on Android
+TODO: Rethink line selection (2 long presses?)
+TODO: Rethink auto-scroll (smooth, by line, wait for scrollend or custom timer)
+TODO: Consider Shift + Click for line selection
+TODO: There's 1 pixel of clickable space around the first and last lines when highlighted
+TODO: Adjust block code lines down 1px
 TODO: Code line anchors
 	Mobile
 		test on firefox desktop touch
@@ -19,31 +43,6 @@ TODO: Code line anchors
 			mouse, touch
 			touch, mouse
 
-TODO: It's still possible to scroll + select with touch on Firefox on Android
-TODO: Choose a diagram method: goat, mermaid (jerky layout), graphviz, other
-TODO: Fix warning on checklist checkboxes (chrome)
-TODO: Lazy image loading
-TODO: Implement zoom for images (current page? new page?)
-TODO: Add "fix typo" button (https://www.ii.com/vscode-uri-scheme-and-hugo/)
-TODO: Implement comments (Github, Giscus, Staticman, Custom)
-TODO: Rethink line selection (2 long presses?)
-TODO: Rethink auto-scroll (smooth, by line, wait for scrollend or custom timer)
-TODO: Consider Shift + Click for line selection
-TODO: There's 1 pixel of clickable space around the first and last lines when highlighted
-
-General
-TODO: Ensure double tap to zoom works on mobile
-TODO: Make window resizing maintain scroll position
-TODO: Try a render hook for images https://gohugo.io/render-hooks/images/
-TODO: Add search support
-TODO: Replace syntax highlighting implementation (use compiler, support inline code)
-TODO: Figure out how to unscale borders
-TODO: Adjust block code lines down 1px
-
-Atom
-TODO: Add an XML stylesheet (.xsl) to Atom feed
-TODO: Split Atom feed into multiple files
-
 Content
 TODO: Improve about page content
 TODO: Add my rss list
@@ -53,6 +52,9 @@ TODO: Blog roll
 Details
 TODO: Selection is screwy around details
 TODO: Fix outline z on details
+
+Maybe One Day (Probably Not)
+TODO: Make window resizing maintain scroll position
 
 Optimization
 TODO: Reduce classes used for syntax highlighting (stutter on firefox)
