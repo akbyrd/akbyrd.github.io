@@ -1,3 +1,14 @@
+Compatibility
+-------------
+Aiming for 5 years (`all` is the current cutoff)
+2024 nesting
+2024 &
+2024 :has
+2023 nth-child
+2021 :not multiple selectors
+
+
+
 Guidelines
 ----------
 HTML is semantic, CSS is visual
@@ -20,3 +31,19 @@ Atomic/Utility-First CSS
 
 Resources
 ---------
+Firefox (Gecko) Style Sheets
+ua, forms, html, quirk
+resource://gre-resources/html.css
+https://searchfox.org/mozilla-central/source/layout/style/res/html.css
+
+Chrome (Chromium) Style Sheets
+fullscreen, html, mathml, quirks, svg, view-source, viewportAndroid, xhtmlImp
+mediaControls, mediaControlsAndroid, mediaControlsAndroidNew, mediaControlsNew
+themeChromium, themeChromiumAndroid, themeChromiumLinux, themeChromiumSkia
+themeInputMultipleFields, themeMac, themeWin, themeWinQuirks
+https://chromium.googlesource.com/chromium/blink/+/master/Source/core/css/html.css
+
+Safari (WebKit) Style Sheets
+captions, dialog, fullscreen, html, mathml, mediaControls, plugIns, quirks, svg
+themeAdwaita, themeWin, themWinQuirks
+https://trac.webkit.org/browser/trunk/Source/WebCore/css/html.css
