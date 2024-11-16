@@ -1,7 +1,7 @@
 /* ---------------------------------------------------------------------------------------------- */
 /* Reset */
 
-*:not(img, math, math *) { all: unset; }
+* { margin: unset; }
 
 /* ---------------------------------------------------------------------------------------------- */
 /* Colors & Fonts */
@@ -175,7 +175,8 @@ h1, h2, h3 {
 	margin: 20px 0;
 	line-height: normal;
 
-	a {
+	a, :link, :visited {
+		color: var(--text);
 		text-decoration: none;
 
 		&:hover {
@@ -188,7 +189,8 @@ h1 { font-size: 30pt; }
 h2 { font-size: 26pt; }
 h3 { font-size: 18pt; }
 
-a {
+a, :link, :visited {
+	color: var(--accent);
 	cursor: pointer;
 	text-decoration: underline;
 
@@ -206,6 +208,7 @@ blockquote {
 }
 
 button {
+	all: unset;
 	cursor: pointer;
 }
 
@@ -245,25 +248,11 @@ img {
 p {
 	display: block;
 	margin: 20px 0;
-
-	a {
-		color: var(--accent);
-	}
 }
 
 pre {
 	white-space: pre;
 }
-
-table    { display: table; }
-tbody    { display: table-row-group; }
-thead    { display: table-header-group; }
-tfoot    { display: table-footer-group; }
-tr       { display: table-row; }
-td       { display: table-cell; }
-colgroup { display: table-column-group; }
-col      { display: table-column; }
-caption  { display: table-caption; }
 
 table {
 	border-collapse: collapse;
@@ -636,6 +625,10 @@ body.error {
 .header-about {
 	padding: 20px;
 	padding-left: 10px;
+}
+
+.header a, .header :link, .header :visited {
+	color: var(--text);
 }
 
 /* ---------------------------------------------------------------------------------------------- */
