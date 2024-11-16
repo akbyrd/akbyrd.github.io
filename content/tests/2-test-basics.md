@@ -25,17 +25,25 @@ Asterisks
 ***
 
 ### Typographic replacements
-(c) (C) (r) (R) (tm) (TM) (p) (P) +-
-"Smartypants, double quotes" and 'single quotes'
+(c) (C) (r) (R) (tm) (TM) (p) (P) +- \
+"double quotes" \
+'single quotes' \
+<<angle quotes>> \
+ellipsis ... \
+en dash -- \
+em dash ---
 
 ### Emphasis
-**This is bold text** (__alternate__)
-*This is italic text* (_alternate_)
+**Bold** (__alternate__) \
+*Italic* (_alternate_) \
 ~~Strikethrough~~
 
-### Subscript / Superscript
-19^th^
-H~2~O
+### Extras
+Superscript 19^th^ \
+Subscript H~2~O \
+~~Deleted~~ \
+++Inserted++ \
+==Mark==
 
 ### Blockquotes
 > Quote 1
@@ -44,19 +52,22 @@ H~2~O
 
 ### Lists
 Checklist
-- [x] A
-- [ ] B
+- [x] One
+- [ ] Two
 	- [ ] Sub
+		- [ ] Sub
 
 Unordered
 * One
 * Two
 	* Sub
+		* Sub
 
 Ordered
-3. Three
-1. Four
-	a. Sub
+1. One
+1. Two
+	1. Sub
+		1. Sub
 
 ### Tables
 | Number | Text  |

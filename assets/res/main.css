@@ -198,6 +198,13 @@ a {
 	}
 }
 
+blockquote {
+	padding: 0 10px;
+	border-left-color: var(--text-detail);
+	border-left-style: solid;
+	border-left-width: 3px;
+}
+
 button {
 	cursor: pointer;
 }
@@ -258,8 +265,21 @@ colgroup { display: table-column-group; }
 col      { display: table-column; }
 caption  { display: table-caption; }
 
-ul, ol, li {
-	display: block;
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+	margin: 20px 0;
+}
+
+thead, tfoot {
+	background-color: var(--background-2);
+}
+
+th, td {
+	border-color: var(--outline);
+	border-style: solid;
+	border-width: 1px;
+	padding: 8px;
 }
 
 .block {
@@ -378,6 +398,21 @@ ul, ol, li {
 .scroll {
 	overflow: auto;
 	scrollbar-width: thin;
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* Checklists */
+
+ul:has(li input) {
+	padding-left: 20px;
+}
+
+ul:has(li input) ul:has(li input) {
+	padding-left: 40px;
+}
+
+li:has(input) {
+	display: block;
 }
 
 /* ---------------------------------------------------------------------------------------------- */
