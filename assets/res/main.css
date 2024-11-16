@@ -698,6 +698,24 @@ body.error {
 /* ---------------------------------------------------------------------------------------------- */
 /* Math */
 
+math[display="inline"] {
+	display: inline;
+	display: inline math;
+}
+
+math[display="inline"] semantics *:not(annotation) {
+	display: inline;
+	display: inline math;
+}
+
+math[display="block"] {
+	display: block;
+	display: block math;
+	min-width: fit-content;
+	padding: 8px;
+	/*text-align: center;*/
+}
+
 .text.special.math.inline {
 	white-space: normal;
 }
@@ -717,13 +735,6 @@ body.error {
 	white-space: normal;
 }
 
-.math.block math {
-	display: block;
-	min-width: fit-content;
-	padding: 8px;
-	text-align: center;
-}
-
 .math.block mrow {
 	cursor: text;
 }
@@ -740,28 +751,37 @@ body.error {
 	white-space: pre;
 }
 
-.math semantics > :not(annotation) {
+math {
+	text-align: center;
+}
+
+math semantics > annotation {
+	display: none;
+}
+
+math semantics > :not(annotation) {
 	font-family: math2;
-	font-size: 16pt;
+	font-size: 14pt;
+	font-size-adjust: unset;
 	line-height: unset;
 }
 
-html:not(.no-mathml) math semantics > annotation {
-	display: none;
-}
-
-html.no-mathml .container.math {
-	border-color: var(--outline);
-	border-style: solid;
-	border-width: 1px;
-}
-
-html.no-mathml .math.block math {
+.no-mathml math {
 	text-align: left;
 }
 
-html.no-mathml math semantics > :not(annotation) {
+.no-mathml math semantics > annotation {
+	display: inline;
+}
+
+.no-mathml math semantics > :not(annotation) {
 	display: none;
+}
+
+.no-mathml .container.math {
+	border-color: var(--outline);
+	border-style: solid;
+	border-width: 1px;
 }
 
 /* ---------------------------------------------------------------------------------------------- */

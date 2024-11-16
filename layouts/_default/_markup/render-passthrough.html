@@ -27,6 +27,7 @@
 
 	{{- /* Set classes */}}
 	{{- $result = replaceRE `<math` `<math class="container text special math inline"` $result }}
+	{{- $result = replaceRE `<math([^>]*)>` `<math$1 display="inline">` $result }}
 
 	{{- /* Remove span */}}
 	{{- $result = replaceRE `^<span class="katex">` `` $result }}

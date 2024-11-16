@@ -11,7 +11,8 @@ General
 TODO: Try a render hook for images https://gohugo.io/render-hooks/images/
 TODO: Add search support
 TODO: Figure out how to unscale borders (e.g. fix copy button size)
-TODO: Text classes feel like a mistake. Makign things harder rather than easier
+TODO: Text classes feel like a mistake. Making things harder rather than easier
+TODO: Why is math falling back to built-in for many glyphs?
 
 Atom
 TODO: Add an XML stylesheet (.xsl) to Atom feed

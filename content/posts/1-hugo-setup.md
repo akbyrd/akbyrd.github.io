@@ -63,6 +63,11 @@ draft = true
 - Sphinx?
 - Custom?
 
+## General Web Stuff
+CSS is rough. A bunch of defaults come from browser style sheets rather than from initial values. `table { all: unset; }` ends up resetting `display: table;` to `display: inline;`. Want default styles from the browser (lists, tables, math, etc). But any use of * by the user agent style sheet breaks inheritance. Option 1 - `* { all: unset; }` and rebuild everything from scratch. Option 2 - Build on top of browser defaults and be exposed to quirks of individual browsers. In both cases you have to assume inheritance doesn't exist and use * for everything. Layers might fix this, but they're too new to use (aiming for 6 years of compatibility).
+
+How do you organize selectors? Target HTML (usually semantic)? Target semantic CSS classes? Target visual CSS classes? I like the idea that HTML is semantics _only_. Target HTML as much as possible, use semantic CSS classes where HTML is complicated or ambiguous. Prefer to target a single class instead of multiple classes. BEM (Block-Element-Modifier) seems like a reasonable default.
+
 ## The rabbit hole
 Want to make a site
 Remember posts about markup languages and generating html (matklad, templates always wrong)

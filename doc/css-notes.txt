@@ -1,0 +1,22 @@
+Guidelines
+----------
+HTML is semantic, CSS is visual
+	Do not embed visual information into HTML
+	Use semantic classes only
+Vaguely follow BEM for CSS classes
+Target HTML tags before classes
+	HTML tags
+	HTML single classes
+	HTML multiple classes
+
+
+
+Methodologies
+-------------
+BEM (Block-Element-Modifier)
+SMACSS (Scalable and Modular Architecture for CSS)
+Atomic/Utility-First CSS
+
+
+Resources
+---------
