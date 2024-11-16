@@ -31,10 +31,10 @@
 	</mask>
 
 	<circle class="header-theme-icon-background"
-		cx="50%" cy="50%" r="46px" stroke-width="8px" stroke="black"
+		cx="50%" cy="50%" r="46px" stroke-width="8px"
 		style="cx: 50%; cy: 50%; r: 46px; stroke-width: 8px;" />
 
 	<circle class="header-theme-icon-fill"
-		cx="50%" cy="50%" r="42px" fill="white" mask="url(#mask)"
-		style="cx: 50%; cy: 50%; r: 42px; mask: url(#mask);" />
+		cx="50%" cy="50%" r="46px" fill="white" mask="url(#mask)"
+		style="cx: 50%; cy: 50%; r: 46px; mask: url(#mask);" />
 </svg>
