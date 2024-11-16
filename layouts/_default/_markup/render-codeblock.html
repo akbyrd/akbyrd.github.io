@@ -22,7 +22,7 @@
 {{- $result = replaceRE "</div>$" "\n</div>\n" $result }}
 
 {{- /* Add copy button */}}
-{{- $btnFmt := `<button class="copy-block text special require-js" type="button" aria-label="Copy"><p>&#xf4bb;</p></button>$2$1` }}
+{{- $btnFmt := `<button class="copy-block text special require-js" type="button" aria-label="Copy">&#xf4bb;</button>$2$1` }}
 {{- $result = replaceRE `(</div>(\n))` $btnFmt $result }}
 
 {{- /* Remove some junk */}}

@@ -5,11 +5,13 @@ TODO: Lazy image loading
 TODO: Implement zoom for images (current page? new page?)
 TODO: Add "fix typo" button (https://www.ii.com/vscode-uri-scheme-and-hugo/)
 TODO: Implement comments (Github, Giscus, Staticman, Custom)
+TODO: Fix initial math style (incorrect until code runs)
 
 General
 TODO: Try a render hook for images https://gohugo.io/render-hooks/images/
 TODO: Add search support
-TODO: Figure out how to unscale borders
+TODO: Figure out how to unscale borders (e.g. fix copy button size)
+TODO: Text classes feel like a mistake. Makign things harder rather than easier
 
 Atom
 TODO: Add an XML stylesheet (.xsl) to Atom feed
