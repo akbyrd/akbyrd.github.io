@@ -1,12 +1,7 @@
 /* ---------------------------------------------------------------------------------------------- */
-/* Reset */
+/* Colors */
 
-* { all: unset; }
-
-/* ---------------------------------------------------------------------------------------------- */
-/* Colors & Fonts */
-
-html {
+:root {
 	--max-width: 800px;
 
 	--accent:      #007fd4;
@@ -51,6 +46,9 @@ html {
 	--code-highlight-border:     #007fd4;
 }
 
+/* ---------------------------------------------------------------------------------------------- */
+/* Theme Support */
+
 .theme-system, .theme-dark {
 	--background:   var(--dark-background);
 	--background-2: var(--dark-background-2);
@@ -78,6 +76,8 @@ html {
 @media (prefers-color-scheme: light) {
 	.theme-system {
 		--background:   var(--light-background);
+		--background-2: var(--light-background-2);
+		--background-3: var(--light-background-3);
 		--draft-stripe: var(--light-draft-stripe);
 		--text:         var(--light-text);
 		--text-detail:  var(--light-text-detail);
@@ -129,13 +129,15 @@ html * {
 /* ---------------------------------------------------------------------------------------------- */
 /* Shared / Standard */
 
-a, :link, :visited {
+a {
 	color: var(--accent);
 	cursor: pointer;
-	text-decoration: underline;
-
 	hyphenate-character: "";
-	@supports not (hyphenate-character: "") {
+	text-decoration: underline;
+}
+
+@supports not (hyphenate-character: "") {
+	a {
 		hyphens: manual;
 	}
 }
@@ -145,6 +147,7 @@ blockquote {
 	border-left-color: var(--text-detail);
 	border-left-style: solid;
 	border-left-width: 3px;
+	margin: unset;
 }
 
 body {
@@ -187,54 +190,39 @@ details {
 }
 
 div {
-	display: block;
 	margin: 20px 0;
-}
-
-em {
-	font-style: italic;
 }
 
 footer {
-	display: block;
 	margin: 20px 0;
 }
 
-head {
-	display: none;
-}
-
 h1, h2, h3 {
-	display: block;
 	font-family: sans-serif;
 	font-weight: bold;
 	margin: 20px 0;
 	line-height: normal;
+}
 
-	a, :link, :visited {
-		color: var(--text);
-		text-decoration: none;
+h1 a, h2 a, h3 a {
+	color: var(--text);
+	text-decoration: none;
+}
 
-		&:hover {
-			text-decoration: underline;
-		}
-	}
+h1 a:hover, h2 a:hover, h3 a:hover {
+	text-decoration: underline;
 }
 
 h1 { font-size: 30pt; }
 h2 { font-size: 26pt; }
 h3 { font-size: 18pt; }
 
-hr {
-	display: block;
-	border-style: solid;
-	border-width: 1px;
-	margin: 20px 0;
+header {
+	margin-bottom: 20px;
 }
 
-header {
-	display: block;
-	margin-bottom: 20px;
+hr {
+	margin: 20px 0;
 }
 
 html {
@@ -251,37 +239,17 @@ img {
 }
 
 main {
-	display: block;
 	font-size: 14pt;
 	padding: 0 20px;
 }
 
 p {
-	display: block;
 	margin: 20px 0;
 }
 
 pre {
-	white-space: pre;
+	margin: unset;
 }
-
-script {
-	display: none;
-}
-
-style {
-	display: none;
-}
-
-table    { display: table; }
-tbody    { display: table-row-group; }
-thead    { display: table-header-group; }
-tfoot    { display: table-footer-group; }
-tr       { display: table-row; }
-td       { display: table-cell; }
-colgroup { display: table-column-group; }
-col      { display: table-column; }
-caption  { display: table-caption; }
 
 table {
 	border-collapse: collapse;
@@ -654,7 +622,7 @@ body.error {
 	padding-left: 10px;
 }
 
-.header a, .header :link, .header :visited {
+.header a {
 	color: var(--text);
 }
 
@@ -727,22 +695,10 @@ body.error {
 /* ---------------------------------------------------------------------------------------------- */
 /* Math */
 
-math[display="inline"] {
-	display: inline;
-	display: inline math;
-}
-
-math[display="inline"] semantics *:not(annotation) {
-	display: inline;
-	display: inline math;
-}
-
 math[display="block"] {
-	display: block;
-	display: block math;
 	min-width: fit-content;
 	padding: 8px;
-	/*text-align: center;*/
+	text-align: center;
 }
 
 .text.special.math.inline {
@@ -797,6 +753,11 @@ math semantics > :not(annotation) {
 
 .no-mathml math {
 	text-align: left;
+}
+
+.no-mathml math[display="block" i] {
+	display: block;
+	display: block math;
 }
 
 .no-mathml math semantics > annotation {

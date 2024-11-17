@@ -6,6 +6,27 @@ Aiming for 5 years (`all` is the current cutoff)
 2024 :has
 2023 nth-child
 2021 :not multiple selectors
+2021 :is
+
+
+
+Reset
+-----
+Should I use a reset or not?
+
+Reset
+* Have to re-implement a lot of boilerplate
+* Might have mistakes from missing boilerplate
+	* More likely to come up in comments where I can't predict / preview the content
+	* Not always possible/reasonable to re-implement (browser specific attributes, newer CSS features)
+
+No Reset
+* Site may look different on different browsers
+* Will have to fight the browser styles in some cases
+
+Issues
+* img loses its size if the file isn't found when using all: unset
+* MathML styles are relatively complex (and use new CSS features)
 
 
 
@@ -29,6 +50,7 @@ SMACSS (Scalable and Modular Architecture for CSS)
 Atomic/Utility-First CSS
 
 
+
 Resources
 ---------
 Firefox (Gecko) Style Sheets
@@ -47,3 +69,13 @@ Safari (WebKit) Style Sheets
 captions, dialog, fullscreen, html, mathml, mediaControls, plugIns, quirks, svg
 themeAdwaita, themeWin, themWinQuirks
 https://trac.webkit.org/browser/trunk/Source/WebCore/css/html.css
+
+MathML spec
+https://w3c.github.io/mathml-core/#the-top-level-math-element
+
+MathML default style sheet
+https://w3c.github.io/mathml-core/#user-agent-stylesheet
+
+Mathematical Alphanumeric Symbols
+Range: 1D400–1D7FF
+https://www.unicode.org/charts/PDF/U1D400.pdf

@@ -1,0 +1,319 @@
+/* hidden */
+
+area,
+base,
+basefont,
+datalist,
+head,
+link,
+meta,
+noembed,
+noframes,
+param,
+rp,
+script,
+style,
+template,
+title {
+	display: none;
+}
+
+/* blocks */
+
+article,
+aside,
+blockquote,
+body,
+details,
+dd,
+div,
+dl,
+dt,
+figcaption,
+figure,
+footer,
+form,
+h1, h2, h3, h4, h5, h6,
+header,
+hgroup,
+html,
+main,
+nav,
+p,
+search,
+section,
+summary {
+	display: block;
+}
+
+hr {
+	display: block;
+	border-width: 1px;
+	border-style: solid;
+}
+
+/* misc */
+
+b, strong {
+	font-weight: bolder;
+}
+
+big {
+	font-size: larger;
+}
+
+canvas {
+	user-select: none;
+}
+
+code {
+	font-family: monospace;
+}
+
+i, cite, em, var, dfn {
+	font-style: italic;
+}
+
+nobr {
+	white-space: nowrap;
+}
+
+pre {
+	white-space: pre;
+}
+
+q:before {
+	content: open-quote;
+}
+
+q:after {
+	content: close-quote;
+}
+
+s, strike, del {
+	text-decoration: line-through;
+}
+
+@media (scripting) {
+	noscript {
+		display: none;
+	}
+}
+
+slot {
+	display: contents;
+}
+
+small {
+	font-size: smaller;
+}
+
+sub {
+	vertical-align: sub;
+	font-size: smaller;
+}
+
+sup {
+	vertical-align: super;
+	font-size: smaller;
+}
+
+u, ins {
+	text-decoration: underline;
+}
+
+/* details */
+
+details > summary:first-of-type {
+	display: list-item;
+	counter-increment: list-item 0;
+	list-style: disclosure-closed inside;
+}
+
+details[open] > summary:first-of-type {
+	list-style-type: disclosure-open;
+}
+
+/* tables */
+
+table    { display: table; }
+caption  { display: table-caption; }
+tr       { display: table-row; }
+col      { display: table-column; }
+colgroup { display: table-column-group; }
+tbody    { display: table-row-group; }
+thead    { display: table-header-group; }
+tfoot    { display: table-footer-group; }
+td       { display: table-cell; }
+th       { display: table-cell; }
+
+/* lists */
+
+ul, menu {
+	counter-reset: list-item;
+	display: block;
+	list-style-type: disc;
+	margin-block-start: 1em;
+	margin-block-end: 1em;
+	padding-inline-start: 40px;
+}
+
+ol {
+	counter-reset: list-item;
+	display: block;
+	list-style-type: decimal;
+	margin-block-start: 1em;
+	margin-block-end: 1em;
+	padding-inline-start: 40px;
+}
+
+li {
+	display: list-item;
+}
+
+li dl,
+li ol,
+li ul,
+li menu {
+	margin-block: 0;
+}
+
+li li ul,
+li li menu {
+	list-style-type: circle;
+}
+
+li li li ul,
+li li li menu {
+	list-style-type: square;
+}
+
+/* media */
+
+audio:not([controls]) {
+	display: none;
+}
+
+video {
+	object-fit: contain;
+}
+
+video > img {
+	object-fit: inherit;
+	object-position: inherit;
+}
+
+/* dialogs */
+
+dialog {
+	display: block;
+}
+
+dialog:not([open]) {
+	display: none;
+}
+
+/* Ruby */
+
+ruby { display: ruby; }
+rb { display: ruby-base; }
+rt { display: ruby-text; }
+rtc { display: ruby-text-container; }
+
+/* popovers */
+
+[popover]:not(:popover-open):not(dialog[open]) {
+	display: none;
+}
+
+dialog:popover-open {
+	display: block;
+}
+
+/* math */
+
+math {
+	font-family: math;
+	font-size: math;
+	math-depth: 0;
+
+	display: inline;
+	display: inline math;
+	math-shift: compact;
+	math-style: compact;
+}
+
+math[display="block" i] {
+	display: block;
+	display: block math;
+	math-shift: normal;
+	math-style: normal;
+}
+
+semantics > :not(:first-child),
+maction > :not(:first-child) {
+	display: none;
+}
+
+merror {
+	border: 1px solid red;
+	background-color: lightYellow;
+}
+
+mfrac {
+	padding-inline: 1px;
+}
+
+mfrac > * {
+	math-depth: auto-add;
+	math-style: compact;
+}
+
+mi {
+	text-transform: math-auto;
+}
+
+mphantom {
+	visibility: hidden;
+}
+
+mtable {
+	display: inline-table;
+}
+
+mtd {
+	display: table-cell;
+	text-align: center;
+	padding: 0.5ex 0.4em;
+}
+
+mtr {
+	display: table-row;
+}
+
+mroot > :not(:first-child) {
+	math-depth: add(2);
+	math-style: compact;
+}
+
+msub > :not(:first-child),
+msup > :not(:first-child),
+msubsup > :not(:first-child),
+mmultiscripts > :not(:first-child),
+munder > :not(:first-child),
+mover > :not(:first-child),
+munderover > :not(:first-child) {
+	math-depth: add(1);
+	math-style: compact;
+}
+
+mroot, msqrt,
+mfrac > :nth-child(2),
+msub > :nth-child(2),
+msubsup > :nth-child(2),
+mmultiscripts > :nth-child(even),
+mmultiscripts > mprescripts ~ :nth-child(odd),
+mover[accent="true" i] > :first-child,
+munderover[accent="true" i] > :first-child {
+	math-shift: compact;
+}
