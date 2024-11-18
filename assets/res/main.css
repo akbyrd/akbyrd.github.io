@@ -701,6 +701,12 @@ math[display="block"] {
 	text-align: center;
 }
 
+semantics {
+	/* Fix up inline math on Chrome */
+	display: inline;
+	display: inline math;
+}
+
 .text.special.math.inline {
 	white-space: normal;
 }
@@ -734,14 +740,6 @@ math[display="block"] {
 
 .math.block semantics > * {
 	white-space: pre;
-}
-
-math {
-	text-align: center;
-}
-
-math semantics > annotation {
-	display: none;
 }
 
 math semantics > :not(annotation) {

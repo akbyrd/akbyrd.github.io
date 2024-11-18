@@ -25,7 +25,6 @@ Asterisks
 ***
 
 ### Typographic replacements
-(c) (C) (r) (R) (tm) (TM) (p) (P) +- \
 "double quotes" \
 'single quotes' \
 <<angle quotes>> \
@@ -82,7 +81,6 @@ Ordered
 
 ### Footnotes
 Footnote [^footnote]
-Inline footnote^[inline footnote]
 [^footnote]: Footnote
 
 ### Definitions
