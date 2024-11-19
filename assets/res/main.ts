@@ -192,10 +192,9 @@ const code: Code = {
 	hash:      "",
 }
 
-function InitCode()
+// TODO: Remove when giscus is no longer needed
+function GetCSS()
 {
-	code.isFirefox = navigator.userAgent.includes("Firefox/")
-
 	var css = null as CSSStyleSheet | null
 	const cssName = `${window.location.origin}/res/main`
 	for (const styleSheet of document.styleSheets)
@@ -206,7 +205,14 @@ function InitCode()
 			break
 		}
 	}
-	assert(css)
+	return css
+}
+
+function InitCode()
+{
+	code.isFirefox = navigator.userAgent.includes("Firefox/")
+
+	const css = GetCSS()
 
 	// Hook up code and math copy buttons
 	const codeButtons = document.querySelectorAll(".container.code > .copy-block")
@@ -800,92 +806,278 @@ function SelectionFromHash()
 // -------------------------------------------------------------------------------------------------
 // Comments
 
+// TODO: Show comments
+// TODO: Ensure loading is async
+// TODO: Show input box
+// TODO: Login button
+// TODO: Lazy load
+// TODO: Put in a separate file?
+
+const comments = {
+	exist: false,
+}
+
+interface IError {
+	error: string;
+}
+
+interface IUser {
+	avatarUrl: string;
+	login: string;
+	url: string;
+}
+
+const Reactions = {
+	THUMBS_UP: '👍',
+	THUMBS_DOWN: '👎',
+	LAUGH: '😄',
+	HOORAY: '🎉',
+	CONFUSED: '😕',
+	HEART: '❤️',
+	ROCKET: '🚀',
+	EYES: '👀',
+} as const;
+
+type IReactionGroups = {
+	[key in keyof typeof Reactions]: {
+		count: number;
+		viewerHasReacted: boolean;
+	};
+};
+
+type ICommentAuthorAssociation =
+	| 'COLLABORATOR'
+	| 'CONTRIBUTOR'
+	| 'FIRST_TIMER'
+	| 'FIRST_TIME_CONTRIBUTOR'
+	| 'MANNEQUIN'
+	| 'MEMBER'
+	| 'NONE'
+	| 'OWNER'
+	| 'APP';
+
+interface IBaseComment {
+	id: string;
+	author: IUser;
+	viewerDidAuthor: boolean;
+	createdAt: string;
+	url: string;
+	authorAssociation: ICommentAuthorAssociation;
+	lastEditedAt: string | null;
+	deletedAt: string | null;
+	isMinimized: boolean;
+	bodyHTML: string;
+	reactions: IReactionGroups;
+}
+
+interface IReply extends IBaseComment {
+	replyToId: string;
+}
+
+interface IComment extends IBaseComment {
+	upvoteCount: number;
+	viewerHasUpvoted: boolean;
+	viewerCanUpvote: boolean;
+	replyCount: number;
+	replies: IReply[];
+}
+
+interface IGiscussion {
+	viewer: IUser;
+	discussion: {
+		id: string;
+		url: string;
+		locked: boolean;
+		totalCommentCount: number;
+		totalReplyCount: number;
+		pageInfo: {
+			startCursor: string;
+			hasNextPage: boolean;
+			hasPreviousPage: boolean;
+			endCursor: string;
+		};
+		repository: {
+			nameWithOwner: string;
+		};
+		reactionCount: number;
+		reactions: IReactionGroups;
+		comments: IComment[];
+	};
+}
+
+class TreeBuilder {
+	element: HTMLElement
+
+	constructor(tag: string, class_?: string, id_?: string, style_?: Partial<CSSStyleDeclaration>)
+	{
+		this.element = document.createElement(tag)
+		if (class_) this.element.classList.add(class_)
+		if (id_) this.element.id = id_
+		if (style_) Object.assign(this.element.style, style_)
+	}
+
+	tree(...ts: TreeBuilder[]): TreeBuilder
+	{
+		for (const t of ts)
+			this.element.appendChild(t.element)
+		return this
+	}
+
+	child(tag: string, class_?: string, id_?: string, style_?: Partial<CSSStyleDeclaration>): TreeBuilder
+	{
+		const child = document.createElement(tag)
+		if (class_) child.classList.add(class_)
+		if (id_) child.id = id_
+		if (style_) Object.assign(child.style, style_)
+		this.element.appendChild(child)
+		return this
+	}
+
+	class(c: string): TreeBuilder
+	{
+		this.element.classList.add(c)
+		return this
+	}
+
+	id(i: string): TreeBuilder
+	{
+		this.element.id = i
+		return this
+	}
+
+	style(s: Partial<CSSStyleDeclaration>): TreeBuilder
+	{
+		Object.assign(this.element.style, s)
+		return this
+	}
+
+	innerHTML(html: string): TreeBuilder
+	{
+		this.element.innerHTML = html
+		return this
+	}
+}
+
+// decide: how to style github content
+// 1. make html more like blog
+// 2. jump hoops with styles
+
 function InitComments()
 {
-	const query = `
-		query {
-			repository(owner: "akbyrd", name: "akbyrd.github.io") {
-				discussion(number: 2) {
-					id
-					title
-					bodyHTML
-					createdAt
-					updatedAt
-					author {
-						login
-						avatarUrl
-						url
-					}
-					comments(first: 100) {
-						totalCount
-						nodes {
-							id
-							bodyHTML
-							createdAt
-							updatedAt
-							author {
-								login
-								avatarUrl
-								url
-							}
-							reactions(first: 100) {
-							totalCount
-							nodes {
-								content
-								user {
-									login
-								}
-							}
-							}
-						}
-					}
-					reactions(first: 100) {
-						totalCount
-						nodes {
-							content
-							user {
-								login
-							}
-						}
-					}
-				}
-			}
-		}`
-
 	async function Execute()
 	{
 		const commentsParent = document.getElementById("comments")
 		if (!commentsParent)
 			return
 
-		const variables: Record<string, any> = {}
-		const response = await fetch("https://api.github.com/graphql",
-		{
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"Authorization": `Bearer <snip>`,
-			},
-			body: JSON.stringify({
-				query,
-				variables,
-			}),
+		const loginButton = document.getElementById("github-login")
+		assert(loginButton)
+
+		const baseUrl = "https://giscus.app/api/discussions"
+		const params = new URLSearchParams({
+			repo: "akbyrd/akbyrd.github.io",
+			term: "tests/test-comments/", // TODO: Remove
+			//term: document.title,
+			category: "Blog Post Comments",
+			number: "0",
+			strict: "true",
+			last: "15",
 		})
 
-		const responseJSON = await response.json()
-		if (!responseJSON)
-			return
+		const url = `${baseUrl}?${params.toString()}`
+		const response = await fetch(url)
 
-		if (responseJSON.errors)
+		const json = await response.json()
+		if (!json)
 		{
-			for (const error of responseJSON.errors)
-				console.error(error.message)
+			Fail()
 			return
 		}
 
-		const comment = responseJSON.data.repository.discussion.comments.nodes[0]
-		commentsParent.innerHTML = comment.bodyHTML
+		comments.exist = response.ok
+		if (!response.ok)
+		{
+			assertType<IError>(json)
+			const knownError = json.error?.includes("Discussion not found")
+			if (!knownError)
+			{
+				console.error(json.error ?? "unknown error")
+				Fail()
+				return
+			}
+		}
+		else
+		{
+			const css = GetCSS()
+
+			assertType<IGiscussion>(json)
+			for (const comment of json.discussion.comments)
+			{
+				const div = document.createElement("div")
+				div.classList.add("comment")
+				div.innerHTML = comment.bodyHTML
+
+				const inlineCodes = div.querySelectorAll("code")
+				for (const code of inlineCodes)
+					code.classList.add("text", "special", "code", "inline")
+
+				//const blockCodes = div.querySelectorAll(".highlight")
+				//for (const code of blockCodes)
+					//code.classList.add("text", "special", "code", "block")
+
+				const inlineMaths = div.querySelectorAll(".js-inline-math")
+				for (const math of inlineMaths)
+					math.classList.add("text", "special", "math", "inline")
+
+				const displayMaths = div.querySelectorAll(".js-display-math")
+				for (const displayMath of displayMaths)
+				{
+					const blockDiv = document.createElement("div")
+					blockDiv.classList.add("container", "math", "block", "no-mathml")
+					displayMath.parentElement!.append(blockDiv)
+
+					const scrollDiv = document.createElement("div")
+					scrollDiv.classList.add("scroll")
+					blockDiv.append(scrollDiv)
+
+					const mathNs = "http://www.w3.org/1998/Math/MathML"
+					const math = document.createElementNS(mathNs, "math")
+					math.classList.add("text", "special")
+					math.setAttribute("display", "block")
+					scrollDiv.append(math)
+
+					const semantics = document.createElement("semantics")
+					math.append(semantics)
+
+					const annotation = document.createElement("annotation")
+					annotation.setAttribute("encoding", "application/x-tex")
+					annotation.textContent = displayMath.textContent!.replace(/^\$\$\s*|\s*\$\$$/g, "")
+					semantics.append(annotation)
+
+					const button = document.createElement("button")
+					button.classList.add("copy-block", "text", "special", "require-js")
+					button.type = "button"
+					button.ariaLabel = "Copy"
+					button.innerHTML = "&#xf4bb;"
+					// TODO: Re-use this code
+					if ("clipboard" in navigator)
+						button.addEventListener("click", CopyMath, { passive: true })
+					else
+						css?.insertRule(".copy-block { display: none; }", css.cssRules.length)
+					scrollDiv.append(button)
+
+					displayMath.remove()
+				}
+
+				commentsParent.append(div)
+			}
+		}
 	};
+
+	function Fail()
+	{
+		// TODO: display an error
+	}
 
 	Execute()
 }
@@ -903,5 +1095,5 @@ function Initialize()
 }
 
 document.readyState !== "complete"
-	? window.addEventListener("load", (e) => Initialize(), { passive: true })
+	? window.addEventListener("load", Initialize, { passive: true })
 	: Initialize()
