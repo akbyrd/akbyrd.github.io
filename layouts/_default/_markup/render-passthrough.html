@@ -15,7 +15,7 @@
 	{{- $result = replaceRE `</div>$` $tail $result }}
 
 	{{- /* Add a second div and set classes */}}
-	{{- $result = replaceRE `<div class="katex">` `<div class="container math block"><div class="scroll">` $result }}
+	{{- $result = replaceRE `<div class="katex">` `<div class="container math"><div class="scroll">` $result }}
 	{{- $result = replaceRE `</div>` `</div></div>` $result }}
 	{{- $result = replaceRE `<math` `<math class="text special"` $result }}
 

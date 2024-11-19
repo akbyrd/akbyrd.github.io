@@ -268,16 +268,8 @@ th, td {
 	padding: 8px;
 }
 
-.block {
-	display: block;
-}
-
-.inline {
-	display: inline;
-}
-
-.container.block {
-	margin: 20px 0;
+.container {
+	/* for copy buttons */
 	position: relative;
 }
 
@@ -291,7 +283,7 @@ th, td {
 	text-shadow: 1px 1px 6px var(--text-shadow);
 }
 
-.text.special, :not(pre) > code {
+annotation, code, .text-code {
 	font-family: code;
 	font-feature-settings: "ss01";
 	font-size-adjust: ex-height 0.48;
@@ -299,7 +291,7 @@ th, td {
 	line-height: 19px;
 }
 
-.text.special.inline, :not(pre) > code {
+.text.special.inline, :not(pre) > code, .math-inline annotation {
 	padding: 1px 3px;
 	position: relative;
 	bottom: 1px;
@@ -414,7 +406,7 @@ code {
 	border-width: 1px;
 }
 
-.container.code.block {
+.container.code {
 	pre {
 		counter-reset: line-numbers var(--ln-start, 1);
 		will-change: translate;
@@ -701,13 +693,24 @@ math[display="block"] {
 	text-align: center;
 }
 
+annotation {
+	white-space: pre;
+}
+
+math {
+	font-family: math2;
+}
+
 semantics {
-	/* Fix up inline math on Chrome */
 	display: inline;
 	display: inline math;
+
+	/* TODO: move to math */
+	font-family: math2;
 }
 
 .text.special.math.inline {
+	/* TODO: remove */
 	white-space: normal;
 }
 
@@ -717,13 +720,6 @@ semantics {
 
 .math.block .scroll {
 	margin: 0;
-}
-
-.math.block,
-.math.block .scroll,
-.math.block math,
-.math.block semantics {
-	white-space: normal;
 }
 
 .math.block mrow {
@@ -738,20 +734,17 @@ semantics {
 	text-align: left;
 }
 
-.math.block semantics > * {
-	white-space: pre;
-}
-
-math semantics > :not(annotation) {
-	font-family: math2;
-	font-size: 14pt;
-	font-size-adjust: unset;
-	line-height: unset;
-}
-
 .no-mathml math {
+	border-color: var(--outline);
+	border-style: solid;
+	border-width: 1px;
 	text-align: left;
+
+	font-size: 11pt;
 }
+
+/*math { font-size: 11pt; }*/
+/*semantics { font-size: 11pt; }*/
 
 .no-mathml math[display="block" i] {
 	display: block;
@@ -764,12 +757,6 @@ math semantics > :not(annotation) {
 
 .no-mathml math semantics > :not(annotation) {
 	display: none;
-}
-
-.no-mathml .container.math {
-	border-color: var(--outline);
-	border-style: solid;
-	border-width: 1px;
 }
 
 /* ---------------------------------------------------------------------------------------------- */
