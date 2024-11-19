@@ -13,6 +13,8 @@ TODO: Add search support
 TODO: Figure out how to unscale borders (e.g. fix copy button size)
 TODO: Text classes feel like a mistake. Making things harder rather than easier
 TODO: Why is math falling back to built-in for many glyphs?
+TODO: Overhaul CSS
+	math blocks have 2px extra vertical padding
 
 Atom
 TODO: Add an XML stylesheet (.xsl) to Atom feed

@@ -14,8 +14,8 @@
 {{- $result := (transform.HighlightCodeBlock .).Wrapped }}
 
 {{- /* Set classes */}}
-{{- $result = replaceRE `class="highlight` `class="container code block` $result }}
-{{- $result = replaceRE `class="chroma` `class="chroma text special code block scroll` $result }}
+{{- $result = replaceRE `class="highlight` `class="container code` $result }}
+{{- $result = replaceRE `class="chroma` `class="chroma text special code scroll` $result }}
 
 {{- /* Add some newlines */}}
 {{- $result = replaceRE `^(<div [^>]*>)` "$1\n" $result }}
