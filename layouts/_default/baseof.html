@@ -106,7 +106,10 @@
 		{{- block "main" . }}{{ end }}
 
 		{{- if .Page.Params.comments }}
-		<section id="comments">
+		<section id="comments" class="no-mathml">
+			<!--
+				<button id="github-login">Login</button>
+			-->
 		</section>
 
 		<script src="https://giscus.app/client.js"
