@@ -202,6 +202,7 @@ h1, h2, h3 {
 	font-weight: bold;
 	margin: 20px 0;
 	line-height: normal;
+	text-align: left;
 }
 
 h1 a, h2 a, h3 a {
@@ -786,6 +787,7 @@ semantics {
 	margin: 0 auto;
 
 	li {
+		display: inline;
 		height: 40px;
 		width: 40px;
 	}

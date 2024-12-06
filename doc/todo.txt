@@ -21,6 +21,7 @@ TODO: Add an XML stylesheet (.xsl) to Atom feed
 TODO: Split Atom feed into multiple files
 
 Code
+TODO: Fix copy button on mobile
 TODO: Replace syntax highlighting implementation (use compiler, support inline code)
 TODO: It's still possible to scroll + select with touch on Firefox on Android
 TODO: Rethink line selection (2 long presses?)
