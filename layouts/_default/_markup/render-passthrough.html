@@ -10,14 +10,14 @@
 	{{- $result = replaceRE "span>$" "div>" $result }}
 
 	{{- /* Add copy button */}}
-	{{- $tail := `<button class="copy-block text special require-js" type="button" aria-label="Copy">&#xf4bb;</button>` }}
+	{{- $tail := `<button class="copy-block require-js" type="button" aria-label="Copy">&#xf4bb;</button>` }}
 	{{- $tail = printf "\n%s\n</div>" $tail }}
 	{{- $result = replaceRE `</div>$` $tail $result }}
 
 	{{- /* Add a second div and set classes */}}
-	{{- $result = replaceRE `<div class="katex">` `<div class="container math"><div class="scroll">` $result }}
+	{{- $result = replaceRE `<div class="katex">` `<div class="container"><div class="scroll">` $result }}
 	{{- $result = replaceRE `</div>` `</div></div>` $result }}
-	{{- $result = replaceRE `<math` `<math class="text special"` $result }}
+	{{- $result = replaceRE `<math` `<math class="text"` $result }}
 
 	{{- /* New lines for readbility in development */}}
 	{{- $result = replaceRE `<math` "\n<math" $result }}
@@ -26,7 +26,7 @@
 	{{- $result = (transform.ToMath $inner $opts).Value }}
 
 	{{- /* Set classes */}}
-	{{- $result = replaceRE `<math` `<math class="container text special math inline"` $result }}
+	{{- $result = replaceRE `<math` `<math class="container text"` $result }}
 	{{- $result = replaceRE `<math([^>]*)>` `<math$1 display="inline">` $result }}
 
 	{{- /* Remove span */}}

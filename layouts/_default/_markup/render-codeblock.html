@@ -15,14 +15,14 @@
 
 {{- /* Set classes */}}
 {{- $result = replaceRE `class="highlight` `class="container code` $result }}
-{{- $result = replaceRE `class="chroma` `class="chroma text special code scroll` $result }}
+{{- $result = replaceRE `class="chroma` `class="chroma code scroll` $result }}
 
 {{- /* Add some newlines */}}
 {{- $result = replaceRE `^(<div [^>]*>)` "$1\n" $result }}
 {{- $result = replaceRE "</div>$" "\n</div>\n" $result }}
 
 {{- /* Add copy button */}}
-{{- $btnFmt := `<button class="copy-block text special require-js" type="button" aria-label="Copy">&#xf4bb;</button>$2$1` }}
+{{- $btnFmt := `<button class="copy-block require-js" type="button" aria-label="Copy">&#xf4bb;</button>$2$1` }}
 {{- $result = replaceRE `(</div>(\n))` $btnFmt $result }}
 
 {{- /* Remove some junk */}}

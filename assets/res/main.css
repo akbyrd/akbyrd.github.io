@@ -284,67 +284,6 @@ th, td {
 	text-shadow: 1px 1px 6px var(--text-shadow);
 }
 
-annotation, code, .text-code {
-	font-family: code;
-	font-feature-settings: "ss01";
-	font-size-adjust: ex-height 0.48;
-	font-size: 11pt;
-	line-height: 19px;
-}
-
-.text.special.inline, :not(pre) > code, .math-inline annotation {
-	padding: 1px 3px;
-	position: relative;
-	bottom: 1px;
-	white-space: break-spaces;
-	hyphenate-character: "";
-	@supports not (hyphenate-character: "") {
-		hyphens: manual;
-	}
-}
-
-.text.special.copy-block {
-	display: block;
-	position: absolute;
-	right: -1px;
-	top: -1px;
-	z-index: 1;
-	user-select: none;
-
-	height: 33.5px;
-	width: 33.5px;
-	font-size: 28px;
-	line-height: 34px;
-	justify-content: center;
-	text-align: center;
-
-	background-color: var(--code-highlight-background);
-	border: 1px solid var(--outline);
-	margin: 0;
-
-	opacity: 0%;
-	transition-duration: 100ms;
-	transition-timing-function: ease-out;
-
-	&:hover {
-		opacity: 100%;
-	}
-
-	&:focus-visible {
-		opacity: 100%;
-		transition-duration: 200ms;
-		transition-property: opacity, outline-color, outline-offset;
-	}
-
-	@supports not selector(:focus-visible) {
-		&:focus & {
-			opacity: 100%;
-			transition-duration: 200ms;
-			transition-property: opacity, outline-color, outline-offset;
-		}
-	}
-}
-
 .image-background {
 	display: block;
 	margin: 0 auto;
@@ -395,16 +334,35 @@ li:has(input) {
 /* ---------------------------------------------------------------------------------------------- */
 /* Code */
 
-code {
+code, annotation, .copy-block {
+	font-family: code;
+	font-feature-settings: "ss01";
+	font-size-adjust: ex-height 0.48;
+}
+
+code, annotation {
+	font-size: 11pt;
+	line-height: 19px;
 	tab-size: 4;
 	white-space: pre;
 }
 
-.container.code, :not(pre) > code {
+:not(pre) > code, .container.code {
 	background-color: var(--code-background);
 	border-color: var(--outline);
 	border-style: solid;
 	border-width: 1px;
+}
+
+:not(pre) > code, math[display="inline"] annotation {
+	padding: 1px 3px;
+	position: relative;
+	bottom: 1px;
+	white-space: break-spaces;
+	hyphenate-character: "";
+	@supports not (hyphenate-character: "") {
+		hyphens: manual;
+	}
 }
 
 .container.code {
@@ -467,6 +425,48 @@ code {
 		border-bottom-color: var(--code-highlight-border);
 		position: relative;
 		z-index: 1;
+	}
+}
+
+.copy-block {
+	display: block;
+	position: absolute;
+	right: -1px;
+	top: -1px;
+	z-index: 1;
+	user-select: none;
+
+	height: 33.5px;
+	width: 33.5px;
+	font-size: 28px;
+	line-height: 34px;
+	justify-content: center;
+	text-align: center;
+
+	background-color: var(--code-highlight-background);
+	border: 1px solid var(--outline);
+	margin: 0;
+
+	opacity: 0%;
+	transition-duration: 100ms;
+	transition-timing-function: ease-out;
+
+	&:hover {
+		opacity: 100%;
+	}
+
+	&:focus-visible {
+		opacity: 100%;
+		transition-duration: 200ms;
+		transition-property: opacity, outline-color, outline-offset;
+	}
+
+	@supports not selector(:focus-visible) {
+		&:focus & {
+			opacity: 100%;
+			transition-duration: 200ms;
+			transition-property: opacity, outline-color, outline-offset;
+		}
 	}
 }
 
@@ -688,16 +688,6 @@ body.error {
 /* ---------------------------------------------------------------------------------------------- */
 /* Math */
 
-math[display="block"] {
-	min-width: fit-content;
-	padding: 8px;
-	text-align: center;
-}
-
-annotation {
-	white-space: pre;
-}
-
 math {
 	font-family: math2;
 }
@@ -710,29 +700,35 @@ semantics {
 	font-family: math2;
 }
 
-.text.special.math.inline {
+math[display="inline"] {
 	/* TODO: remove */
 	white-space: normal;
 }
 
-.text.special.math.inline semantics > * {
+math[display="inline"] semantics > * {
 	white-space: break-spaces;
 }
 
-.math.block .scroll {
-	margin: 0;
+math[display="block"] {
+	min-width: fit-content;
+	padding: 8px;
+	text-align: center;
 }
 
-.math.block mrow {
+math[display="block"] mrow {
 	cursor: text;
 }
 
-.math.block mtr mtd:not([class]) {
+math[display="block"] mtr mtd:not([class]) {
 	text-align: right;
 }
 
-.math.block mtr mtd:not([class]) + mtd:not([class]) {
+math[display="block"] mtr mtd:not([class]) + mtd:not([class]) {
 	text-align: left;
+}
+
+math[display="block"] .scroll {
+	margin: 0;
 }
 
 .no-mathml math {
