@@ -17,7 +17,6 @@
 	{{- /* Add a second div and set classes */}}
 	{{- $result = replaceRE `<div class="katex">` `<div class="container"><div class="scroll">` $result }}
 	{{- $result = replaceRE `</div>` `</div></div>` $result }}
-	{{- $result = replaceRE `<math` `<math class="text"` $result }}
 
 	{{- /* New lines for readbility in development */}}
 	{{- $result = replaceRE `<math` "\n<math" $result }}
@@ -26,7 +25,6 @@
 	{{- $result = (transform.ToMath $inner $opts).Value }}
 
 	{{- /* Set classes */}}
-	{{- $result = replaceRE `<math` `<math class="container text"` $result }}
 	{{- $result = replaceRE `<math([^>]*)>` `<math$1 display="inline">` $result }}
 
 	{{- /* Remove span */}}

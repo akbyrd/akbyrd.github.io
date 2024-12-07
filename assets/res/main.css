@@ -274,7 +274,7 @@ th, td {
 	position: relative;
 }
 
-.text, body {
+body {
 	color: var(--text);
 	font-family: serif;
 	hyphens: auto;
@@ -711,7 +711,7 @@ math[display="inline"] semantics > * {
 
 math[display="block"] {
 	min-width: fit-content;
-	padding: 8px;
+	padding: 6.5px 8px;
 	text-align: center;
 }
 
@@ -731,25 +731,22 @@ math[display="block"] .scroll {
 	margin: 0;
 }
 
-.no-mathml math {
+.no-mathml math[display="block"],
+.no-mathml math[display="inline"] annotation {
 	border-color: var(--outline);
 	border-style: solid;
 	border-width: 1px;
-	text-align: left;
-
 	font-size: 11pt;
+	text-align: left;
 }
 
-/*math { font-size: 11pt; }*/
-/*semantics { font-size: 11pt; }*/
-
-.no-mathml math[display="block" i] {
+.no-mathml math[display="block"] {
 	display: block;
 	display: block math;
 }
 
-.no-mathml math semantics > annotation {
-	display: inline;
+.no-mathml math[display="block"] annotation {
+	display: block;
 }
 
 .no-mathml math semantics > :not(annotation) {
@@ -778,9 +775,10 @@ math[display="block"] .scroll {
 .about-link-container {
 	display: flex;
 	justify-content: space-between;
-	user-select: none;
-	max-width: calc(40px * 6 + 12px * 5);
 	margin: 0 auto;
+	max-width: calc(40px * 6 + 12px * 5);
+	padding: 0;
+	user-select: none;
 
 	li {
 		display: inline;
