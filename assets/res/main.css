@@ -553,6 +553,46 @@ code, annotation {
 		pre > code {
 			padding: 8px;
 		}
+
+		.comment-header {
+			display: flex;
+			gap: 8px;
+
+			margin: 0;
+		}
+
+		.comment-header a {
+			text-decoration: none;
+		}
+
+		.comment-header a:hover {
+			text-decoration: underline;
+		}
+
+		.comment-avatar {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+
+			color: var(--text);
+			font-family: sans-serif;
+			font-weight: bold;
+			line-height: normal;
+		}
+
+		.comment-avatar img {
+			border-radius: 50%;
+		}
+
+		.comment-time {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+
+			color: var(--text-detail);
+			font-family: sans-serif;
+			font-size: 11pt;
+		}
 	}
 
 	.comment > div {

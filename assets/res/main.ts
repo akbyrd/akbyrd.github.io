@@ -1008,6 +1008,9 @@ function InitComments()
 		}
 		else
 		{
+			const avatarTemplate = document.getElementById("comment-avatar-template") as HTMLTemplateElement
+			console.log(avatarTemplate.content.childNodes)
+
 			assertType<IGiscussion>(json)
 			for (const comment of json.discussion.comments)
 			{
@@ -1016,7 +1019,30 @@ function InitComments()
 
 				const div = document.createElement("div")
 				div.innerHTML = comment.bodyHTML
-				outerDiv.appendChild(div)
+				outerDiv.append(div)
+
+				{
+					const avatarFragment = avatarTemplate.content.cloneNode(true) as DocumentFragment
+
+					const aAvatar = avatarFragment.querySelector(".comment-avatar")! as HTMLAnchorElement
+					aAvatar.href = comment.author.url
+					aAvatar.append(comment.author.login)
+
+					const img = aAvatar.querySelector("img")!
+					img.src = comment.author.avatarUrl
+					img.style.display = "inline"
+
+					const aTime = avatarFragment.querySelector(".comment-time")! as HTMLAnchorElement
+					aAvatar.href = comment.url
+
+					const time = aTime.querySelector("time")!
+					time.dateTime = comment.createdAt
+					const date = new Date(comment.createdAt)
+					const formatter = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
+					time.innerText = formatter.format(date)
+
+					div.prepend(avatarFragment)
+				}
 
 				let blockCodes = div.querySelectorAll("div.highlight")
 				for (const codeDiv of blockCodes)
@@ -1028,7 +1054,7 @@ function InitComments()
 
 					const code = document.createElement("code")
 					code.append(...pre.childNodes)
-					pre.appendChild(code)
+					pre.append(code)
 
 					if ("clipboard" in navigator)
 					{
@@ -1038,7 +1064,7 @@ function InitComments()
 						button.ariaLabel = "Copy"
 						button.textContent = "\uf4bb"
 						button.addEventListener("click", CopyCode, { passive: true })
-						codeDiv.appendChild(button)
+						codeDiv.append(button)
 					}
 				}
 
@@ -1061,7 +1087,7 @@ function InitComments()
 						button.ariaLabel = "Copy"
 						button.textContent = "\uf4bb"
 						button.addEventListener("click", CopyCode, { passive: true })
-						codeDiv.appendChild(button)
+						codeDiv.append(button)
 					}
 				}
 
