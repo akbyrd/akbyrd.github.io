@@ -316,6 +316,62 @@ th, td {
 }
 
 /* ---------------------------------------------------------------------------------------------- */
+/* About */
+
+.about-pic-container {
+	float: left;
+	margin-right: 20px;
+}
+
+@media (max-width: 600px) {
+	.about-pic-container {
+		float: none;
+		margin: 0 auto 20px auto;
+	}
+}
+
+.about-pic {
+	max-width: 256px;
+}
+
+.about-link-container {
+	display: flex;
+	justify-content: space-between;
+	margin: 0 auto;
+	max-width: calc(40px * 6 + 12px * 5);
+	padding: 0;
+	user-select: none;
+
+	li {
+		display: inline;
+		height: 40px;
+		width: 40px;
+	}
+
+	a {
+		display: block;
+		font-size: 44px;
+		font-family: code;
+		font-size: 44px;
+		text-decoration: none;
+	}
+
+	p {
+		aspect-ratio: 1;
+		background-color: var(--dark-background);
+		border-radius: 4px;
+		color: var(--dark-text);
+		line-height: 42px;
+		margin: 0;
+		overflow: hidden;
+		text-align: center;
+
+		a[title="GitHub"] & { font-size: 105%; }
+		a[title="Mastodon"] & { font-size: 98%; }
+	}
+}
+
+/* ---------------------------------------------------------------------------------------------- */
 /* Checklists */
 
 ul:has(li input) {
@@ -796,62 +852,6 @@ math[display="block"] mtr mtd:not([class]) + mtd:not([class]) {
 
 .no-mathml math semantics > :not(annotation) {
 	display: none;
-}
-
-/* ---------------------------------------------------------------------------------------------- */
-/* About */
-
-.about-pic-container {
-	float: left;
-	margin-right: 20px;
-}
-
-@media (max-width: 600px) {
-	.about-pic-container {
-		float: none;
-		margin: 0 auto 20px auto;
-	}
-}
-
-.about-pic {
-	max-width: 256px;
-}
-
-.about-link-container {
-	display: flex;
-	justify-content: space-between;
-	margin: 0 auto;
-	max-width: calc(40px * 6 + 12px * 5);
-	padding: 0;
-	user-select: none;
-
-	li {
-		display: inline;
-		height: 40px;
-		width: 40px;
-	}
-
-	a {
-		display: block;
-		font-size: 44px;
-		font-family: code;
-		font-size: 44px;
-		text-decoration: none;
-	}
-
-	p {
-		aspect-ratio: 1;
-		background-color: var(--dark-background);
-		border-radius: 4px;
-		color: var(--dark-text);
-		line-height: 42px;
-		margin: 0;
-		overflow: hidden;
-		text-align: center;
-
-		a[title="GitHub"] & { font-size: 105%; }
-		a[title="Mastodon"] & { font-size: 98%; }
-	}
 }
 
 /* ---------------------------------------------------------------------------------------------- */
