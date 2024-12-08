@@ -1008,9 +1008,6 @@ function InitComments()
 		}
 		else
 		{
-			// TODO: Remove
-			console.log(json)
-
 			assertType<IGiscussion>(json)
 			for (const comment of json.discussion.comments)
 			{
@@ -1068,36 +1065,52 @@ function InitComments()
 					}
 				}
 
-				// TODO: Don't use .js-inline-math
-				const inlineMaths = div.querySelectorAll(".js-inline-math") as NodeListOf<HTMLElement>
-				for (const math of inlineMaths)
+				function ConstructMath(display: string, latex: string)
 				{
-					math.classList.add("math", "inline")
-					math.style.display = ""
-					math.textContent = math.textContent!.replace(/^\$\`\s*|\s*\$\`$$/gm, "")
-					math.textContent = math.textContent!.replace(/^\$\s*|\s*\$$/gm, "")
-				}
-
-				const displayMaths = div.querySelectorAll(".js-display-math") as NodeListOf<HTMLElement>
-				for (const displayMath of displayMaths)
-				{
-					const div = document.createElement("div")
-					div.classList.add("container", "math", "scroll")
-					displayMath.insertAdjacentElement("afterend", div)
-					displayMath.remove()
-
 					const mathNs = "http://www.w3.org/1998/Math/MathML"
 					const math = document.createElementNS(mathNs, "math")
-					math.setAttribute("display", "block")
-					div.append(math)
+					math.setAttribute("display", display)
 
 					const semantics = document.createElement("semantics")
 					math.append(semantics)
 
 					const annotation = document.createElement("annotation")
 					annotation.setAttribute("encoding", "application/x-tex")
-					annotation.textContent = displayMath.textContent!.replace(/^\$\$\s*|\s*\$\$$/g, "")
+					annotation.textContent = latex
 					semantics.append(annotation)
+
+					return math
+				}
+
+				const inlineMaths = div.querySelectorAll(".js-inline-math") as NodeListOf<HTMLElement>
+				for (const ghMath of inlineMaths)
+				{
+					let latex = ghMath.textContent!
+					latex = latex.replace(/^\$\`\s*|\s*\$\`$$/gm, "")
+					latex = latex.replace(/^\$\s*|\s*\$$/gm, "")
+					const math = ConstructMath("inline", latex)
+
+					ghMath.insertAdjacentElement("afterend", math)
+					ghMath.remove()
+				}
+
+				const displayMaths = div.querySelectorAll(".js-display-math") as NodeListOf<HTMLElement>
+				for (const ghMath of displayMaths)
+				{
+					const outerDiv = document.createElement("div")
+					outerDiv.classList.add("container", "math")
+
+					const div = document.createElement("div")
+					div.classList.add("scroll")
+					outerDiv.append(div)
+
+					let latex = ghMath.textContent!
+					latex = latex.replace(/^\$\$\s*|\s*\$\$$/gm, "")
+					const math = ConstructMath("block", latex)
+					div.append(math)
+
+					ghMath.insertAdjacentElement("afterend", outerDiv)
+					ghMath.remove()
 
 					if ("clipboard" in navigator)
 					{

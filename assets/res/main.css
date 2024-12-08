@@ -389,13 +389,13 @@ li:has(input) {
 /* ---------------------------------------------------------------------------------------------- */
 /* Code */
 
-code, annotation, .copy-block, .js-inline-math {
+code, annotation, .copy-block {
 	font-family: code;
 	font-feature-settings: "ss01";
 	font-size-adjust: ex-height 0.48;
 }
 
-code, annotation, .js-inline-math {
+code, annotation {
 	font-size: 11pt;
 	line-height: 19px;
 	tab-size: 4;
@@ -409,7 +409,7 @@ code, annotation, .js-inline-math {
 	border-width: 1px;
 }
 
-:not(pre) > code, math[display="inline"] annotation, .js-inline-math {
+:not(pre) > code, math[display="inline"] annotation {
 	padding: 1px 3px;
 	position: relative;
 	bottom: 1px;
@@ -832,8 +832,7 @@ math[display="block"] mtr mtd:not([class]) + mtd:not([class]) {
 }
 
 .no-mathml .container:has(math),
-.no-mathml math[display="inline"] annotation,
-.js-inline-math {
+.no-mathml math[display="inline"] annotation {
 	border-color: var(--outline);
 	border-style: solid;
 	border-width: 1px;
