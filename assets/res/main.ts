@@ -212,23 +212,11 @@ function InitCode()
 {
 	code.isFirefox = navigator.userAgent.includes("Firefox/")
 
-	const css = GetCSS()
-
 	// Hook up code and math copy buttons
 	const codeButtons = document.querySelectorAll(".container.code > .copy-block")
 	const mathButtons = document.querySelectorAll(".container.math > .copy-block")
-	if ("clipboard" in navigator)
-	{
-		for (const button of codeButtons)
-			button.addEventListener("click", CopyCode, { passive: true })
-
-		for (const button of mathButtons)
-			button.addEventListener("click", CopyMath, { passive: true })
-	}
-	else
-	{
-		css?.insertRule(".copy-block { display: none; }", css.cssRules.length)
-	}
+	AttachCopyFunction(codeButtons, CopyCode)
+	AttachCopyFunction(mathButtons, CopyMath)
 
 	// Hook up line number selection
 	const idParents = document.querySelectorAll(".container.code")
@@ -240,6 +228,7 @@ function InitCode()
 
 	if (code.lnParents)
 	{
+		const css = GetCSS()
 		css?.insertRule(".line { cursor: pointer; }", css.cssRules.length)
 
 		for (const lnParent of code.lnParents)
@@ -257,6 +246,32 @@ function InitCode()
 		document.body.insertAdjacentElement("beforeend", code.scrollTarget)
 
 		SelectionFromHash()
+	}
+}
+
+function AttachCopyFunction(elements: NodeListOf<Element> | Element, func: (e: Event) => void)
+{
+	if ("clipboard" in navigator)
+	{
+		if (elements instanceof NodeList)
+		{
+			for (const element of elements)
+				element.addEventListener("click", func, { passive: true })
+		}
+		else
+			elements.addEventListener("click", func, { passive: true })
+	}
+	else
+	{
+		if (elements instanceof NodeList)
+		{
+			for (const element of elements)
+				(element as HTMLElement).style.display = "none"
+		}
+		else
+		{
+			(elements as HTMLElement).style.display = "none"
+		}
 	}
 }
 
@@ -909,59 +924,6 @@ interface IGiscussion {
 	};
 }
 
-class TreeBuilder {
-	element: HTMLElement
-
-	constructor(tag: string, class_?: string, id_?: string, style_?: Partial<CSSStyleDeclaration>)
-	{
-		this.element = document.createElement(tag)
-		if (class_) this.element.classList.add(class_)
-		if (id_) this.element.id = id_
-		if (style_) Object.assign(this.element.style, style_)
-	}
-
-	tree(...ts: TreeBuilder[]): TreeBuilder
-	{
-		for (const t of ts)
-			this.element.appendChild(t.element)
-		return this
-	}
-
-	child(tag: string, class_?: string, id_?: string, style_?: Partial<CSSStyleDeclaration>): TreeBuilder
-	{
-		const child = document.createElement(tag)
-		if (class_) child.classList.add(class_)
-		if (id_) child.id = id_
-		if (style_) Object.assign(child.style, style_)
-		this.element.appendChild(child)
-		return this
-	}
-
-	class(c: string): TreeBuilder
-	{
-		this.element.classList.add(c)
-		return this
-	}
-
-	id(i: string): TreeBuilder
-	{
-		this.element.id = i
-		return this
-	}
-
-	style(s: Partial<CSSStyleDeclaration>): TreeBuilder
-	{
-		Object.assign(this.element.style, s)
-		return this
-	}
-
-	innerHTML(html: string): TreeBuilder
-	{
-		this.element.innerHTML = html
-		return this
-	}
-}
-
 function InitComments()
 {
 	async function Execute()
@@ -1008,18 +970,17 @@ function InitComments()
 		}
 		else
 		{
+			const commentTemplate = document.getElementById("comment") as HTMLTemplateElement
 			const avatarTemplate = document.getElementById("comment-avatar-template") as HTMLTemplateElement
-			console.log(avatarTemplate.content.childNodes)
+			const mathInlineTemplate = document.getElementById("comment-math-inline") as HTMLTemplateElement
+			const mathBlockTemplate = document.getElementById("comment-math-block") as HTMLTemplateElement
 
 			assertType<IGiscussion>(json)
 			for (const comment of json.discussion.comments)
 			{
-				const outerDiv = document.createElement("div")
-				outerDiv.classList.add("comment")
-
-				const div = document.createElement("div")
-				div.innerHTML = comment.bodyHTML
-				outerDiv.append(div)
+				const commentFragment = commentTemplate.content.cloneNode(true) as DocumentFragment
+				const commentDiv = commentFragment.querySelector(".padding") as HTMLElement
+				commentDiv.innerHTML = comment.bodyHTML
 
 				{
 					const avatarFragment = avatarTemplate.content.cloneNode(true) as DocumentFragment
@@ -1041,10 +1002,10 @@ function InitComments()
 					const formatter = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
 					time.innerText = formatter.format(date)
 
-					div.prepend(avatarFragment)
+					commentDiv.prepend(avatarFragment)
 				}
 
-				let blockCodes = div.querySelectorAll("div.highlight")
+				let blockCodes = commentDiv.querySelectorAll("div.highlight")
 				for (const codeDiv of blockCodes)
 				{
 					codeDiv.classList.add("container", "code")
@@ -1056,19 +1017,16 @@ function InitComments()
 					code.append(...pre.childNodes)
 					pre.append(code)
 
-					if ("clipboard" in navigator)
-					{
-						const button = document.createElement("button")
-						button.classList.add("copy-block")
-						button.type = "button"
-						button.ariaLabel = "Copy"
-						button.textContent = "\uf4bb"
-						button.addEventListener("click", CopyCode, { passive: true })
-						codeDiv.append(button)
-					}
+					const button = document.createElement("button")
+					button.classList.add("copy-block")
+					button.type = "button"
+					button.ariaLabel = "Copy"
+					button.textContent = "\uf4bb"
+					button.addEventListener("click", CopyCode, { passive: true })
+					codeDiv.append(button)
 				}
 
-				blockCodes = div.querySelectorAll("div.snippet-clipboard-content")
+				blockCodes = commentDiv.querySelectorAll("div.snippet-clipboard-content")
 				for (const codeDiv of blockCodes)
 				{
 					if (!codeDiv.querySelectorAll("pre > code"))
@@ -1079,78 +1037,46 @@ function InitComments()
 					const pre = codeDiv.querySelector("pre")!
 					pre.classList.add("code", "scroll")
 
-					if ("clipboard" in navigator)
-					{
-						const button = document.createElement("button")
-						button.classList.add("copy-block")
-						button.type = "button"
-						button.ariaLabel = "Copy"
-						button.textContent = "\uf4bb"
-						button.addEventListener("click", CopyCode, { passive: true })
-						codeDiv.append(button)
-					}
+					const button = document.createElement("button")
+					button.classList.add("copy-block")
+					button.type = "button"
+					button.ariaLabel = "Copy"
+					button.textContent = "\uf4bb"
+					button.addEventListener("click", CopyCode, { passive: true })
+					codeDiv.append(button)
 				}
 
-				function ConstructMath(display: string, latex: string)
-				{
-					const mathNs = "http://www.w3.org/1998/Math/MathML"
-					const math = document.createElementNS(mathNs, "math")
-					math.setAttribute("display", display)
-
-					const semantics = document.createElement("semantics")
-					math.append(semantics)
-
-					const annotation = document.createElement("annotation")
-					annotation.setAttribute("encoding", "application/x-tex")
-					annotation.textContent = latex
-					semantics.append(annotation)
-
-					return math
-				}
-
-				const inlineMaths = div.querySelectorAll(".js-inline-math") as NodeListOf<HTMLElement>
+				const inlineMaths = commentDiv.querySelectorAll(".js-inline-math") as NodeListOf<HTMLElement>
 				for (const ghMath of inlineMaths)
 				{
+					const mathFragment = mathInlineTemplate.content.cloneNode(true) as DocumentFragment
+
+					const annotation = mathFragment.querySelector("annotation")!
 					let latex = ghMath.textContent!
 					latex = latex.replace(/^\$\`\s*|\s*\$\`$$/gm, "")
 					latex = latex.replace(/^\$\s*|\s*\$$/gm, "")
-					const math = ConstructMath("inline", latex)
+					annotation.textContent = latex
 
-					ghMath.insertAdjacentElement("afterend", math)
-					ghMath.remove()
+					ghMath.parentElement!.replaceChild(mathFragment, ghMath)
 				}
 
-				const displayMaths = div.querySelectorAll(".js-display-math") as NodeListOf<HTMLElement>
+				const displayMaths = commentDiv.querySelectorAll(".js-display-math") as NodeListOf<HTMLElement>
 				for (const ghMath of displayMaths)
 				{
-					const outerDiv = document.createElement("div")
-					outerDiv.classList.add("container", "math")
+					const mathFragment = mathBlockTemplate.content.cloneNode(true) as DocumentFragment
 
-					const div = document.createElement("div")
-					div.classList.add("scroll")
-					outerDiv.append(div)
-
+					const annotation = mathFragment.querySelector("annotation")!
 					let latex = ghMath.textContent!
 					latex = latex.replace(/^\$\$\s*|\s*\$\$$/gm, "")
-					const math = ConstructMath("block", latex)
-					div.append(math)
+					annotation.textContent = latex
 
-					ghMath.insertAdjacentElement("afterend", outerDiv)
-					ghMath.remove()
+					const button = mathFragment.querySelector("button")!
+					AttachCopyFunction(button, CopyMath)
 
-					if ("clipboard" in navigator)
-					{
-						const button = document.createElement("button")
-						button.classList.add("copy-block", "text", "special", "require-js")
-						button.type = "button"
-						button.ariaLabel = "Copy"
-						button.textContent = "\uf4bb"
-						button.addEventListener("click", CopyMath, { passive: true })
-						div.append(button)
-					}
+					ghMath.parentElement!.replaceChild(mathFragment, ghMath)
 				}
 
-				commentsParent.append(outerDiv)
+				commentsParent.append(commentFragment)
 			}
 		}
 	};

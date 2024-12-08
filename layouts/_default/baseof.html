@@ -110,6 +110,14 @@
 			<!--
 				<button id="github-login">Login</button>
 			-->
+
+			<template id="comment">
+				<div class="comment">
+					<div class="padding">
+					</div>
+				</div>
+			</template>
+
 			<template id="comment-avatar-template">
 				<div class="comment-header">
 					<a class="comment-avatar" href="" rel="nofollow noopener noreferrer">
@@ -118,6 +126,27 @@
 					<a class="comment-time" href="" rel="nofollow noopener noreferrer">
 						<time datetime=""></time>
 					</a>
+				</div>
+			</template>
+
+			<template id="comment-math-inline">
+				<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">
+					<semantics>
+						<annotation encoding="application/x-tex"></annotation>
+					</semantics>
+				</math>
+			</template>
+
+			<template id="comment-math-block">
+				<div class="container math">
+					<div class="scroll">
+						<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+							<semantics>
+								<annotation encoding="application/x-tex"></annotation>
+							</semantics>
+						</math>
+						<button class="copy-block" type="button" aria-label="Copy">&#xf4bb;</button>
+					</div>
 				</div>
 			</template>
 		</section>
