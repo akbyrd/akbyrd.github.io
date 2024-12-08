@@ -1,0 +1,4 @@
+{{- $path := substr .Position 1 -1 }}
+{{- $path = substr $path (len hugo.WorkingDir) }}
+{{- $path = substr $path 1 }}
+{{- return $path }}

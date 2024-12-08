@@ -1,9 +1,13 @@
 {{- $id := index .Attributes "id" }}
 {{- if not $id }}
 	{{- if not (in .Type (slice "goat" "mermaid")) }}
-		{{/* They don't have line numbers and create a tab stop */}}
-		{{- errorf "Id is required for code blocks.\n\t%s" .Position }}
+		{{- errorf "Id is required for code blocks.\n\t%s" (partial "relpath" .) }}
 	{{- end }}
+{{- end }}
+
+{{- $lang := index .Type }}
+{{- if not $lang }}
+	{{- warnf "Language is required for code blocks.\n\t%s" (partial "relpath" .) }}
 {{- end }}
 
 {{- $lineStart := 1 }}
