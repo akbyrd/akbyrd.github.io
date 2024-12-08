@@ -970,10 +970,11 @@ function InitComments()
 		}
 		else
 		{
-			const commentTemplate = document.getElementById("comment") as HTMLTemplateElement
+			const commentTemplate = document.getElementById("comment-template") as HTMLTemplateElement
 			const avatarTemplate = document.getElementById("comment-avatar-template") as HTMLTemplateElement
-			const mathInlineTemplate = document.getElementById("comment-math-inline") as HTMLTemplateElement
-			const mathBlockTemplate = document.getElementById("comment-math-block") as HTMLTemplateElement
+			const codeBlockTemplate = document.getElementById("comment-code-block-template") as HTMLTemplateElement
+			const mathInlineTemplate = document.getElementById("comment-math-inline-template") as HTMLTemplateElement
+			const mathBlockTemplate = document.getElementById("comment-math-block-template") as HTMLTemplateElement
 
 			assertType<IGiscussion>(json)
 			for (const comment of json.discussion.comments)
@@ -1005,45 +1006,28 @@ function InitComments()
 					commentDiv.prepend(avatarFragment)
 				}
 
-				let blockCodes = commentDiv.querySelectorAll("div.highlight")
-				for (const codeDiv of blockCodes)
+				function ConstructCodeBlock(root: Element, codeNode: Element)
 				{
-					codeDiv.classList.add("container", "code")
+					const codeBlockFragment = codeBlockTemplate.content.cloneNode(true) as DocumentFragment
 
-					const pre = codeDiv.querySelector("pre")!
-					pre.classList.add("code", "scroll")
+					const code = codeBlockFragment.querySelector("code")!
+					code.append(...codeNode.childNodes)
 
-					const code = document.createElement("code")
-					code.append(...pre.childNodes)
-					pre.append(code)
-
-					const button = document.createElement("button")
-					button.classList.add("copy-block")
-					button.type = "button"
-					button.ariaLabel = "Copy"
-					button.textContent = "\uf4bb"
-					button.addEventListener("click", CopyCode, { passive: true })
-					codeDiv.append(button)
+					const button = codeBlockFragment.querySelector("button")!
+					AttachCopyFunction(button, CopyCode)
+					root.parentElement!.replaceChild(codeBlockFragment, root)
 				}
 
-				blockCodes = commentDiv.querySelectorAll("div.snippet-clipboard-content")
+				const blockCodes = commentDiv.querySelectorAll("div.highlight")
 				for (const codeDiv of blockCodes)
+					ConstructCodeBlock(codeDiv, codeDiv);
+
+				const blockCodesNoLang = commentDiv.querySelectorAll("div.snippet-clipboard-content")
+				for (const codeDiv of blockCodesNoLang)
 				{
-					if (!codeDiv.querySelectorAll("pre > code"))
-						continue;
-
-					codeDiv.classList.add("container", "code")
-
-					const pre = codeDiv.querySelector("pre")!
-					pre.classList.add("code", "scroll")
-
-					const button = document.createElement("button")
-					button.classList.add("copy-block")
-					button.type = "button"
-					button.ariaLabel = "Copy"
-					button.textContent = "\uf4bb"
-					button.addEventListener("click", CopyCode, { passive: true })
-					codeDiv.append(button)
+					const code = codeDiv.querySelector("pre > code")
+					if (code)
+						ConstructCodeBlock(codeDiv, code);
 				}
 
 				const inlineMaths = commentDiv.querySelectorAll(".js-inline-math") as NodeListOf<HTMLElement>

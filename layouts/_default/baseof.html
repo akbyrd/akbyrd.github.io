@@ -111,7 +111,7 @@
 				<button id="github-login">Login</button>
 			-->
 
-			<template id="comment">
+			<template id="comment-template">
 				<div class="comment">
 					<div class="padding">
 					</div>
@@ -129,7 +129,14 @@
 				</div>
 			</template>
 
-			<template id="comment-math-inline">
+			<template id="comment-code-block-template">
+				<div class="container code">
+					<pre class="scroll"><code></code></pre>
+					<button class="copy-block" type="button" aria-label="Copy">&#xf4bb;</button>
+				</div>
+			</template>
+
+			<template id="comment-math-inline-template">
 				<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">
 					<semantics>
 						<annotation encoding="application/x-tex"></annotation>
@@ -137,7 +144,7 @@
 				</math>
 			</template>
 
-			<template id="comment-math-block">
+			<template id="comment-math-block-template">
 				<div class="container math">
 					<div class="scroll">
 						<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
