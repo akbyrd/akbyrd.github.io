@@ -971,7 +971,7 @@ function InitComments()
 		else
 		{
 			const commentTemplate = document.getElementById("comment-template") as HTMLTemplateElement
-			const avatarTemplate = document.getElementById("comment-avatar-template") as HTMLTemplateElement
+			const headerTemplate = document.getElementById("comment-header-template") as HTMLTemplateElement
 			const codeBlockTemplate = document.getElementById("comment-code-block-template") as HTMLTemplateElement
 			const mathInlineTemplate = document.getElementById("comment-math-inline-template") as HTMLTemplateElement
 			const mathBlockTemplate = document.getElementById("comment-math-block-template") as HTMLTemplateElement
@@ -983,10 +983,11 @@ function InitComments()
 				const commentDiv = commentFragment.querySelector(".padding") as HTMLElement
 				commentDiv.innerHTML = comment.bodyHTML
 
+				// Header
 				{
-					const avatarFragment = avatarTemplate.content.cloneNode(true) as DocumentFragment
+					const headerFragment = headerTemplate.content.cloneNode(true) as DocumentFragment
 
-					const aAvatar = avatarFragment.querySelector(".comment-avatar")! as HTMLAnchorElement
+					const aAvatar = headerFragment.querySelector(".comment-avatar")! as HTMLAnchorElement
 					aAvatar.href = comment.author.url
 					aAvatar.append(comment.author.login)
 
@@ -994,7 +995,7 @@ function InitComments()
 					img.src = comment.author.avatarUrl
 					img.style.display = "inline"
 
-					const aTime = avatarFragment.querySelector(".comment-time")! as HTMLAnchorElement
+					const aTime = headerFragment.querySelector(".comment-time")! as HTMLAnchorElement
 					aAvatar.href = comment.url
 
 					const time = aTime.querySelector("time")!
@@ -1003,61 +1004,67 @@ function InitComments()
 					const formatter = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
 					time.innerText = formatter.format(date)
 
-					commentDiv.prepend(avatarFragment)
+					commentDiv.prepend(headerFragment)
 				}
 
-				function ConstructCodeBlock(root: Element, codeNode: Element)
+				// Code
 				{
-					const codeBlockFragment = codeBlockTemplate.content.cloneNode(true) as DocumentFragment
+					function ConstructCodeBlock(root: Element, codeNode: Element)
+					{
+						const codeBlockFragment = codeBlockTemplate.content.cloneNode(true) as DocumentFragment
 
-					const code = codeBlockFragment.querySelector("code")!
-					code.append(...codeNode.childNodes)
+						const code = codeBlockFragment.querySelector("code")!
+						code.append(...codeNode.childNodes)
 
-					const button = codeBlockFragment.querySelector("button")!
-					AttachCopyFunction(button, CopyCode)
-					root.parentElement!.replaceChild(codeBlockFragment, root)
+						const button = codeBlockFragment.querySelector("button")!
+						AttachCopyFunction(button, CopyCode)
+						root.parentElement!.replaceChild(codeBlockFragment, root)
+					}
+
+					const blockCodes = commentDiv.querySelectorAll("div.highlight")
+					for (const codeDiv of blockCodes)
+						ConstructCodeBlock(codeDiv, codeDiv);
+
+					const blockCodesNoLang = commentDiv.querySelectorAll("div.snippet-clipboard-content")
+					for (const codeDiv of blockCodesNoLang)
+					{
+						const code = codeDiv.querySelector("pre > code")
+						if (code)
+							ConstructCodeBlock(codeDiv, code);
+					}
 				}
 
-				const blockCodes = commentDiv.querySelectorAll("div.highlight")
-				for (const codeDiv of blockCodes)
-					ConstructCodeBlock(codeDiv, codeDiv);
-
-				const blockCodesNoLang = commentDiv.querySelectorAll("div.snippet-clipboard-content")
-				for (const codeDiv of blockCodesNoLang)
+				// Math
 				{
-					const code = codeDiv.querySelector("pre > code")
-					if (code)
-						ConstructCodeBlock(codeDiv, code);
-				}
+					const inlineMaths = commentDiv.querySelectorAll(".js-inline-math") as NodeListOf<HTMLElement>
+					for (const ghMath of inlineMaths)
+					{
+						const mathFragment = mathInlineTemplate.content.cloneNode(true) as DocumentFragment
 
-				const inlineMaths = commentDiv.querySelectorAll(".js-inline-math") as NodeListOf<HTMLElement>
-				for (const ghMath of inlineMaths)
-				{
-					const mathFragment = mathInlineTemplate.content.cloneNode(true) as DocumentFragment
+						const annotation = mathFragment.querySelector("annotation")!
+						let latex = ghMath.textContent!
+						latex = latex.replace(/^\$\`\s*|\s*\$\`$$/gm, "")
+						latex = latex.replace(/^\$\s*|\s*\$$/gm, "")
+						annotation.textContent = latex
 
-					const annotation = mathFragment.querySelector("annotation")!
-					let latex = ghMath.textContent!
-					latex = latex.replace(/^\$\`\s*|\s*\$\`$$/gm, "")
-					latex = latex.replace(/^\$\s*|\s*\$$/gm, "")
-					annotation.textContent = latex
+						ghMath.parentElement!.replaceChild(mathFragment, ghMath)
+					}
 
-					ghMath.parentElement!.replaceChild(mathFragment, ghMath)
-				}
+					const displayMaths = commentDiv.querySelectorAll(".js-display-math") as NodeListOf<HTMLElement>
+					for (const ghMath of displayMaths)
+					{
+						const mathFragment = mathBlockTemplate.content.cloneNode(true) as DocumentFragment
 
-				const displayMaths = commentDiv.querySelectorAll(".js-display-math") as NodeListOf<HTMLElement>
-				for (const ghMath of displayMaths)
-				{
-					const mathFragment = mathBlockTemplate.content.cloneNode(true) as DocumentFragment
+						const annotation = mathFragment.querySelector("annotation")!
+						let latex = ghMath.textContent!
+						latex = latex.replace(/^\$\$\s*|\s*\$\$$/gm, "")
+						annotation.textContent = latex
 
-					const annotation = mathFragment.querySelector("annotation")!
-					let latex = ghMath.textContent!
-					latex = latex.replace(/^\$\$\s*|\s*\$\$$/gm, "")
-					annotation.textContent = latex
+						const button = mathFragment.querySelector("button")!
+						AttachCopyFunction(button, CopyMath)
 
-					const button = mathFragment.querySelector("button")!
-					AttachCopyFunction(button, CopyMath)
-
-					ghMath.parentElement!.replaceChild(mathFragment, ghMath)
+						ghMath.parentElement!.replaceChild(mathFragment, ghMath)
+					}
 				}
 
 				commentsParent.append(commentFragment)
