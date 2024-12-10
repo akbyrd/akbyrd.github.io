@@ -1090,7 +1090,8 @@ function InitComments()
 					{
 						const key = reaction.name as keyof typeof Reactions
 						const data = comment.reactions[key]
-						if (data.viewerHasReacted) reaction.value = "on"
+						if (data.viewerHasReacted)
+							reaction.toggleAttribute("data-pressed")
 						UpdateReactionVisibility(reaction, false, data.count)
 
 						reaction.addEventListener("click", ToggleReaction, { passive: true })
@@ -1113,26 +1114,37 @@ function InitComments()
 	Execute()
 }
 
-// TODO: Emoji - Hide when clicking elsewhere
 // TODO: Emoji - Send message
 // TODO: Emoji - Disable while waiting
 function ToggleReactions(e: Event)
 {
 	const target = e.currentTarget! as HTMLButtonElement
-	const parent = target.parentElement!
-	const reactions = parent.querySelectorAll(".comment-reaction") as NodeListOf<HTMLElement>
+	const reactions = target.parentElement!.querySelectorAll(".comment-reaction") as NodeListOf<HTMLButtonElement>
 
-	if (target.value == "on")
+	if (target.toggleAttribute("data-pressed"))
 	{
-		target.removeAttribute("value")
 		for (const reaction of reactions)
-			UpdateReactionVisibility(reaction, false, 0)
+			UpdateReactionVisibility(reaction, true, 0)
+
+		e.stopPropagation()
+		document.addEventListener("click", {
+			handleEvent(e: Event)
+			{
+				const clickedFooter = target.parentElement!.contains(e.target as Node)
+				const clickedButton = target == e.target
+				if (!clickedFooter || clickedButton)
+				{
+					document.removeEventListener("click", this)
+					if (target.hasAttribute("data-pressed"))
+						target.click()
+				}
+			}
+		}, { passive: true })
 	}
 	else
 	{
-		target.value = "on"
 		for (const reaction of reactions)
-			UpdateReactionVisibility(reaction, true, 0)
+			UpdateReactionVisibility(reaction, false, 0)
 	}
 }
 
@@ -1141,28 +1153,20 @@ function ToggleReaction(e: Event)
 	const reaction = e.currentTarget! as HTMLButtonElement
 	const reactionsDiv = reaction.parentElement!.parentElement!
 	const reactionsButton = reactionsDiv.querySelector(".comment-reactions-button") as HTMLButtonElement
-	const showReactions = reactionsButton.value == "on"
-
-	if (reaction.value == "on")
-	{
-		reaction.removeAttribute("value")
-		reaction.ariaLabel = `Add ${reaction.localName} reaction`
-		UpdateReactionVisibility(reaction, showReactions, -1)
-	}
-	else
-	{
-		reaction.value = "on"
-		reaction.ariaLabel = `Remove ${reaction.localName} reaction`
-		UpdateReactionVisibility(reaction, showReactions, +1)
-	}
+	const showReactions = reactionsButton.hasAttribute("data-pressed")
+	const countOffset = reaction.toggleAttribute("data-pressed") ? 1 : -1
+	UpdateReactionVisibility(reaction, showReactions, countOffset)
 }
 
-function UpdateReactionVisibility(reaction: Element, showReactions: boolean, countOffset: number)
+function UpdateReactionVisibility(reaction: HTMLButtonElement, showReactions: boolean, countOffset: number)
 {
 	const countSpan = reaction.querySelector("span + span")! as HTMLSpanElement
 	const count = parseInt(countSpan.innerText) + countOffset
-	countSpan.innerText =  count.toString()
-	reaction.ariaChecked = (showReactions || count) ? "true" : "false"
+	countSpan.innerText = count.toString()
+
+	const visible = showReactions || count
+	if (reaction.hasAttribute("data-visible") != visible)
+		reaction.toggleAttribute("data-visible")
 }
 
 // -------------------------------------------------------------------------------------------------

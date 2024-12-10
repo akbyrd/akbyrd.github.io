@@ -678,7 +678,7 @@ code, annotation {
 		.comment-reaction:nth-child(7) { z-index: 1; transition-delay: 100ms; }
 		.comment-reaction:nth-child(8) { z-index: 0; transition-delay: 115ms; }
 
-		.comment-reaction[aria-checked="false"] {
+		.comment-reaction:not([data-visible]) {
 			border-width: 0;
 			margin: 0;
 			pointer-events: none;
@@ -687,7 +687,7 @@ code, annotation {
 			width: 0px;
 		}
 
-		.comment-reaction[value="on"] {
+		.comment-reaction[data-pressed] {
 			background-color: var(--accent-3);
 			border-color: var(--accent-2);
 		}
@@ -696,7 +696,7 @@ code, annotation {
 			background-color: var(--background-5);
 		}
 
-		.comment-reaction[value="on"]:hover {
+		.comment-reaction[data-pressed]:hover {
 			background-color: var(--accent-2);
 		}
 
