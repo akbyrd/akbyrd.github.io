@@ -1,6 +1,7 @@
 Compatibility
 -------------
 Aiming for 5 years (`all` is the current cutoff)
+2024 light-dark()
 2024 nesting
 2024 &
 2024 :has

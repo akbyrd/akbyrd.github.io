@@ -1,13 +1,16 @@
 Compatibility
 -------------
 Aiming for 6 years based on browsers on caniuse.com
-HTML 2.0  1995
-HTML 3.2  1997
-HTML 4.0  1997
-HTML 4.01 1999
-HTML 5.0  2014
-HTML 5.1  2016
-HTML 5.2  2017
+
+2023 dialog
+
+1995 HTML 2.0
+1997 HTML 3.2
+1997 HTML 4.0
+1999 HTML 4.01
+2014 HTML 5.0
+2016 HTML 5.1
+2017 HTML 5.2
 
 
 

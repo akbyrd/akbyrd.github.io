@@ -1,0 +1,23 @@
+Emojis
+------
+👍 U+1F44D       :thumbs_up:                       Slack :+1: :thumbsup:   Github +1
+👎 U+1F44E       :thumbs_down:                     Slack :-1: :thumbsdown: Github -1
+😄 U+1F604       :grinning_face_with_smiling_eyes: Slack :smile:           Github Laugh
+🎉 U+1F389       :party_popper:                    Slack :tada:            Github Hooray
+😕 U+1F615       :confused_face:                   Slack :confused:        Github Confused
+❤️ U+2764 U+FE0F :red_heart:                       Slack :heart:           Github Love
+🚀 U+1F680       :rocket:                          Slack :rocket:          Github Rocket
+👀 U+1F440       :eyes:                            Slack :eyes:            Github Eyes
+
+
+
+Nerd Font Characters
+--------------------
+󰑫 RSS      f046b nf-md-rss
+󰌻 LinkedIn f033b nf-md-linkedin
+󰊤 GitHub   f02a4 nf-md-github
+󰫑 Mastodon f0ad1 nf-md-mastodon
+󰕄 Twitter  f0544 nf-md-twitter
+󰇮 Email    f01ee nf-md-email
+ Copy     f4bb  nf-oct-copy
+ Smile    f118  nf-fa-face_smile

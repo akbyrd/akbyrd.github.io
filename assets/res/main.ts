@@ -947,12 +947,21 @@ function InitComments()
 		})
 
 		const url = `${baseUrl}?${params.toString()}`
-		const response = await fetch(url)
+		let response = null
+		try
+		{
+			response = await fetch(url)
+		}
+		catch (error)
+		{
+			Fail(String(error))
+			return
+		}
 
 		const json = await response.json()
 		if (!json)
 		{
-			Fail()
+			Fail("failed to get response json")
 			return
 		}
 
@@ -963,8 +972,7 @@ function InitComments()
 			const knownError = json.error?.includes("Discussion not found")
 			if (!knownError)
 			{
-				console.error(json.error ?? "unknown error")
-				Fail()
+				Fail(json.error ?? "unknown error")
 				return
 			}
 		}
@@ -975,6 +983,7 @@ function InitComments()
 			const codeBlockTemplate = document.getElementById("comment-code-block-template") as HTMLTemplateElement
 			const mathInlineTemplate = document.getElementById("comment-math-inline-template") as HTMLTemplateElement
 			const mathBlockTemplate = document.getElementById("comment-math-block-template") as HTMLTemplateElement
+			const footerTemplate = document.getElementById("comment-footer-template") as HTMLTemplateElement
 
 			assertType<IGiscussion>(json)
 			for (const comment of json.discussion.comments)
@@ -992,11 +1001,13 @@ function InitComments()
 					aAvatar.append(comment.author.login)
 
 					const img = aAvatar.querySelector("img")!
-					img.src = comment.author.avatarUrl
+					const url = new URL(comment.author.avatarUrl)
+					url.searchParams.append("size", (2 * img.width).toString())
+					img.src = url.toString()
 					img.style.display = "inline"
 
 					const aTime = headerFragment.querySelector(".comment-time")! as HTMLAnchorElement
-					aAvatar.href = comment.url
+					aTime.href = comment.url
 
 					const time = aTime.querySelector("time")!
 					time.dateTime = comment.createdAt
@@ -1067,17 +1078,91 @@ function InitComments()
 					}
 				}
 
+				// Footer
+				{
+					const footerFragment = footerTemplate.content.cloneNode(true) as DocumentFragment
+
+					const button = footerFragment.querySelector(".comment-reactions-button")!
+					button.addEventListener("click", ToggleReactions, { passive: true })
+
+					const reactions = footerFragment.querySelectorAll(".comment-reaction") as NodeListOf<HTMLButtonElement>
+					for (const reaction of reactions)
+					{
+						const key = reaction.name as keyof typeof Reactions
+						const data = comment.reactions[key]
+						if (data.viewerHasReacted) reaction.value = "on"
+						UpdateReactionVisibility(reaction, false, data.count)
+
+						reaction.addEventListener("click", ToggleReaction, { passive: true })
+					}
+
+					commentDiv.append(footerFragment)
+				}
+
 				commentsParent.append(commentFragment)
 			}
 		}
 	};
 
-	function Fail()
+	function Fail(error: string)
 	{
 		// TODO: display an error
+		console.error(error)
 	}
 
 	Execute()
+}
+
+// TODO: Emoji - Hide when clicking elsewhere
+// TODO: Emoji - Send message
+// TODO: Emoji - Disable while waiting
+function ToggleReactions(e: Event)
+{
+	const target = e.currentTarget! as HTMLButtonElement
+	const parent = target.parentElement!
+	const reactions = parent.querySelectorAll(".comment-reaction") as NodeListOf<HTMLElement>
+
+	if (target.value == "on")
+	{
+		target.removeAttribute("value")
+		for (const reaction of reactions)
+			UpdateReactionVisibility(reaction, false, 0)
+	}
+	else
+	{
+		target.value = "on"
+		for (const reaction of reactions)
+			UpdateReactionVisibility(reaction, true, 0)
+	}
+}
+
+function ToggleReaction(e: Event)
+{
+	const reaction = e.currentTarget! as HTMLButtonElement
+	const reactionsDiv = reaction.parentElement!.parentElement!
+	const reactionsButton = reactionsDiv.querySelector(".comment-reactions-button") as HTMLButtonElement
+	const showReactions = reactionsButton.value == "on"
+
+	if (reaction.value == "on")
+	{
+		reaction.removeAttribute("value")
+		reaction.ariaLabel = `Add ${reaction.localName} reaction`
+		UpdateReactionVisibility(reaction, showReactions, -1)
+	}
+	else
+	{
+		reaction.value = "on"
+		reaction.ariaLabel = `Remove ${reaction.localName} reaction`
+		UpdateReactionVisibility(reaction, showReactions, +1)
+	}
+}
+
+function UpdateReactionVisibility(reaction: Element, showReactions: boolean, countOffset: number)
+{
+	const countSpan = reaction.querySelector("span + span")! as HTMLSpanElement
+	const count = parseInt(countSpan.innerText) + countOffset
+	countSpan.innerText =  count.toString()
+	reaction.ariaChecked = (showReactions || count) ? "true" : "false"
 }
 
 // -------------------------------------------------------------------------------------------------

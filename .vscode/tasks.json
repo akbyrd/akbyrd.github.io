@@ -53,19 +53,19 @@
 			"label": "test-file",
 			"detail": "hugo test (development)",
 			"type": "shell",
-			"command": "hugo server --bind 0.0.0.0 -e development --cleanDestinationDir --printPathWarnings --disableFastRender --noHTTPCache",
+			"command": "hugo server --bind 0.0.0.0 -e development --cleanDestinationDir --printPathWarnings --disableFastRender --noHTTPCache --ignoreCache",
 		},
 		{
 			"label": "test-project",
 			"detail": "hugo test (staging)",
 			"type": "shell",
-			"command": "hugo server --bind 0.0.0.0 -e staging --cleanDestinationDir --printPathWarnings --disableFastRender --noHTTPCache --minify",
+			"command": "hugo server --bind 0.0.0.0 -e staging --cleanDestinationDir --printPathWarnings --disableFastRender --noHTTPCache --ignoreCache --minify",
 		},
 		{
 			"label": "test-solution",
 			"detail": "hugo test (production)",
 			"type": "shell",
-			"command": "hugo server --bind 0.0.0.0 -e production --cleanDestinationDir --printPathWarnings --disableFastRender --noHTTPCache --minify",
+			"command": "hugo server --bind 0.0.0.0 -e production --cleanDestinationDir --printPathWarnings --disableFastRender --noHTTPCache --ignoreCache --minify",
 		},
 		{
 			"label": "profile-solution",

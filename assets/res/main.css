@@ -5,11 +5,15 @@
 	--max-width: 800px;
 
 	--accent:      #007fd4;
+	--accent-2:    #14547f;
+	--accent-3:    #223a4a;
 	--accent-fade: #007fd4a0;
 
 	--dark-background:   #212121;
 	--dark-background-2: #2a2a2a;
-	--dark-background-3: #313131;
+	--dark-background-3: #333333;
+	--dark-background-4: #3c3c3c;
+	--dark-background-5: #454545;
 	--dark-draft-stripe: #2c2c2c;
 	--dark-text:         #bdbdbd;
 	--dark-text-detail:  #616161;
@@ -20,6 +24,8 @@
 	--light-background:   #bdbdbd;
 	--light-background-2: #b8b8b8;
 	--light-background-3: #b3b3b3;
+	--light-background-4: #aeaeae;
+	--light-background-5: #a9a9a9;
 	--light-draft-stripe: #a0a0a0;
 	--light-text:         #212121;
 	--light-text-detail:  #404040;
@@ -53,6 +59,8 @@
 	--background:   var(--dark-background);
 	--background-2: var(--dark-background-2);
 	--background-3: var(--dark-background-3);
+	--background-4: var(--dark-background-4);
+	--background-5: var(--dark-background-5);
 	--draft-stripe: var(--dark-draft-stripe);
 	--text:         var(--dark-text);
 	--text-detail:  var(--dark-text-detail);
@@ -65,6 +73,8 @@
 	--background:   var(--light-background);
 	--background-2: var(--light-background-2);
 	--background-3: var(--light-background-3);
+	--background-4: var(--light-background-4);
+	--background-5: var(--light-background-5);
 	--draft-stripe: var(--light-draft-stripe);
 	--text:         var(--light-text);
 	--text-detail:  var(--light-text-detail);
@@ -78,6 +88,8 @@
 		--background:   var(--light-background);
 		--background-2: var(--light-background-2);
 		--background-3: var(--light-background-3);
+		--background-4: var(--light-background-4);
+		--background-5: var(--light-background-5);
 		--draft-stripe: var(--light-draft-stripe);
 		--text:         var(--light-text);
 		--text-detail:  var(--light-text-detail);
@@ -170,6 +182,7 @@ body {
 button {
 	all: unset;
 	cursor: pointer;
+	user-select: none;
 }
 
 details {
@@ -259,6 +272,10 @@ p {
 
 pre {
 	margin: unset;
+}
+
+section {
+	margin: 20px 0;
 }
 
 table {
@@ -389,7 +406,7 @@ li:has(input) {
 /* ---------------------------------------------------------------------------------------------- */
 /* Code */
 
-code, annotation, .copy-block {
+code, annotation, .copy-block, .comment-reactions-button {
 	font-family: code;
 	font-feature-settings: "ss01";
 	font-size-adjust: ex-height 0.48;
@@ -490,7 +507,6 @@ code, annotation {
 	right: 0;
 	top: 0;
 	z-index: 1;
-	user-select: none;
 
 	height: 34px;
 	width: 34px;
@@ -554,29 +570,28 @@ code, annotation {
 			padding: 8px;
 		}
 
-		.comment-header {
+		header {
 			display: flex;
 			gap: 8px;
 
 			margin: 0;
 		}
 
-		.comment-header a {
+		header a {
 			text-decoration: none;
 		}
 
-		.comment-header a:hover {
+		header a:hover {
 			text-decoration: underline;
 		}
 
 		.comment-avatar {
-			display: flex;
 			align-items: center;
-			gap: 8px;
-
 			color: var(--text);
+			display: flex;
 			font-family: sans-serif;
 			font-weight: bold;
+			gap: 8px;
 			line-height: normal;
 		}
 
@@ -585,13 +600,109 @@ code, annotation {
 		}
 
 		.comment-time {
+			color: var(--text-detail);
 			display: flex;
 			flex-direction: column;
-			justify-content: center;
-
-			color: var(--text-detail);
 			font-family: sans-serif;
 			font-size: 11pt;
+			justify-content: center;
+		}
+
+		footer {
+			display: grid;
+			grid-template-columns: 0fr 1fr;
+		}
+
+		.comment-reactions-button {
+			border-color: var(--text-detail);
+			border-radius: 50%;
+			border-style: solid;
+			border-width: 1px;
+			color: var(--text-detail);
+			font-size: 32px;
+			height: 26px;
+			line-height: 26px;
+			text-align: center;
+			width: 26px;
+		}
+
+		.comment-reactions-button:hover {
+			background-color: var(--background-4);
+		}
+
+		.comment-reactions {
+			display: inline-flex;
+			flex-wrap: wrap;
+			flex-shrink: 0;
+			flex-grow: 0;
+			flex-basis: auto;
+			gap: 8px 0;
+			margin: 0;
+		}
+
+		.comment-reaction {
+			background-color: var(--background-4);
+			border-color: var(--text-detail);
+			border-radius: 13px;
+			border-style: solid;
+			border-width: 1px;
+			font-family: sans-serif;
+			height: 26px;
+			line-height: 26px;
+			margin-left: 8px;
+			text-align: center;
+			width: 48px;
+
+			overflow: hidden;
+			position: relative;
+			right: 0px;
+			transition-duration: 85ms;
+			transition-property: border-width, width, margin, right;
+			transition-timing-function: ease-out;
+			white-space: pre;
+		}
+
+		.comment-reaction[name="THUMBS_UP"] span:nth-child(1),
+		.comment-reaction[name="HOORAY"]    span:nth-child(1),
+		.comment-reaction[name="EYES"]      span:nth-child(1) {
+			bottom: 1px;
+		}
+
+		.comment-reactions-button      { z-index: 8; }
+		.comment-reaction:nth-child(1) { z-index: 7; transition-delay: 0ms; }
+		.comment-reaction:nth-child(2) { z-index: 6; transition-delay: 15ms; }
+		.comment-reaction:nth-child(3) { z-index: 5; transition-delay: 30ms; }
+		.comment-reaction:nth-child(4) { z-index: 4; transition-delay: 45ms; }
+		.comment-reaction:nth-child(5) { z-index: 3; transition-delay: 60ms; }
+		.comment-reaction:nth-child(6) { z-index: 2; transition-delay: 75ms; }
+		.comment-reaction:nth-child(7) { z-index: 1; transition-delay: 100ms; }
+		.comment-reaction:nth-child(8) { z-index: 0; transition-delay: 115ms; }
+
+		.comment-reaction[aria-checked="false"] {
+			border-width: 0;
+			margin: 0;
+			pointer-events: none;
+			right: 16px;
+			transition-timing-function: ease-in;
+			width: 0px;
+		}
+
+		.comment-reaction[value="on"] {
+			background-color: var(--accent-3);
+			border-color: var(--accent-2);
+		}
+
+		.comment-reaction:hover {
+			background-color: var(--background-5);
+		}
+
+		.comment-reaction[value="on"]:hover {
+			background-color: var(--accent-2);
+		}
+
+		.comment-reaction span:nth-child(2) {
+			padding-left: 6px;
+			font-size: 10pt;
 		}
 	}
 
@@ -729,7 +840,6 @@ body.error {
 	display: block;
 	height: 1em;
 	stroke: var(--text);
-	user-select: none;
 }
 
 .header-theme-icon-background {
@@ -820,6 +930,7 @@ body.error {
 
 math {
 	font-family: math2;
+	cursor: text;
 }
 
 semantics {
@@ -843,10 +954,6 @@ math[display="block"] {
 	min-width: fit-content;
 	padding: 6.5px 8px;
 	text-align: center;
-}
-
-math[display="block"] mrow {
-	cursor: text;
 }
 
 math[display="block"] mtr mtd:not([class]) {

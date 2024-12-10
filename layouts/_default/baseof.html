@@ -38,7 +38,7 @@
 	<style>
 		@font-face {
 			font-family: "code";
-			unicode-range: U+0000-00a0, U+f046b, U+f033b, U+f02a4, U+f0ad1, U+f0544, U+f01ee, U+f4bb;
+			unicode-range: U+0000-00a0, U+feff, U+fffd, U+f046b, U+f033b, U+f02a4, U+f0ad1, U+f0544, U+f01ee, U+f4bb, U+f118;
 			src:
 			url("{{ $woff2.RelPermalink }}") format("woff2"),
 			url("{{ $woff.RelPermalink }}") format("woff");
@@ -112,21 +112,39 @@
 			-->
 
 			<template id="comment-template">
-				<div class="comment">
+				<section class="comment">
 					<div class="padding">
+						<section class="comment-replies">
+						</section>
 					</div>
-				</div>
+				</section>
 			</template>
 
 			<template id="comment-header-template">
-				<div class="comment-header">
+				<header>
 					<a class="comment-avatar" href="" rel="nofollow noopener noreferrer">
 						<img src="" width="40px" height="40px" loading="lazy" />
 					</a>
 					<a class="comment-time" href="" rel="nofollow noopener noreferrer">
 						<time datetime=""></time>
 					</a>
-				</div>
+				</header>
+			</template>
+
+			<template id="comment-footer-template">
+				<footer>
+					<button class="comment-reactions-button" type="button" aria-label="Show Reactions">&#xf118;</button>
+					<div class="comment-reactions">
+						<button class="comment-reaction" type="button" name="THUMBS_UP"><span>👍</span><span>0</span></button>
+						<button class="comment-reaction" type="button" name="THUMBS_DOWN"><span>👎</span><span>0</span></button>
+						<button class="comment-reaction" type="button" name="LAUGH"><span>😄</span><span>0</span></button>
+						<button class="comment-reaction" type="button" name="HOORAY"><span>🎉</span><span>0</span></button>
+						<button class="comment-reaction" type="button" name="CONFUSED"><span>😕</span><span>0</span></button>
+						<button class="comment-reaction" type="button" name="HEART"><span>❤️</span><span>0</span></button>
+						<button class="comment-reaction" type="button" name="ROCKET"><span>🚀</span><span>0</span></button>
+						<button class="comment-reaction" type="button" name="EYES"><span>👀</span><span>0</span></button>
+					</div>
+				</footer>
 			</template>
 
 			<template id="comment-code-block-template">
