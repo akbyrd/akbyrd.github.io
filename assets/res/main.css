@@ -406,7 +406,7 @@ li:has(input) {
 /* ---------------------------------------------------------------------------------------------- */
 /* Code */
 
-code, annotation, .copy-block, .comment-reactions-button {
+code, annotation, .copy-block, .comment-toggle-reactions {
 	font-family: code;
 	font-feature-settings: "ss01";
 	font-size-adjust: ex-height 0.48;
@@ -613,7 +613,7 @@ code, annotation {
 			grid-template-columns: 0fr 1fr;
 		}
 
-		.comment-reactions-button {
+		.comment-toggle-reactions {
 			border-color: var(--text-detail);
 			border-radius: 50%;
 			border-style: solid;
@@ -626,11 +626,11 @@ code, annotation {
 			width: 26px;
 		}
 
-		.comment-reactions-button:hover {
+		.comment-toggle-reactions:hover {
 			background-color: var(--background-4);
 		}
 
-		.comment-reactions {
+		.comment-reactions div {
 			display: inline-flex;
 			flex-wrap: wrap;
 			flex-shrink: 0;
@@ -668,7 +668,7 @@ code, annotation {
 			bottom: 1px;
 		}
 
-		.comment-reactions-button      { z-index: 8; }
+		.comment-toggle-reactions      { z-index: 8; }
 		.comment-reaction:nth-child(1) { z-index: 7; transition-delay: 0ms; }
 		.comment-reaction:nth-child(2) { z-index: 6; transition-delay: 15ms; }
 		.comment-reaction:nth-child(3) { z-index: 5; transition-delay: 30ms; }
@@ -700,13 +700,13 @@ code, annotation {
 			background-color: var(--accent-2);
 		}
 
-		.comment-reaction span:nth-child(2) {
+		.comment-reaction-count {
 			padding-left: 6px;
 			font-size: 10pt;
 		}
 	}
 
-	.comment > div {
+	.comment > .padding {
 		margin: 16px;
 	}
 }

@@ -983,7 +983,7 @@ function InitComments()
 			const codeBlockTemplate = document.getElementById("comment-code-block-template") as HTMLTemplateElement
 			const mathInlineTemplate = document.getElementById("comment-math-inline-template") as HTMLTemplateElement
 			const mathBlockTemplate = document.getElementById("comment-math-block-template") as HTMLTemplateElement
-			const footerTemplate = document.getElementById("comment-footer-template") as HTMLTemplateElement
+			const reactionsTemplate = document.getElementById("comment-reactions-template") as HTMLTemplateElement
 
 			assertType<IGiscussion>(json)
 			for (const comment of json.discussion.comments)
@@ -1080,12 +1080,12 @@ function InitComments()
 
 				// Footer
 				{
-					const footerFragment = footerTemplate.content.cloneNode(true) as DocumentFragment
+					const reactionsFragment = reactionsTemplate.content.cloneNode(true) as DocumentFragment
 
-					const button = footerFragment.querySelector(".comment-reactions-button")!
+					const button = reactionsFragment.querySelector(".comment-toggle-reactions")!
 					button.addEventListener("click", ToggleReactions, { passive: true })
 
-					const reactions = footerFragment.querySelectorAll(".comment-reaction") as NodeListOf<HTMLButtonElement>
+					const reactions = reactionsFragment.querySelectorAll(".comment-reaction") as NodeListOf<HTMLButtonElement>
 					for (const reaction of reactions)
 					{
 						const key = reaction.name as keyof typeof Reactions
@@ -1097,7 +1097,7 @@ function InitComments()
 						reaction.addEventListener("click", ToggleReaction, { passive: true })
 					}
 
-					commentDiv.append(footerFragment)
+					commentDiv.append(reactionsFragment)
 				}
 
 				commentsParent.append(commentFragment)
@@ -1152,7 +1152,7 @@ function ToggleReaction(e: Event)
 {
 	const reaction = e.currentTarget! as HTMLButtonElement
 	const reactionsDiv = reaction.parentElement!.parentElement!
-	const reactionsButton = reactionsDiv.querySelector(".comment-reactions-button") as HTMLButtonElement
+	const reactionsButton = reactionsDiv.querySelector(".comment-toggle-reactions") as HTMLButtonElement
 	const showReactions = reactionsButton.hasAttribute("data-pressed")
 	const countOffset = reaction.toggleAttribute("data-pressed") ? 1 : -1
 	UpdateReactionVisibility(reaction, showReactions, countOffset)
@@ -1160,11 +1160,12 @@ function ToggleReaction(e: Event)
 
 function UpdateReactionVisibility(reaction: HTMLButtonElement, showReactions: boolean, countOffset: number)
 {
-	const countSpan = reaction.querySelector("span + span")! as HTMLSpanElement
+	const countSpan = reaction.querySelector(".comment-reaction-count")! as HTMLSpanElement
 	const count = parseInt(countSpan.innerText) + countOffset
 	countSpan.innerText = count.toString()
 
-	const visible = showReactions || count
+	const visible = showReactions || count != 0
+	console.log(visible)
 	if (reaction.hasAttribute("data-visible") != visible)
 		reaction.toggleAttribute("data-visible")
 }
