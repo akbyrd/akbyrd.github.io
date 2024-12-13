@@ -38,7 +38,7 @@
 	<style>
 		@font-face {
 			font-family: "code";
-			unicode-range: U+0000-00a0, U+feff, U+fffd, U+f046b, U+f033b, U+f02a4, U+f0ad1, U+f0544, U+f01ee, U+f4bb, U+f118;
+			unicode-range: U+0000-00a0, U+feff, U+fffd, U+f046b, U+f033b, U+f02a4, U+f0ad1, U+f0544, U+f01ee, U+f4bb, U+f4a2;
 			src:
 			url("{{ $woff2.RelPermalink }}") format("woff2"),
 			url("{{ $woff.RelPermalink }}") format("woff");
@@ -113,9 +113,17 @@
 
 			<template id="comment-template">
 				<section class="comment">
-					<div class="padding">
-						<section class="comment-replies">
-						</section>
+					<div class="comment-content">
+					</div>
+					<div class="comment-reply-input">
+						<button type="button">Write a reply</button>
+					</div>
+				</section>
+			</template>
+
+			<template id="comment-reply-template">
+				<section class="comment">
+					<div class="comment-content">
 					</div>
 				</section>
 			</template>
@@ -131,10 +139,10 @@
 				</header>
 			</template>
 
-			<template id="comment-reactions-template">
-				<footer class="comment-reactions">
-					<button class="comment-toggle-reactions" type="button">&#xf118;</button>
-					<div>
+			<template id="comment-footer-template">
+				<footer>
+					<button class="comment-toggle-reactions" type="button">&#xf4a2;</button>
+					<div class="comment-reactions">
 						<button class="comment-reaction" type="button" name="THUMBS_UP"><span>👍</span><span class="comment-reaction-count">0</span></button>
 						<button class="comment-reaction" type="button" name="THUMBS_DOWN"><span>👎</span><span class="comment-reaction-count">0</span></button>
 						<button class="comment-reaction" type="button" name="LAUGH"><span>😄</span><span class="comment-reaction-count">0</span></button>

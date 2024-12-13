@@ -22,7 +22,7 @@ foreach ($out in $codeOut)
 		--unicodes="uf0544" <# nf-md-twitter #> `
 		--unicodes="uf01ee" <# nf-md-email #> `
 		--unicodes="uf4bb"  <# nf-oct-copy #> `
-		--unicodes="uf118"  <# nf-fa-face_smile #>
+		--unicodes="uf4a2"  <# nf-oct-smiley #>
 
 
 	$name = Split-Path -Leaf $out

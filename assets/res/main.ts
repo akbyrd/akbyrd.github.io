@@ -983,14 +983,16 @@ function InitComments()
 			const codeBlockTemplate = document.getElementById("comment-code-block-template") as HTMLTemplateElement
 			const mathInlineTemplate = document.getElementById("comment-math-inline-template") as HTMLTemplateElement
 			const mathBlockTemplate = document.getElementById("comment-math-block-template") as HTMLTemplateElement
-			const reactionsTemplate = document.getElementById("comment-reactions-template") as HTMLTemplateElement
+			const footerTemplate = document.getElementById("comment-footer-template") as HTMLTemplateElement
+			const replyTemplate = document.getElementById("comment-reply-template") as HTMLTemplateElement
 
-			assertType<IGiscussion>(json)
-			for (const comment of json.discussion.comments)
+			function CreateComment(commentsParent: HTMLElement, template: HTMLTemplateElement, comment: IBaseComment): HTMLElement
 			{
-				const commentFragment = commentTemplate.content.cloneNode(true) as DocumentFragment
-				const commentDiv = commentFragment.querySelector(".padding") as HTMLElement
-				commentDiv.innerHTML = comment.bodyHTML
+				const commentFragment = template.content.cloneNode(true) as DocumentFragment
+				const commentRoot = commentFragment.querySelector(".comment") as HTMLElement
+				const commentInput = commentFragment.querySelector(".comment-reply-input") as HTMLElement
+				const commentContent = commentFragment.querySelector(".comment-content") as HTMLElement
+				commentContent.innerHTML = comment.bodyHTML
 
 				// Header
 				{
@@ -1015,7 +1017,7 @@ function InitComments()
 					const formatter = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
 					time.innerText = formatter.format(date)
 
-					commentDiv.prepend(headerFragment)
+					commentRoot.prepend(headerFragment)
 				}
 
 				// Code
@@ -1032,11 +1034,11 @@ function InitComments()
 						root.parentElement!.replaceChild(codeBlockFragment, root)
 					}
 
-					const blockCodes = commentDiv.querySelectorAll("div.highlight")
+					const blockCodes = commentContent.querySelectorAll("div.highlight")
 					for (const codeDiv of blockCodes)
 						ConstructCodeBlock(codeDiv, codeDiv);
 
-					const blockCodesNoLang = commentDiv.querySelectorAll("div.snippet-clipboard-content")
+					const blockCodesNoLang = commentContent.querySelectorAll("div.snippet-clipboard-content")
 					for (const codeDiv of blockCodesNoLang)
 					{
 						const code = codeDiv.querySelector("pre > code")
@@ -1047,7 +1049,7 @@ function InitComments()
 
 				// Math
 				{
-					const inlineMaths = commentDiv.querySelectorAll(".js-inline-math") as NodeListOf<HTMLElement>
+					const inlineMaths = commentContent.querySelectorAll(".js-inline-math") as NodeListOf<HTMLElement>
 					for (const ghMath of inlineMaths)
 					{
 						const mathFragment = mathInlineTemplate.content.cloneNode(true) as DocumentFragment
@@ -1061,7 +1063,7 @@ function InitComments()
 						ghMath.parentElement!.replaceChild(mathFragment, ghMath)
 					}
 
-					const displayMaths = commentDiv.querySelectorAll(".js-display-math") as NodeListOf<HTMLElement>
+					const displayMaths = commentContent.querySelectorAll(".js-display-math") as NodeListOf<HTMLElement>
 					for (const ghMath of displayMaths)
 					{
 						const mathFragment = mathBlockTemplate.content.cloneNode(true) as DocumentFragment
@@ -1080,12 +1082,12 @@ function InitComments()
 
 				// Footer
 				{
-					const reactionsFragment = reactionsTemplate.content.cloneNode(true) as DocumentFragment
+					const footerFragment = footerTemplate.content.cloneNode(true) as DocumentFragment
 
-					const button = reactionsFragment.querySelector(".comment-toggle-reactions")!
+					const button = footerFragment.querySelector(".comment-toggle-reactions")!
 					button.addEventListener("click", ToggleReactions, { passive: true })
 
-					const reactions = reactionsFragment.querySelectorAll(".comment-reaction") as NodeListOf<HTMLButtonElement>
+					const reactions = footerFragment.querySelectorAll(".comment-reaction") as NodeListOf<HTMLButtonElement>
 					for (const reaction of reactions)
 					{
 						const key = reaction.name as keyof typeof Reactions
@@ -1097,10 +1099,33 @@ function InitComments()
 						reaction.addEventListener("click", ToggleReaction, { passive: true })
 					}
 
-					commentDiv.append(reactionsFragment)
+					commentRoot.insertBefore(footerFragment, commentInput)
 				}
 
 				commentsParent.append(commentFragment)
+				return commentRoot
+			}
+
+			assertType<IGiscussion>(json)
+			for (const comment of json.discussion.comments)
+			{
+				const commentRoot = CreateComment(commentsParent, commentTemplate, comment)
+				if (!comment.replies.length) continue
+
+				const commentInput = commentRoot.querySelector(".comment-reply-input") as HTMLElement
+				const repliesParent = commentRoot.insertBefore(document.createElement("section"), commentInput)
+				repliesParent.classList.add("comment-replies")
+
+				const repliesLine = document.createElement("section")
+				repliesLine.classList.add("reply-line")
+				repliesParent.prepend(repliesLine)
+
+				for (const reply of comment.replies)
+				{
+					const replyRoot = CreateComment(repliesParent, replyTemplate, reply)
+					replyRoot.classList.remove("comment")
+					replyRoot.classList.add("comment-reply")
+				}
 			}
 		}
 	};
@@ -1114,6 +1139,7 @@ function InitComments()
 	Execute()
 }
 
+// TODO: Emoji - Don't close other emoji lists
 // TODO: Emoji - Send message
 // TODO: Emoji - Disable while waiting
 function ToggleReactions(e: Event)
@@ -1165,7 +1191,6 @@ function UpdateReactionVisibility(reaction: HTMLButtonElement, showReactions: bo
 	countSpan.innerText = count.toString()
 
 	const visible = showReactions || count != 0
-	console.log(visible)
 	if (reaction.hasAttribute("data-visible") != visible)
 		reaction.toggleAttribute("data-visible")
 }

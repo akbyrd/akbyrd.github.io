@@ -21,3 +21,4 @@ Nerd Font Characters
 󰇮 Email    f01ee nf-md-email
  Copy     f4bb  nf-oct-copy
  Smile    f118  nf-fa-face_smile
+ Smile    f4a2  nf-oct-smiley
