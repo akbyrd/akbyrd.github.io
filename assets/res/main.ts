@@ -821,20 +821,15 @@ function SelectionFromHash()
 // -------------------------------------------------------------------------------------------------
 // Comments
 
-// TODO: Show comments
 // TODO: Ensure loading is async
 // TODO: Show input box
 // TODO: Login button
 // TODO: Lazy load
 // TODO: Put in a separate file?
+// TODO: Emoji - Send message
+// TODO: Emoji - Disable while waiting
 
-// TODO: decide: how to style github content
-// 1. make html more like blog
-// 2. jump hoops with styles
-
-const comments = {
-	exist: false,
-}
+let syntheticClick = null as null | HTMLButtonElement
 
 interface IError {
 	error: string;
@@ -965,7 +960,6 @@ function InitComments()
 			return
 		}
 
-		comments.exist = response.ok
 		if (!response.ok)
 		{
 			assertType<IError>(json)
@@ -1139,9 +1133,6 @@ function InitComments()
 	Execute()
 }
 
-// TODO: Emoji - Don't close other emoji lists
-// TODO: Emoji - Send message
-// TODO: Emoji - Disable while waiting
 function ToggleReactions(e: Event)
 {
 	const target = e.currentTarget! as HTMLButtonElement
@@ -1152,20 +1143,27 @@ function ToggleReactions(e: Event)
 		for (const reaction of reactions)
 			UpdateReactionVisibility(reaction, true, 0)
 
-		e.stopPropagation()
-		document.addEventListener("click", {
-			handleEvent(e: Event)
-			{
-				const clickedFooter = target.parentElement!.contains(e.target as Node)
-				const clickedButton = target == e.target
-				if (!clickedFooter || clickedButton)
+		setTimeout(() => {
+			document.addEventListener("click", {
+				handleEvent(e: Event)
 				{
-					document.removeEventListener("click", this)
-					if (target.hasAttribute("data-pressed"))
-						target.click()
+					if (syntheticClick && syntheticClick != target) return
+
+					const clickedFooter = target.parentElement!.contains(e.target as Node)
+					const clickedButton = target == e.target
+					if (!clickedFooter || clickedButton)
+					{
+						document.removeEventListener("click", this)
+						if (target.hasAttribute("data-pressed"))
+						{
+							syntheticClick = target
+							target.click()
+							syntheticClick = null
+						}
+					}
 				}
-			}
-		}, { passive: true })
+			}, { passive: true })
+		}, 1)
 	}
 	else
 	{
