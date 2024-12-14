@@ -1105,10 +1105,10 @@ function InitComments()
 					commentTextArea.addEventListener("input", UpdateInputHeight, { passive: true })
 
 					const commentSubmit = commentInput.querySelector(".comment-submit") as HTMLElement
-					commentSubmit.innerText = "Reply"
+					//commentSubmit.innerText = "Reply"
 
-					const commentLogin = commentInput.querySelector(".comment-login") as HTMLElement
-					commentLogin.style.display = "none"
+					const commentLogout = commentInput.querySelector(".comment-logout") as HTMLElement
+					//commentLogout.style.display = "none"
 				}
 
 				// Replies
@@ -1211,11 +1211,15 @@ function UpdateInputHeight(e: Event)
 	const oldHeight = commentTextArea.clientHeight
 	commentTextArea.style.height = "auto"
 
-	const newHeight = commentTextArea.scrollHeight
+	const newHeightRect = commentTextArea.getClientRects()[0].height
+	const newHeightScroll = commentTextArea.scrollHeight
+	const newHeight = Math.abs(newHeightRect - newHeightScroll) < 1 ? newHeightRect : newHeightScroll
 	commentTextArea.style.height = `${oldHeight}px`
 
 	const reflow = commentTextArea.scrollHeight
 	commentTextArea.style.height = `${newHeight}px`
+
+	requestAnimationFrame(() => commentTextArea.scrollTop = 0)
 }
 
 // -------------------------------------------------------------------------------------------------

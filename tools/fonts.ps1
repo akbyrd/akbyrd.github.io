@@ -15,14 +15,15 @@ foreach ($out in $codeOut)
 		--drop-tables="PfEd, BASE" `
 		--layout-features="ss01" `
 		--unicodes="u0000-00a0,ufeff,ufffd" `
-		--unicodes="uf046b" <# nf-md-rss #> `
-		--unicodes="uf033b" <# nf-md-linkedin #> `
-		--unicodes="uf02a4" <# nf-md-github #> `
-		--unicodes="uf0ad1" <# nf-md-mastodon #> `
-		--unicodes="uf0544" <# nf-md-twitter #> `
-		--unicodes="uf01ee" <# nf-md-email #> `
+		--unicodes="uf426"  <# nf-oct-sign_out #> `
+		--unicodes="uf4a2"  <# nf-oct-smiley #> `
 		--unicodes="uf4bb"  <# nf-oct-copy #> `
-		--unicodes="uf4a2"  <# nf-oct-smiley #>
+		--unicodes="uf01ee" <# nf-md-email #> `
+		--unicodes="uf02a4" <# nf-md-github #> `
+		--unicodes="uf033b" <# nf-md-linkedin #> `
+		--unicodes="uf046b" <# nf-md-rss #> `
+		--unicodes="uf0544" <# nf-md-twitter #> `
+		--unicodes="uf0ad1" <# nf-md-mastodon #>
 
 
 	$name = Split-Path -Leaf $out

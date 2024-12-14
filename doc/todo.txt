@@ -1,16 +1,21 @@
 General
 TODO: Implement comments
-	Show submit button if focused or content
-	Animate buttons
-	Show login button if main comment
-	Disable until logged in
-	Clear when logging out
-	Save draft?
-	Set maxlength from Github limit
-	Ensure loading is async
-	Put in a separate file?
-	Emoji - Send message
-	Emoji - Disable while waiting
+	Login
+		Swap button between submit and login
+		Disable submit button when no text
+		Disable text area until logged in
+		Disable logout button until logged int
+	Messages
+		Hook up emoji buttons
+		Hook up submit button
+		Hook up login button
+		Disable buttons while pending
+	Loading
+		Animate when loading
+		Defer loading until scrolled into view
+	Polish
+		Save draft when typing
+		Set textarea maxlength from Github limit
 TODO: Initial focus outline color on theme button is wrong
 TODO: Fix scrolling on math in comments (don't use <math> because it behaves poorly)
 TODO: Check for missing math glyphs (should be using a single font, not falling back)

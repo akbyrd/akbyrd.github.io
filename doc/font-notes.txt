@@ -13,12 +13,13 @@ Emojis
 
 Nerd Font Characters
 --------------------
+ Copy     f4bb  nf-oct-copy
+ Smile    f4a2  nf-oct-smiley
+ Logout   f426  nf-oct-sign_out
 󰑫 RSS      f046b nf-md-rss
 󰌻 LinkedIn f033b nf-md-linkedin
 󰊤 GitHub   f02a4 nf-md-github
 󰫑 Mastodon f0ad1 nf-md-mastodon
 󰕄 Twitter  f0544 nf-md-twitter
 󰇮 Email    f01ee nf-md-email
- Copy     f4bb  nf-oct-copy
- Smile    f118  nf-fa-face_smile
- Smile    f4a2  nf-oct-smiley
+ Smile    f0118 nf-fa-face_smile
