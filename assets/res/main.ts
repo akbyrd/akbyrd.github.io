@@ -821,14 +821,6 @@ function SelectionFromHash()
 // -------------------------------------------------------------------------------------------------
 // Comments
 
-// TODO: Ensure loading is async
-// TODO: Show input box
-// TODO: Login button
-// TODO: Lazy load
-// TODO: Put in a separate file?
-// TODO: Emoji - Send message
-// TODO: Emoji - Disable while waiting
-
 let syntheticClick = null as null | HTMLButtonElement
 
 interface IError {
@@ -984,7 +976,7 @@ function InitComments()
 			{
 				const commentFragment = template.content.cloneNode(true) as DocumentFragment
 				const commentRoot = commentFragment.querySelector(".comment") as HTMLElement
-				const commentInput = commentFragment.querySelector(".comment-reply-input") as HTMLElement
+				const commentInput = commentFragment.querySelector(".comment-input") as HTMLElement
 				const commentContent = commentFragment.querySelector(".comment-content") as HTMLElement
 				commentContent.innerHTML = comment.bodyHTML
 
@@ -992,7 +984,7 @@ function InitComments()
 				{
 					const headerFragment = headerTemplate.content.cloneNode(true) as DocumentFragment
 
-					const aAvatar = headerFragment.querySelector(".comment-avatar")! as HTMLAnchorElement
+					const aAvatar = headerFragment.querySelector(".comment-avatar") as HTMLAnchorElement
 					aAvatar.href = comment.author.url
 					aAvatar.append(comment.author.login)
 
@@ -1002,7 +994,7 @@ function InitComments()
 					img.src = url.toString()
 					img.style.display = "inline"
 
-					const aTime = headerFragment.querySelector(".comment-time")! as HTMLAnchorElement
+					const aTime = headerFragment.querySelector(".comment-time") as HTMLAnchorElement
 					aTime.href = comment.url
 
 					const time = aTime.querySelector("time")!
@@ -1104,21 +1096,37 @@ function InitComments()
 			for (const comment of json.discussion.comments)
 			{
 				const commentRoot = CreateComment(commentsParent, commentTemplate, comment)
-				if (!comment.replies.length) continue
+				const commentInput = commentRoot.querySelector(".comment-input") as HTMLElement
 
-				const commentInput = commentRoot.querySelector(".comment-reply-input") as HTMLElement
-				const repliesParent = commentRoot.insertBefore(document.createElement("section"), commentInput)
-				repliesParent.classList.add("comment-replies")
-
-				const repliesLine = document.createElement("section")
-				repliesLine.classList.add("reply-line")
-				repliesParent.prepend(repliesLine)
-
-				for (const reply of comment.replies)
+				// Input
 				{
-					const replyRoot = CreateComment(repliesParent, replyTemplate, reply)
-					replyRoot.classList.remove("comment")
-					replyRoot.classList.add("comment-reply")
+					const commentTextArea = commentInput.querySelector("textarea")!
+					commentTextArea.placeholder = "Write a reply"
+					commentTextArea.addEventListener("input", UpdateInputHeight, { passive: true })
+
+					const commentSubmit = commentInput.querySelector(".comment-submit") as HTMLElement
+					commentSubmit.innerText = "Reply"
+
+					const commentLogin = commentInput.querySelector(".comment-login") as HTMLElement
+					commentLogin.style.display = "none"
+				}
+
+				// Replies
+				if (comment.replies.length)
+				{
+					const repliesParent = commentRoot.insertBefore(document.createElement("section"), commentInput)
+					repliesParent.classList.add("comment-replies")
+
+					const repliesLine = document.createElement("section")
+					repliesLine.classList.add("reply-line")
+					repliesParent.prepend(repliesLine)
+
+					for (const reply of comment.replies)
+					{
+						const replyRoot = CreateComment(repliesParent, replyTemplate, reply)
+						replyRoot.classList.remove("comment")
+						replyRoot.classList.add("comment-reply")
+					}
 				}
 			}
 		}
@@ -1135,7 +1143,7 @@ function InitComments()
 
 function ToggleReactions(e: Event)
 {
-	const target = e.currentTarget! as HTMLButtonElement
+	const target = e.currentTarget as HTMLButtonElement
 	const reactions = target.parentElement!.querySelectorAll(".comment-reaction") as NodeListOf<HTMLButtonElement>
 
 	if (target.toggleAttribute("data-pressed"))
@@ -1174,7 +1182,7 @@ function ToggleReactions(e: Event)
 
 function ToggleReaction(e: Event)
 {
-	const reaction = e.currentTarget! as HTMLButtonElement
+	const reaction = e.currentTarget as HTMLButtonElement
 	const reactionsDiv = reaction.parentElement!.parentElement!
 	const reactionsButton = reactionsDiv.querySelector(".comment-toggle-reactions") as HTMLButtonElement
 	const showReactions = reactionsButton.hasAttribute("data-pressed")
@@ -1184,13 +1192,30 @@ function ToggleReaction(e: Event)
 
 function UpdateReactionVisibility(reaction: HTMLButtonElement, showReactions: boolean, countOffset: number)
 {
-	const countSpan = reaction.querySelector(".comment-reaction-count")! as HTMLSpanElement
+	const countSpan = reaction.querySelector(".comment-reaction-count") as HTMLSpanElement
 	const count = parseInt(countSpan.innerText) + countOffset
 	countSpan.innerText = count.toString()
 
 	const visible = showReactions || count != 0
 	if (reaction.hasAttribute("data-visible") != visible)
+	{
+		reaction.disabled = !visible
 		reaction.toggleAttribute("data-visible")
+	}
+}
+
+function UpdateInputHeight(e: Event)
+{
+	const commentTextArea = e.currentTarget as HTMLTextAreaElement
+
+	const oldHeight = commentTextArea.clientHeight
+	commentTextArea.style.height = "auto"
+
+	const newHeight = commentTextArea.scrollHeight
+	commentTextArea.style.height = `${oldHeight}px`
+
+	const reflow = commentTextArea.scrollHeight
+	commentTextArea.style.height = `${newHeight}px`
 }
 
 // -------------------------------------------------------------------------------------------------

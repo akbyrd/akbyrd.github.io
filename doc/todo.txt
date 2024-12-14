@@ -1,25 +1,32 @@
-Posts
+General
+TODO: Implement comments
+	Show submit button if focused or content
+	Animate buttons
+	Show login button if main comment
+	Disable until logged in
+	Clear when logging out
+	Save draft?
+	Set maxlength from Github limit
+	Ensure loading is async
+	Put in a separate file?
+	Emoji - Send message
+	Emoji - Disable while waiting
+TODO: Initial focus outline color on theme button is wrong
+TODO: Fix scrolling on math in comments (don't use <math> because it behaves poorly)
+TODO: Check for missing math glyphs (should be using a single font, not falling back)
+TODO: Fix initial math style (incorrect until code runs)
+TODO: Add "fix typo" button (https://www.ii.com/vscode-uri-scheme-and-hugo/)
+TODO: Get link previews working on {Discord, X, Mastodon, Bluesky, Hacker News, Github, LinkedIn, Slack}
 TODO: Choose a diagram method: goat, mermaid (jerky layout), graphviz, other
+TODO: Try a render hook for images https://gohugo.io/render-hooks/images/
 TODO: Lazy image loading
 TODO: Implement zoom for images (current page? new page?)
-TODO: Add "fix typo" button (https://www.ii.com/vscode-uri-scheme-and-hugo/)
-TODO: Implement comments (Github, Giscus, Staticman, Custom)
-TODO: Fix initial math style (incorrect until code runs)
-TODO: Initial focus outline color on theme button is wrong
-TODO: Check for missing math glyphs (should be using a single font, not falling back)
-TODO: Fix scrolling on math in comments (don't use <math> because it behaves poorly)
-
-General
-TODO: Try a render hook for images https://gohugo.io/render-hooks/images/
 TODO: Add search support
-TODO: Figure out how to unscale borders (e.g. fix copy button size)
-TODO: Text classes feel like a mistake. Making things harder rather than easier
-TODO: Why is math falling back to built-in for many glyphs?
-TODO: Overhaul CSS
 
-Atom
+Atom / RSS
 TODO: Add an XML stylesheet (.xsl) to Atom feed
 TODO: Split Atom feed into multiple files
+TODO: Fix icon on Inoreader
 
 Code
 TODO: Fix 1px gap below scroll bars

@@ -107,17 +107,15 @@
 
 		{{- if .Page.Params.comments }}
 		<section id="comments" class="no-mathml">
-			<!--
-				<button id="github-login">Login</button>
-			-->
-
 			<template id="comment-template">
 				<section class="comment">
 					<div class="comment-content">
 					</div>
-					<div class="comment-reply-input">
-						<button type="button">Write a reply</button>
-					</div>
+					<form class="comment-input">
+						<textarea placeholder="Write a comment" required rows="1"></textarea>
+						<button class="comment-logout" type="button" style="display: none;">Sign Out</button>
+						<button class="comment-submit" type="submit" style="display: none;">Comment</button>
+					</form>
 				</section>
 			</template>
 
@@ -143,14 +141,14 @@
 				<footer>
 					<button class="comment-toggle-reactions" type="button">&#xf4a2;</button>
 					<div class="comment-reactions">
-						<button class="comment-reaction" type="button" name="THUMBS_UP"><span>👍</span><span class="comment-reaction-count">0</span></button>
-						<button class="comment-reaction" type="button" name="THUMBS_DOWN"><span>👎</span><span class="comment-reaction-count">0</span></button>
-						<button class="comment-reaction" type="button" name="LAUGH"><span>😄</span><span class="comment-reaction-count">0</span></button>
-						<button class="comment-reaction" type="button" name="HOORAY"><span>🎉</span><span class="comment-reaction-count">0</span></button>
-						<button class="comment-reaction" type="button" name="CONFUSED"><span>😕</span><span class="comment-reaction-count">0</span></button>
-						<button class="comment-reaction" type="button" name="HEART"><span>❤️</span><span class="comment-reaction-count">0</span></button>
-						<button class="comment-reaction" type="button" name="ROCKET"><span>🚀</span><span class="comment-reaction-count">0</span></button>
-						<button class="comment-reaction" type="button" name="EYES"><span>👀</span><span class="comment-reaction-count">0</span></button>
+						<button class="comment-reaction" type="button" disabled="" name="THUMBS_UP"><span>👍</span><span class="comment-reaction-count">0</span></button>
+						<button class="comment-reaction" type="button" disabled="" name="THUMBS_DOWN"><span>👎</span><span class="comment-reaction-count">0</span></button>
+						<button class="comment-reaction" type="button" disabled="" name="LAUGH"><span>😄</span><span class="comment-reaction-count">0</span></button>
+						<button class="comment-reaction" type="button" disabled="" name="HOORAY"><span>🎉</span><span class="comment-reaction-count">0</span></button>
+						<button class="comment-reaction" type="button" disabled="" name="CONFUSED"><span>😕</span><span class="comment-reaction-count">0</span></button>
+						<button class="comment-reaction" type="button" disabled="" name="HEART"><span>❤️</span><span class="comment-reaction-count">0</span></button>
+						<button class="comment-reaction" type="button" disabled="" name="ROCKET"><span>🚀</span><span class="comment-reaction-count">0</span></button>
+						<button class="comment-reaction" type="button" disabled="" name="EYES"><span>👀</span><span class="comment-reaction-count">0</span></button>
 					</div>
 				</footer>
 			</template>

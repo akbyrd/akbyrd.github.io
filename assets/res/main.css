@@ -718,12 +718,14 @@ code, annotation {
 			background-color: var(--background-3);
 			border-color: var(--outline);
 			border-style: solid;
-			border-width: 2px 0 1px 0;
+			border-width: 2px 0 0 0;
+			display: flex;
+			flex-direction: column;
 			margin-bottom: 0;
 			position: relative;
 
 			.comment-reply {
-				margin: 16px 0;
+				margin: 0;
 			}
 
 			.reply-line {
@@ -744,30 +746,49 @@ code, annotation {
 				margin-bottom: -20px;
 			}
 
-			.comment-reply + .comment-reply {
-				margin-top: 24px;
-			}
-
 			footer {
 				margin-top: -6px;
 			}
 		}
 
-		.comment-reply-input {
+		.comment-input > div {
+			scroll-padding: 100px;
+		}
+
+		.comment-input {
 			border-top-color: var(--outline);
 			border-top-style: solid;
-			border-top-width: 1px;
+			border-top-width: 2px;
 			margin: 0;
 		}
 
-		.comment-reply-input button {
+		.comment-input textarea {
+			background-color: unset;
+			border: unset;
 			box-sizing: border-box;
-			color: var(--text-detail);
-			cursor: text;
+			color: var(--text);
 			display: block;
 			font-family: sans-serif;
+			font-size: 14px;
+			margin: 0;
 			padding: 16px;
+			padding-bottom: 14px;
+			resize: none;
 			width: 100%;
+
+			overflow: hidden;
+			transition-duration: 50ms;
+			transition-property: height;
+		}
+
+		.comment-input textarea:focus {
+			outline: none;
+		}
+
+		.comment-submit {
+		}
+
+		.comment-logout {
 		}
 	}
 }
