@@ -3,10 +3,12 @@
 {{ $name := . }}
 {{ $rename := true }}
 {{ $minify := true }}
+{{ $sourceMap := "" }}
 
 {{ if eq hugo.Environment "development" }}
 	{{ $rename = false }}
 	{{ $minify = false }}
+	{{ $sourceMap = "external" }}
 {{ end }}
 
 {{ if reflect.IsMap . }}
@@ -29,12 +31,13 @@
 	{{ end }}
 
 	{{ if (eq $type "typescript") }}
-		{{ $opts := dict "minify" $minify }}
+		{{ $opts := dict "minify" $minify "sourceMap" $sourceMap }}
 		{{ $resource = $resource | js.Build $opts }}
+		{{ $name = replaceRE `\.ts\z` ".js" $name }}
 	{{ end }}
 
-	{{ $copy := $resource | fingerprint }}
-	{{ $fingerprint = $copy.Data.Integrity }}
+	{{ $resource := $resource | fingerprint "sha384" }}
+	{{ $fingerprint = $resource.Data.Integrity }}
 	{{ $integrity := "" | safeHTMLAttr }}
 	{{ if ne hugo.Environment "development" }}
 	{{ $integrity = printf ` integrity=%q crossorigin="anonymous"` ($fingerprint | htmlEscape) | safeHTMLAttr }}
@@ -48,7 +51,6 @@
 		{{ $name = replaceRE `\.([^.]*\z)` (printf "-%s.$1" $hash) $name }}
 	{{ end }}
 
-	{{ $name = replaceRE `\.ts\z` ".js" $name }}
 	{{ $resource = resources.Copy $name $resource }}
 
 	{{ $permalink := $resource.Permalink }}
