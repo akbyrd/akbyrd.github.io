@@ -33,29 +33,26 @@
 		{{ $resource = $resource | js.Build $opts }}
 	{{ end }}
 
-	{{ if $rename }}
-		{{ $resource = $resource | fingerprint }}
-		{{ $fingerprint = $resource.Data.Integrity }}
-
-		{{ $hash := index (index (findRESubmatch `sha\d*-(.*)` $fingerprint) 0) 1 }}
-		{{ $hash = $hash | first 6 }}
-
-		{{ $safe := $hash }}
-		{{ $safe = replace $safe "+" "p" }}
-		{{ $safe = replace $safe "/" "f" }}
-		{{ $safe = replace $safe "=" "e" }}
-		{{ $name = replaceRE `\.([^.]*\z)` (printf "-%s.$1" $safe) $name }}
-
-		{{ $name = replaceRE `\.ts\z` ".js" $name }}
-		{{ $resource = $resource.Content | resources.FromString $name }}
-	{{ end }}
-
+	{{ $copy := $resource | fingerprint }}
+	{{ $fingerprint = $copy.Data.Integrity }}
 	{{ $integrity := "" | safeHTMLAttr }}
 	{{ if ne hugo.Environment "development" }}
 	{{ $integrity = printf ` integrity=%q crossorigin="anonymous"` ($fingerprint | htmlEscape) | safeHTMLAttr }}
 	{{ else }}
 	{{ $integrity = ` crossorigin="anonymous"` | safeHTMLAttr }}
 	{{ end }}
+
+	{{ if $rename }}
+		{{ $hash := index (index (findRESubmatch `sha\d*-(.*)` $fingerprint) 0) 1 }}
+		{{ $hash = $hash | first 6 }}
+		{{ $hash = replace $hash "+" "p" }}
+		{{ $hash = replace $hash "/" "f" }}
+		{{ $hash = replace $hash "=" "e" }}
+		{{ $name = replaceRE `\.([^.]*\z)` (printf "-%s.$1" $hash) $name }}
+	{{ end }}
+
+	{{ $name = replaceRE `\.ts\z` ".js" $name }}
+	{{ $resource = resources.Copy $name $resource }}
 
 	{{ $permalink := $resource.Permalink }}
 	{{ $relPermalink := $resource.RelPermalink }}

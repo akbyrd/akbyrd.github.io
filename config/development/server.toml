@@ -1,3 +1,4 @@
+# NOTE: Configuring headers only works in development
 [[headers]]
 	for = '/res/comments.css'
 
