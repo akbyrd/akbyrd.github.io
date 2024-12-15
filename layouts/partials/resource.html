@@ -44,10 +44,7 @@
 
 	{{ if $rename }}
 		{{ $hash := index (index (findRESubmatch `sha\d*-(.*)` $fingerprint) 0) 1 }}
-		{{ $hash = $hash | first 6 }}
-		{{ $hash = replace $hash "+" "p" }}
-		{{ $hash = replace $hash "/" "f" }}
-		{{ $hash = replace $hash "=" "e" }}
+		{{ $hash = $hash | encoding.Base64Encode | first 6 }}
 		{{ $name = replaceRE `\.([^.]*\z)` (printf "-%s.$1" $hash) $name }}
 	{{ end }}
 
