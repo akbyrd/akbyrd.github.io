@@ -192,22 +192,6 @@ const code: Code = {
 	hash:      "",
 }
 
-// TODO: Remove when giscus is no longer needed
-function GetCSS()
-{
-	var css = null as CSSStyleSheet | null
-	const cssName = `${window.location.origin}/res/main`
-	for (const styleSheet of document.styleSheets)
-	{
-		if (styleSheet.href?.startsWith(cssName))
-		{
-			css = styleSheet
-			break
-		}
-	}
-	return css
-}
-
 function InitCode()
 {
 	code.isFirefox = navigator.userAgent.includes("Firefox/")
@@ -228,8 +212,8 @@ function InitCode()
 
 	if (code.lnParents)
 	{
-		const css = GetCSS()
-		css?.insertRule(".line { cursor: pointer; }", css.cssRules.length)
+		const css = document.styleSheets[0]
+		css.insertRule(".line { cursor: pointer; }", css.cssRules.length)
 
 		for (const lnParent of code.lnParents)
 		{
@@ -918,9 +902,6 @@ function InitComments()
 		const commentsParent = document.getElementById("comments")
 		if (!commentsParent)
 			return
-
-		//const loginButton = document.getElementById("github-login")
-		//assert(loginButton)
 
 		const baseUrl = "https://giscus.app/api/discussions"
 		const params = new URLSearchParams({

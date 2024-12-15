@@ -570,7 +570,7 @@ code, annotation {
 }
 
 /* ---------------------------------------------------------------------------------------------- */
-/* Comments (Custom) */
+/* Comments */
 
 #comments {
 	font-size: 12pt;
@@ -850,50 +850,6 @@ code, annotation {
 			color: var(--text);
 		}
 	}
-}
-
-/* ---------------------------------------------------------------------------------------------- */
-/* Comments (Giscus) */
-
-div.giscus {
-	margin: 40px 0;
-
-	.comment {
-		background-color: var(--background-2);
-		border-color: var(--outline);
-		border-style: solid;
-		border-width: 1px;
-		padding: 8px;
-	}
-
-	.comment .highlight pre,
-	.comment .js-display-math {
-		background-color: var(--code-background);
-		border-color: var(--outline);
-		border-style: solid;
-		border-width: 1px;
-
-		will-change: translate;
-
-		display: block;
-		min-width: fit-content;
-		padding: 8px;
-
-		cursor: text;
-		white-space: pre;
-	}
-
-	.comment .js-inline-math {
-		background-color: var(--code-background);
-		border-color: var(--outline);
-		border-style: solid;
-		border-width: 1px;
-		white-space: pre;
-	}
-}
-
-.giscus-frame {
-	outline-style: none;
 }
 
 /* ---------------------------------------------------------------------------------------------- */
