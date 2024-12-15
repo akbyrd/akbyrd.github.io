@@ -33,23 +33,22 @@
 		{{ $resource = $resource | js.Build $opts }}
 	{{ end }}
 
-	{{ $resource = $resource | fingerprint }}
-	{{ $fingerprint = $resource.Data.Integrity }}
-
-	{{ $hash := index (index (findRESubmatch `sha\d*-(.*)` $fingerprint) 0) 1 }}
-	{{ $long := $hash }}
-	{{ $short := $hash | first 6 }}
-
 	{{ if $rename }}
-		{{ $safe := $short }}
+		{{ $resource = $resource | fingerprint }}
+		{{ $fingerprint = $resource.Data.Integrity }}
+
+		{{ $hash := index (index (findRESubmatch `sha\d*-(.*)` $fingerprint) 0) 1 }}
+		{{ $hash = $hash | first 6 }}
+
+		{{ $safe := $hash }}
 		{{ $safe = replace $safe "+" "p" }}
 		{{ $safe = replace $safe "/" "f" }}
 		{{ $safe = replace $safe "=" "e" }}
 		{{ $name = replaceRE `\.([^.]*\z)` (printf "-%s.$1" $safe) $name }}
-	{{ end }}
 
-	{{ $name = replaceRE `\.ts\z` ".js" $name }}
-	{{ $resource = $resource.Content | resources.FromString $name }}
+		{{ $name = replaceRE `\.ts\z` ".js" $name }}
+		{{ $resource = $resource.Content | resources.FromString $name }}
+	{{ end }}
 
 	{{ $integrity := "" | safeHTMLAttr }}
 	{{ if ne hugo.Environment "development" }}
@@ -60,7 +59,7 @@
 
 	{{ $permalink := $resource.Permalink }}
 	{{ $relPermalink := $resource.RelPermalink }}
-	{{ $ret = dict "Resource" $resource "Short" $short "Long" $long "Integrity" $integrity "Permalink" $permalink "RelPermalink" $relPermalink }}
+	{{ $ret = dict "Resource" $resource "Integrity" $integrity "Permalink" $permalink "RelPermalink" $relPermalink }}
 {{ end }}
 
 {{ return $ret }}
