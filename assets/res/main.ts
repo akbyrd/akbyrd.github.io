@@ -807,60 +807,9 @@ function SelectionFromHash()
 
 let syntheticClick = null as null | HTMLButtonElement
 
-async function InitComments()
-{
-	await QueryDiscussion()
-}
-
-function strtobytes(s: string): ArrayBuffer
-{
-	const buf = new ArrayBuffer(s.length)
-	const view = new Uint8Array(buf)
-
-	for (let i = 0; i < s.length; i++)
-		view[i] = s.charCodeAt(i)
-
-	return buf
-}
-
-function b64tobytes(str: string): ArrayBuffer
-{
-	const binary = atob(str)
-	const buf = new ArrayBuffer(binary.length)
-	const view = new Uint8Array(buf)
-
-	for (let i = 0; i < binary.length; i++)
-		view[i] = binary.charCodeAt(i)
-
-	return buf
-}
-
-function bytestob64(buf: ArrayBuffer): string
-{
-	const view = new Uint8Array(buf)
-	const str = String.fromCharCode(...view) // TODO: More efficient
-	const b64 = strtob64(str)
-	return b64
-}
-
-function strtob64(str: string): string
-{
-	str = btoa(str)
-	str = str.replace(/=/g, "")
-	str = str.replace(/\+/g, "-")
-	str = str.replace(/\//g, "_")
-	return str
-}
-
-function objtob64(obj: any): string
-{
-	const json = JSON.stringify(obj)
-	return strtob64(json)
-}
-
 const owner = "akbyrd"
 const repo = "akbyrd.github.io"
-const discussion = "tests/test-comments/"
+const discussionUrl = "tests/test-comments/"
 const appId = 1088157
 
 interface IError
@@ -945,27 +894,71 @@ enum Reaction
 	EYES,
 }
 
-async function CreateJWT()
+function strtobytes(s: string): ArrayBuffer
 {
-	const key_b64 = b64tobytes(privateKey)
-	const alg = { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256", }
-	const cryptoKey = await crypto.subtle.importKey("pkcs8", key_b64, alg, false, ["sign"])
+	const buf = new ArrayBuffer(s.length)
+	const view = new Uint8Array(buf)
 
-	const now = Math.floor(Date.now() / 1000 - 60)
-	const header_b64 = objtob64({ alg: "RS256", typ: "JWT", })
-	const payload_b64 = objtob64({ iat: now, exp: now + 300, iss: appId, })
-	const message_bytes = strtobytes(`${header_b64}.${payload_b64}`)
+	for (let i = 0; i < s.length; i++)
+		view[i] = s.charCodeAt(i)
 
-	const signature_bytes = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", cryptoKey, message_bytes)
-	const signature_b64 = bytestob64(signature_bytes)
-
-	const jwt = `${header_b64}.${payload_b64}.${signature_b64}`
-	return jwt
+	return buf
 }
 
-async function QueryDiscussion()
+function b64tobytes(str: string): ArrayBuffer
 {
-	const jwt = await CreateJWT()
+	const binary = atob(str)
+	const buf = new ArrayBuffer(binary.length)
+	const view = new Uint8Array(buf)
+
+	for (let i = 0; i < binary.length; i++)
+		view[i] = binary.charCodeAt(i)
+
+	return buf
+}
+
+function bytestob64(buf: ArrayBuffer): string
+{
+	const view = new Uint8Array(buf)
+	const str = String.fromCharCode(...view) // TODO: More efficient
+	const b64 = strtob64(str)
+	return b64
+}
+
+function strtob64(str: string): string
+{
+	str = btoa(str)
+	str = str.replace(/=/g, "")
+	str = str.replace(/\+/g, "-")
+	str = str.replace(/\//g, "_")
+	return str
+}
+
+function objtob64(obj: any): string
+{
+	const json = JSON.stringify(obj)
+	return strtob64(json)
+}
+
+async function InitComments()
+{
+	async function CreateJWT()
+	{
+		const key_b64 = b64tobytes(privateKey)
+		const alg = { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256", }
+		const cryptoKey = await crypto.subtle.importKey("pkcs8", key_b64, alg, false, ["sign"])
+
+		const now = Math.floor(Date.now() / 1000 - 60)
+		const header_b64 = objtob64({ alg: "RS256", typ: "JWT", })
+		const payload_b64 = objtob64({ iat: now, exp: now + 300, iss: appId, })
+		const message_bytes = strtobytes(`${header_b64}.${payload_b64}`)
+
+		const signature_bytes = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", cryptoKey, message_bytes)
+		const signature_b64 = bytestob64(signature_bytes)
+
+		const jwt = `${header_b64}.${payload_b64}.${signature_b64}`
+		return jwt
+	}
 
 	async function GetInstallation()
 	{
@@ -998,7 +991,7 @@ async function QueryDiscussion()
 
 	async function GetDiscussion(access: IAccess)
 	{
-		const searchQuery = `repo:${owner}/${repo} in:title ${discussion}`
+		const searchQuery = `repo:${owner}/${repo} in:title ${discussionUrl}`
 		const discussionQuery =
 			`query($query: String!) {
 				search(type: DISCUSSION, query: $query, first: 1) {
@@ -1070,9 +1063,19 @@ async function QueryDiscussion()
 
 		const json = await response.json()
 		if (!response.ok) throw json as IError
-		return json as IDiscussion
+
+		const search = json as IDiscussionSearch
+		if (search.data.search.nodes.length != 1)
+			throw {
+				documentation_url: "",
+				message: "Failed to find discussion",
+				status: "",
+			} as IError
+
+		return search.data.search.nodes[0]
 	}
 
+	const jwt = await CreateJWT()
 	const discussion = Promise.resolve()
 		.then(GetInstallation)
 		.then(GetAccessToken)
@@ -1081,7 +1084,6 @@ async function QueryDiscussion()
 		.catch(ShowCommentsError)
 }
 
-// TODO: Use the passed in discussion
 // TODO: Handle expired JWT
 // TODO: Show error on page
 async function CreateComments(discussion: IDiscussion)
@@ -1090,211 +1092,168 @@ async function CreateComments(discussion: IDiscussion)
 	if (!commentsParent)
 		return
 
-	const baseUrl = "https://giscus.app/api/discussions"
-	const params = new URLSearchParams({
-		repo: "akbyrd/akbyrd.github.io",
-		term: "tests/test-comments/", // TODO: Remove
-		//term: document.title,
-		category: "Blog Post Comments",
-		number: "0",
-		strict: "true",
-		last: "15",
-	})
+	const commentTemplate = document.getElementById("comment-template") as HTMLTemplateElement
+	const headerTemplate = document.getElementById("comment-header-template") as HTMLTemplateElement
+	const codeBlockTemplate = document.getElementById("comment-code-block-template") as HTMLTemplateElement
+	const mathInlineTemplate = document.getElementById("comment-math-inline-template") as HTMLTemplateElement
+	const mathBlockTemplate = document.getElementById("comment-math-block-template") as HTMLTemplateElement
+	const footerTemplate = document.getElementById("comment-footer-template") as HTMLTemplateElement
+	const replyTemplate = document.getElementById("comment-reply-template") as HTMLTemplateElement
 
-	const url = `${baseUrl}?${params.toString()}`
-	let response = null
-	try
+	function CreateComment(commentsParent: HTMLElement, template: HTMLTemplateElement, comment: ICommentBase): HTMLElement
 	{
-		response = await fetch(url)
-	}
-	catch (error)
-	{
-		ShowCommentsError(String(error))
-		return
-	}
+		const commentFragment = template.content.cloneNode(true) as DocumentFragment
+		const commentRoot = commentFragment.querySelector(".comment") as HTMLElement
+		const commentInput = commentFragment.querySelector(".comment-input") as HTMLElement
+		const commentContent = commentFragment.querySelector(".comment-content") as HTMLElement
+		commentContent.innerHTML = comment.bodyHTML
 
-	const json = await response.json()
-	if (!json)
-	{
-		ShowCommentsError("failed to get response json")
-		return
-	}
-
-	if (!response.ok)
-	{
-		assertType<IError>(json)
-		const knownError = json.error?.includes("Discussion not found")
-		if (!knownError)
+		// Header
 		{
-			ShowCommentsError(json.error ?? "unknown error")
-			return
-		}
-	}
-	else
-	{
-		const commentTemplate = document.getElementById("comment-template") as HTMLTemplateElement
-		const headerTemplate = document.getElementById("comment-header-template") as HTMLTemplateElement
-		const codeBlockTemplate = document.getElementById("comment-code-block-template") as HTMLTemplateElement
-		const mathInlineTemplate = document.getElementById("comment-math-inline-template") as HTMLTemplateElement
-		const mathBlockTemplate = document.getElementById("comment-math-block-template") as HTMLTemplateElement
-		const footerTemplate = document.getElementById("comment-footer-template") as HTMLTemplateElement
-		const replyTemplate = document.getElementById("comment-reply-template") as HTMLTemplateElement
+			const headerFragment = headerTemplate.content.cloneNode(true) as DocumentFragment
 
-		function CreateComment(commentsParent: HTMLElement, template: HTMLTemplateElement, comment: IBaseComment): HTMLElement
-		{
-			const commentFragment = template.content.cloneNode(true) as DocumentFragment
-			const commentRoot = commentFragment.querySelector(".comment") as HTMLElement
-			const commentInput = commentFragment.querySelector(".comment-input") as HTMLElement
-			const commentContent = commentFragment.querySelector(".comment-content") as HTMLElement
-			commentContent.innerHTML = comment.bodyHTML
+			const aAvatar = headerFragment.querySelector(".comment-avatar") as HTMLAnchorElement
+			aAvatar.href = comment.author.url
+			aAvatar.append(comment.author.login)
 
-			// Header
-			{
-				const headerFragment = headerTemplate.content.cloneNode(true) as DocumentFragment
+			const img = aAvatar.querySelector("img")!
+			const url = new URL(comment.author.avatarUrl)
+			url.searchParams.append("size", (2 * img.width).toString())
+			img.src = url.toString()
+			img.style.display = "inline"
 
-				const aAvatar = headerFragment.querySelector(".comment-avatar") as HTMLAnchorElement
-				aAvatar.href = comment.author.url
-				aAvatar.append(comment.author.login)
+			const aTime = headerFragment.querySelector(".comment-time") as HTMLAnchorElement
+			aTime.href = comment.url
 
-				const img = aAvatar.querySelector("img")!
-				const url = new URL(comment.author.avatarUrl)
-				url.searchParams.append("size", (2 * img.width).toString())
-				img.src = url.toString()
-				img.style.display = "inline"
+			const time = aTime.querySelector("time")!
+			time.dateTime = comment.createdAt
+			const date = new Date(comment.createdAt)
+			const formatter = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
+			time.innerText = formatter.format(date)
 
-				const aTime = headerFragment.querySelector(".comment-time") as HTMLAnchorElement
-				aTime.href = comment.url
-
-				const time = aTime.querySelector("time")!
-				time.dateTime = comment.createdAt
-				const date = new Date(comment.createdAt)
-				const formatter = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
-				time.innerText = formatter.format(date)
-
-				commentRoot.prepend(headerFragment)
-			}
-
-			// Code
-			{
-				function ConstructCodeBlock(root: Element, codeNode: Element)
-				{
-					const codeBlockFragment = codeBlockTemplate.content.cloneNode(true) as DocumentFragment
-
-					const code = codeBlockFragment.querySelector("code")!
-					code.append(...codeNode.childNodes)
-
-					const button = codeBlockFragment.querySelector("button")!
-					AttachCopyFunction(button, CopyCode)
-					root.parentElement!.replaceChild(codeBlockFragment, root)
-				}
-
-				const blockCodes = commentContent.querySelectorAll("div.highlight")
-				for (const codeDiv of blockCodes)
-					ConstructCodeBlock(codeDiv, codeDiv);
-
-				const blockCodesNoLang = commentContent.querySelectorAll("div.snippet-clipboard-content")
-				for (const codeDiv of blockCodesNoLang)
-				{
-					const code = codeDiv.querySelector("pre > code")
-					if (code)
-						ConstructCodeBlock(codeDiv, code);
-				}
-			}
-
-			// Math
-			{
-				const inlineMaths = commentContent.querySelectorAll(".js-inline-math") as NodeListOf<HTMLElement>
-				for (const ghMath of inlineMaths)
-				{
-					const mathFragment = mathInlineTemplate.content.cloneNode(true) as DocumentFragment
-
-					const annotation = mathFragment.querySelector("annotation")!
-					let latex = ghMath.textContent!
-					latex = latex.replace(/^\$\`\s*|\s*\$\`$$/gm, "")
-					latex = latex.replace(/^\$\s*|\s*\$$/gm, "")
-					annotation.textContent = latex
-
-					ghMath.parentElement!.replaceChild(mathFragment, ghMath)
-				}
-
-				const displayMaths = commentContent.querySelectorAll(".js-display-math") as NodeListOf<HTMLElement>
-				for (const ghMath of displayMaths)
-				{
-					const mathFragment = mathBlockTemplate.content.cloneNode(true) as DocumentFragment
-
-					const annotation = mathFragment.querySelector("annotation")!
-					let latex = ghMath.textContent!
-					latex = latex.replace(/^\$\$\s*|\s*\$\$$/gm, "")
-					annotation.textContent = latex
-
-					const button = mathFragment.querySelector("button")!
-					AttachCopyFunction(button, CopyMath)
-
-					ghMath.parentElement!.replaceChild(mathFragment, ghMath)
-				}
-			}
-
-			// Footer
-			{
-				const footerFragment = footerTemplate.content.cloneNode(true) as DocumentFragment
-
-				const button = footerFragment.querySelector(".comment-toggle-reactions")!
-				button.addEventListener("click", ToggleReactions, { passive: true })
-
-				const reactions = footerFragment.querySelectorAll(".comment-reaction") as NodeListOf<HTMLButtonElement>
-				for (const reaction of reactions)
-				{
-					const key = reaction.name as keyof typeof Reactions
-					const data = comment.reactions[key]
-					if (data.viewerHasReacted)
-						reaction.toggleAttribute("data-pressed")
-					UpdateReactionVisibility(reaction, false, data.count)
-
-					reaction.addEventListener("click", ToggleReaction, { passive: true })
-				}
-
-				commentRoot.insertBefore(footerFragment, commentInput)
-			}
-
-			commentsParent.append(commentFragment)
-			return commentRoot
+			commentRoot.prepend(headerFragment)
 		}
 
-		assertType<IGiscussion>(json)
-		for (const comment of json.discussion.comments)
+		// Code
 		{
-			const commentRoot = CreateComment(commentsParent, commentTemplate, comment)
-			const commentInput = commentRoot.querySelector(".comment-input") as HTMLElement
-
-			// Input
+			function ConstructCodeBlock(root: Element, codeNode: Element)
 			{
-				const commentTextArea = commentInput.querySelector("textarea")!
-				commentTextArea.placeholder = "Write a reply"
-				commentTextArea.addEventListener("input", UpdateInputHeight, { passive: true })
+				const codeBlockFragment = codeBlockTemplate.content.cloneNode(true) as DocumentFragment
 
-				const commentSubmit = commentInput.querySelector(".comment-submit") as HTMLElement
-				//commentSubmit.innerText = "Reply"
+				const code = codeBlockFragment.querySelector("code")!
+				code.append(...codeNode.childNodes)
 
-				const commentLogout = commentInput.querySelector(".comment-logout") as HTMLElement
-				//commentLogout.style.display = "none"
+				const button = codeBlockFragment.querySelector("button")!
+				AttachCopyFunction(button, CopyCode)
+				root.parentElement!.replaceChild(codeBlockFragment, root)
 			}
 
-			// Replies
-			if (comment.replies.length)
+			const blockCodes = commentContent.querySelectorAll("div.highlight")
+			for (const codeDiv of blockCodes)
+				ConstructCodeBlock(codeDiv, codeDiv);
+
+			const blockCodesNoLang = commentContent.querySelectorAll("div.snippet-clipboard-content")
+			for (const codeDiv of blockCodesNoLang)
 			{
-				const repliesParent = commentRoot.insertBefore(document.createElement("section"), commentInput)
-				repliesParent.classList.add("comment-replies")
+				const code = codeDiv.querySelector("pre > code")
+				if (code)
+					ConstructCodeBlock(codeDiv, code);
+			}
+		}
 
-				const repliesLine = document.createElement("section")
-				repliesLine.classList.add("reply-line")
-				repliesParent.prepend(repliesLine)
+		// Math
+		{
+			const inlineMaths = commentContent.querySelectorAll(".js-inline-math") as NodeListOf<HTMLElement>
+			for (const ghMath of inlineMaths)
+			{
+				const mathFragment = mathInlineTemplate.content.cloneNode(true) as DocumentFragment
 
-				for (const reply of comment.replies)
-				{
-					const replyRoot = CreateComment(repliesParent, replyTemplate, reply)
-					replyRoot.classList.remove("comment")
-					replyRoot.classList.add("comment-reply")
-				}
+				const annotation = mathFragment.querySelector("annotation")!
+				let latex = ghMath.textContent!
+				latex = latex.replace(/^\$\`\s*|\s*\$\`$$/gm, "")
+				latex = latex.replace(/^\$\s*|\s*\$$/gm, "")
+				annotation.textContent = latex
+
+				ghMath.parentElement!.replaceChild(mathFragment, ghMath)
+			}
+
+			const displayMaths = commentContent.querySelectorAll(".js-display-math") as NodeListOf<HTMLElement>
+			for (const ghMath of displayMaths)
+			{
+				const mathFragment = mathBlockTemplate.content.cloneNode(true) as DocumentFragment
+
+				const annotation = mathFragment.querySelector("annotation")!
+				let latex = ghMath.textContent!
+				latex = latex.replace(/^\$\$\s*|\s*\$\$$/gm, "")
+				annotation.textContent = latex
+
+				const button = mathFragment.querySelector("button")!
+				AttachCopyFunction(button, CopyMath)
+
+				ghMath.parentElement!.replaceChild(mathFragment, ghMath)
+			}
+		}
+
+		// Footer
+		{
+			const footerFragment = footerTemplate.content.cloneNode(true) as DocumentFragment
+
+			const button = footerFragment.querySelector(".comment-toggle-reactions")!
+			button.addEventListener("click", ToggleReactions, { passive: true })
+
+			const reactions = footerFragment.querySelectorAll(".comment-reaction") as NodeListOf<HTMLButtonElement>
+			for (const reaction of reactions)
+			{
+				const key = reaction.name as keyof Reaction
+				const data = comment.reactionGroups.find(r => r.content == key)!
+				if (data.viewerHasReacted)
+					reaction.toggleAttribute("data-pressed")
+				UpdateReactionVisibility(reaction, false, data.users.totalCount)
+
+				reaction.addEventListener("click", ToggleReaction, { passive: true })
+			}
+
+			commentRoot.insertBefore(footerFragment, commentInput)
+		}
+
+		commentsParent.append(commentFragment)
+		return commentRoot
+	}
+
+	console.log(discussion)
+	for (const comment of discussion.comments.nodes)
+	{
+		const commentRoot = CreateComment(commentsParent, commentTemplate, comment)
+		const commentInput = commentRoot.querySelector(".comment-input") as HTMLElement
+
+		// Input
+		{
+			const commentTextArea = commentInput.querySelector("textarea")!
+			commentTextArea.placeholder = "Write a reply"
+			commentTextArea.addEventListener("input", UpdateInputHeight, { passive: true })
+
+			const commentSubmit = commentInput.querySelector(".comment-submit") as HTMLElement
+			//commentSubmit.innerText = "Reply"
+
+			const commentLogout = commentInput.querySelector(".comment-logout") as HTMLElement
+			//commentLogout.style.display = "none"
+		}
+
+		// Replies
+		if (comment.replies.nodes.length)
+		{
+			const repliesParent = commentRoot.insertBefore(document.createElement("section"), commentInput)
+			repliesParent.classList.add("comment-replies")
+
+			const repliesLine = document.createElement("section")
+			repliesLine.classList.add("reply-line")
+			repliesParent.prepend(repliesLine)
+
+			for (const reply of comment.replies.nodes)
+			{
+				const replyRoot = CreateComment(repliesParent, replyTemplate, reply)
+				replyRoot.classList.remove("comment")
+				replyRoot.classList.add("comment-reply")
 			}
 		}
 	}
