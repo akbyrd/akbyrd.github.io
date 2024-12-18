@@ -10,6 +10,7 @@ function Generate-Favicons
 
 	$assets       = "assets"
 	$output_svg   = "$assets\res\favicon.svg"
+	$output_png   = "$assets\res\favicon.png"
 	$output_ico   = "$assets\favicon.ico"
 	$output_apple = "$assets\res\apple-touch-icon.png"
 
@@ -31,6 +32,7 @@ function Generate-Favicons
 		--output $output_svg `
 		$output_svg
 
+	& $magick -size 512x512 -background none $output_svg $output_png
 	& $magick -size 32x32 -background none $output_svg $output_ico
 
 	& $magick `
