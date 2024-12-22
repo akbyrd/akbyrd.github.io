@@ -27,6 +27,8 @@ TODO: Try a render hook for images https://gohugo.io/render-hooks/images/
 TODO: Lazy image loading
 TODO: Implement zoom for images (current page? new page?)
 TODO: Add search support
+TODO: Show copy buttons when hovering entire area
+TODO: Make copy buttons sticky
 
 Atom / RSS
 TODO: Add an XML stylesheet (.xsl) to Atom feed

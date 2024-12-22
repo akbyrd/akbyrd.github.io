@@ -684,7 +684,7 @@ function EndSelection()
 
 		if (location.hash != code.hash)
 		{
-			const currLocation = new URL(location.toString())
+			const currLocation = new URL(location.href)
 			currLocation.hash = code.hash
 			history.pushState({ previouslyVisited: true }, "", currLocation)
 		}
@@ -807,39 +807,6 @@ function SelectionFromHash()
 
 let syntheticClick = null as null | HTMLButtonElement
 
-const owner = "akbyrd"
-const repo = "akbyrd.github.io"
-const discussionUrl = "tests/test-comments/"
-const appId = 1088157
-
-interface IError
-{
-	documentation_url: string
-	message: string
-	status: string
-}
-
-interface IInstallation
-{
-	access_tokens_url: string
-}
-
-interface IAccess
-{
-	expires_at: string
-	token: string
-}
-
-interface IDiscussionSearch
-{
-	data: {
-		search: {
-			discussionCount: number
-			nodes: IDiscussion[]
-		}
-	}
-}
-
 interface IDiscussion
 {
 	bodyHTML: string
@@ -874,7 +841,6 @@ interface IAuthor
 
 interface IReactionGroup
 {
-	// TODO: [key in keyof typeof Reactions] ?
 	content: keyof Reaction
 	viewerHasReacted: boolean
 	users: {
@@ -894,204 +860,55 @@ enum Reaction
 	EYES,
 }
 
-function strtobytes(s: string): ArrayBuffer
-{
-	const buf = new ArrayBuffer(s.length)
-	const view = new Uint8Array(buf)
-
-	for (let i = 0; i < s.length; i++)
-		view[i] = s.charCodeAt(i)
-
-	return buf
-}
-
-function b64tobytes(str: string): ArrayBuffer
-{
-	const binary = atob(str)
-	const buf = new ArrayBuffer(binary.length)
-	const view = new Uint8Array(buf)
-
-	for (let i = 0; i < binary.length; i++)
-		view[i] = binary.charCodeAt(i)
-
-	return buf
-}
-
-function bytestob64(buf: ArrayBuffer): string
-{
-	const view = new Uint8Array(buf)
-	const str = String.fromCharCode(...view) // TODO: More efficient
-	const b64 = strtob64(str)
-	return b64
-}
-
-function strtob64(str: string): string
-{
-	str = btoa(str)
-	str = str.replace(/=/g, "")
-	str = str.replace(/\+/g, "-")
-	str = str.replace(/\//g, "_")
-	return str
-}
-
-function objtob64(obj: any): string
-{
-	const json = JSON.stringify(obj)
-	return strtob64(json)
-}
-
 async function InitComments()
-{
-	async function CreateJWT()
-	{
-		const key_b64 = b64tobytes(privateKey)
-		const alg = { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256", }
-		const cryptoKey = await crypto.subtle.importKey("pkcs8", key_b64, alg, false, ["sign"])
-
-		const now = Math.floor(Date.now() / 1000 - 60)
-		const header_b64 = objtob64({ alg: "RS256", typ: "JWT", })
-		const payload_b64 = objtob64({ iat: now, exp: now + 300, iss: appId, })
-		const message_bytes = strtobytes(`${header_b64}.${payload_b64}`)
-
-		const signature_bytes = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", cryptoKey, message_bytes)
-		const signature_b64 = bytestob64(signature_bytes)
-
-		const jwt = `${header_b64}.${payload_b64}.${signature_b64}`
-		return jwt
-	}
-
-	async function GetInstallation()
-	{
-		const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/installation`, {
-			method: "GET",
-			headers: {
-				Authorization: `Bearer ${jwt}`,
-			},
-		})
-
-		const json = await response.json()
-		if (!response.ok) throw json as IError
-		return json as IInstallation
-	}
-
-	async function GetAccessToken(installation: IInstallation)
-	{
-		const response = await fetch(installation.access_tokens_url, {
-			method: "POST",
-			headers: {
-				Authorization: `Bearer ${jwt}`,
-				"Content-Type": "application/json",
-			}
-		});
-
-		const json = await response.json()
-		if (!response.ok) throw json as IError
-		return json as IAccess
-	}
-
-	async function GetDiscussion(access: IAccess)
-	{
-		const searchQuery = `repo:${owner}/${repo} in:title ${discussionUrl}`
-		const discussionQuery =
-			`query($query: String!) {
-				search(type: DISCUSSION, query: $query, first: 1) {
-					discussionCount
-					nodes {
-						... on Discussion {
-							bodyHTML
-							comments(first: 100) {
-								nodes {
-									bodyHTML
-									createdAt
-									url
-									author {
-										login
-										avatarUrl
-										url
-									}
-									reactionGroups {
-										content
-										viewerHasReacted
-										users {
-											totalCount
-										}
-									}
-									replies(first: 100) {
-										nodes {
-											bodyHTML
-											createdAt
-											url
-											author {
-												avatarUrl
-												login
-												url
-											}
-											reactionGroups {
-												content
-												viewerHasReacted
-												users {
-													totalCount
-												}
-											}
-										}
-									}
-								}
-							}
-							reactionGroups {
-								content
-								viewerHasReacted
-								users {
-									totalCount
-								}
-							}
-						}
-					}
-				}
-			}`
-
-		const response = await fetch("https://api.github.com/graphql", {
-			method: "POST",
-			headers: {
-				Authorization: `Bearer ${access.token}`,
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				query: discussionQuery,
-				variables: { query: searchQuery, },
-			}),
-		})
-
-		const json = await response.json()
-		if (!response.ok) throw json as IError
-
-		const search = json as IDiscussionSearch
-		if (search.data.search.nodes.length != 1)
-			throw {
-				documentation_url: "",
-				message: "Failed to find discussion",
-				status: "",
-			} as IError
-
-		return search.data.search.nodes[0]
-	}
-
-	const jwt = await CreateJWT()
-	const discussion = Promise.resolve()
-		.then(GetInstallation)
-		.then(GetAccessToken)
-		.then(GetDiscussion)
-		.then(CreateComments)
-		.catch(ShowCommentsError)
-}
-
-// TODO: Handle expired JWT
-// TODO: Show error on page
-async function CreateComments(discussion: IDiscussion)
 {
 	const commentsParent = document.getElementById("comments")
 	if (!commentsParent)
 		return
 
+	const owner = "akbyrd"
+	const repo = "akbyrd.github.io"
+
+	const url = new URL("https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-a8e52261-669e-47a2-88db-6280c8b77099/default/api")
+	url.searchParams.append("owner", owner)
+	url.searchParams.append("repo", repo)
+	url.searchParams.append("page", location.pathname)
+
+	const response = await fetch(url, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+		},
+	});
+
+	const json = await response.json()
+	if (!response.ok) throw json
+
+	const discussion = json as IDiscussion
+	CreateComments(discussion)
+}
+
+// TODO: User authentication
+// User doesn't authorize repo
+// User doesn't have access to repo
+// User revokes auth (401 bad credentials)
+// Rate limit
+// Token expired
+// Bad token
+
+// TODO: App authentication
+// App isn't installed
+// App doesn't have access to repo
+// App is uninstalled
+// Rate limit
+// Token expired
+// Bad token
+
+// TODO: Cache JWT
+// TODO: Show error on page
+async function CreateComments(discussion: IDiscussion)
+{
+	const commentsParent = document.getElementById("comments")!
 	const commentTemplate = document.getElementById("comment-template") as HTMLTemplateElement
 	const headerTemplate = document.getElementById("comment-header-template") as HTMLTemplateElement
 	const codeBlockTemplate = document.getElementById("comment-code-block-template") as HTMLTemplateElement

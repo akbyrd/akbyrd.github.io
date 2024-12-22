@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "lib",
+    "rootDir": "src",
+    "target": "es2019",
+    "moduleResolution": "node"
+  },
+  "include": [ "src/**/*" ]
+}

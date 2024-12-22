@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	{{- with partial "resource" "res/github.ts" }}
+	<script src="{{ .RelPermalink }}" async{{ .Integrity }}></script>
+	{{- end }}
+</head>
+
+</html>

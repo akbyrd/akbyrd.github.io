@@ -65,11 +65,46 @@ TODO: If a user authorizes for a single repo, how does the app detect this and r
 
 Hosting
 -------
+Languages: native, WASM, TS
+
+AWS Lambda         - Native, Node, Py, Ruby, Java, Go, .NET Core
+Microsoft Azure    - TS, JS, C#, F#, Py, pwsh, Java
+Google Cloud       - Node, Go, .NET Core, Py, Java, Ruby, PHP
+Cloudflare Workers - TS, JS, WASM, Py. Sounds fast
+Netlify            - TS, JS, Go. Maybe easier to automate? AWS.
+Vercel             - Node, Go, Py, Ruby, Deno, Rust. Maybe easier to automate? Sounds fast. AWS.
+Digital Ocean      - Node, Go, Py, PHP. CLI.
+
+Requirements
+Language: TS and {native, WASM, or Go}
+Custom domain
+
+
+
 Digital Ocean
-Netlify
-Vercel
-Azure
-AWS
+-------------
+Buggy
+BUG: Deploying sometimes hangs
+BUG: Building locally then remotely causes tsc not be flagged an executable
+BUG: doctl print incremental progress only once the process is complete
+Error messages aren't great
+Web requests don't generate activation records (use REST API and POST)
+Event object is empty when using REST API or browser tests
+Deploying blows up environment variables
+
+doctl serverless watch api
+doctl serverless deploy api --remote-build
+doctl serverless functions invoke api -p param:value
+doctl serverless activations logs --follow
+
+
+
+Dependencies
+------------
+btoa / atob
+crypto.subtle.importKey
+crypto.subtle.sign
+JSON.stringify
 
 
 

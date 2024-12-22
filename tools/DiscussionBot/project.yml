@@ -1,0 +1,8 @@
+packages:
+    - name: default
+      functions:
+        - name: api
+          runtime: nodejs:18
+          environment:
+            APP_ID: "${APP_ID}"
+            PRIVATE_KEY: "${PRIVATE_KEY}"

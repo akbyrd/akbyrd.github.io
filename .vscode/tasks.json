@@ -59,19 +59,19 @@
 			"label": "test-project",
 			"detail": "hugo test (staging)",
 			"type": "shell",
-			"command": "hugo server --bind 0.0.0.0 -e staging --cleanDestinationDir --printPathWarnings --noHTTPCache --ignoreCache --minify",
+			"command": "hugo server-e staging --cleanDestinationDir --printPathWarnings --noHTTPCache --ignoreCache --minify",
 		},
 		{
 			"label": "test-solution",
 			"detail": "hugo test (production)",
 			"type": "shell",
-			"command": "hugo server --bind 0.0.0.0 -e production --cleanDestinationDir --printPathWarnings --noHTTPCache --ignoreCache --minify",
+			"command": "hugo server-e production --cleanDestinationDir --printPathWarnings --noHTTPCache --ignoreCache --minify",
 		},
 		{
 			"label": "profile-solution",
 			"detail": "hugo site",
 			"type": "shell",
-			"command": "Start-Process http://localhost:1313/",
+			"command": "Start-Process https://localhost:1313/",
 		},
 		{
 			"label": "build-favicon",
