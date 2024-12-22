@@ -807,6 +807,15 @@ function SelectionFromHash()
 
 let syntheticClick = null as null | HTMLButtonElement
 
+interface CommentTemplates
+{
+	header: HTMLTemplateElement
+	codeBlock: HTMLTemplateElement
+	mathInline: HTMLTemplateElement
+	mathBlock: HTMLTemplateElement
+	footer: HTMLTemplateElement
+}
+
 interface IDiscussion
 {
 	bodyHTML: string
@@ -866,6 +875,9 @@ async function InitComments()
 	if (!commentsParent)
 		return
 
+	const reloadButton = commentsParent.querySelector("#comment-error button")!
+	reloadButton.addEventListener("click", ReloadComments, { passive: true })
+
 	const owner = "akbyrd"
 	const repo = "akbyrd.github.io"
 
@@ -882,165 +894,28 @@ async function InitComments()
 	});
 
 	const json = await response.json()
-	if (!response.ok) throw json
-
-	const discussion = json as IDiscussion
-	CreateComments(discussion)
-}
-
-// TODO: User authentication
-// User doesn't authorize repo
-// User doesn't have access to repo
-// User revokes auth (401 bad credentials)
-// Rate limit
-// Token expired
-// Bad token
-
-// TODO: App authentication
-// App isn't installed
-// App doesn't have access to repo
-// App is uninstalled
-// Rate limit
-// Token expired
-// Bad token
-
-// TODO: Cache JWT
-// TODO: Show error on page
-async function CreateComments(discussion: IDiscussion)
-{
-	const commentsParent = document.getElementById("comments")!
-	const commentTemplate = document.getElementById("comment-template") as HTMLTemplateElement
-	const headerTemplate = document.getElementById("comment-header-template") as HTMLTemplateElement
-	const codeBlockTemplate = document.getElementById("comment-code-block-template") as HTMLTemplateElement
-	const mathInlineTemplate = document.getElementById("comment-math-inline-template") as HTMLTemplateElement
-	const mathBlockTemplate = document.getElementById("comment-math-block-template") as HTMLTemplateElement
-	const footerTemplate = document.getElementById("comment-footer-template") as HTMLTemplateElement
-	const replyTemplate = document.getElementById("comment-reply-template") as HTMLTemplateElement
-
-	function CreateComment(commentsParent: HTMLElement, template: HTMLTemplateElement, comment: ICommentBase): HTMLElement
+	if (!response.ok)
 	{
-		const commentFragment = template.content.cloneNode(true) as DocumentFragment
-		const commentRoot = commentFragment.querySelector(".comment") as HTMLElement
-		const commentInput = commentFragment.querySelector(".comment-input") as HTMLElement
-		const commentContent = commentFragment.querySelector(".comment-content") as HTMLElement
-		commentContent.innerHTML = comment.bodyHTML
-
-		// Header
-		{
-			const headerFragment = headerTemplate.content.cloneNode(true) as DocumentFragment
-
-			const aAvatar = headerFragment.querySelector(".comment-avatar") as HTMLAnchorElement
-			aAvatar.href = comment.author.url
-			aAvatar.append(comment.author.login)
-
-			const img = aAvatar.querySelector("img")!
-			const url = new URL(comment.author.avatarUrl)
-			url.searchParams.append("size", (2 * img.width).toString())
-			img.src = url.toString()
-			img.style.display = "inline"
-
-			const aTime = headerFragment.querySelector(".comment-time") as HTMLAnchorElement
-			aTime.href = comment.url
-
-			const time = aTime.querySelector("time")!
-			time.dateTime = comment.createdAt
-			const date = new Date(comment.createdAt)
-			const formatter = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
-			time.innerText = formatter.format(date)
-
-			commentRoot.prepend(headerFragment)
-		}
-
-		// Code
-		{
-			function ConstructCodeBlock(root: Element, codeNode: Element)
-			{
-				const codeBlockFragment = codeBlockTemplate.content.cloneNode(true) as DocumentFragment
-
-				const code = codeBlockFragment.querySelector("code")!
-				code.append(...codeNode.childNodes)
-
-				const button = codeBlockFragment.querySelector("button")!
-				AttachCopyFunction(button, CopyCode)
-				root.parentElement!.replaceChild(codeBlockFragment, root)
-			}
-
-			const blockCodes = commentContent.querySelectorAll("div.highlight")
-			for (const codeDiv of blockCodes)
-				ConstructCodeBlock(codeDiv, codeDiv);
-
-			const blockCodesNoLang = commentContent.querySelectorAll("div.snippet-clipboard-content")
-			for (const codeDiv of blockCodesNoLang)
-			{
-				const code = codeDiv.querySelector("pre > code")
-				if (code)
-					ConstructCodeBlock(codeDiv, code);
-			}
-		}
-
-		// Math
-		{
-			const inlineMaths = commentContent.querySelectorAll(".js-inline-math") as NodeListOf<HTMLElement>
-			for (const ghMath of inlineMaths)
-			{
-				const mathFragment = mathInlineTemplate.content.cloneNode(true) as DocumentFragment
-
-				const annotation = mathFragment.querySelector("annotation")!
-				let latex = ghMath.textContent!
-				latex = latex.replace(/^\$\`\s*|\s*\$\`$$/gm, "")
-				latex = latex.replace(/^\$\s*|\s*\$$/gm, "")
-				annotation.textContent = latex
-
-				ghMath.parentElement!.replaceChild(mathFragment, ghMath)
-			}
-
-			const displayMaths = commentContent.querySelectorAll(".js-display-math") as NodeListOf<HTMLElement>
-			for (const ghMath of displayMaths)
-			{
-				const mathFragment = mathBlockTemplate.content.cloneNode(true) as DocumentFragment
-
-				const annotation = mathFragment.querySelector("annotation")!
-				let latex = ghMath.textContent!
-				latex = latex.replace(/^\$\$\s*|\s*\$\$$/gm, "")
-				annotation.textContent = latex
-
-				const button = mathFragment.querySelector("button")!
-				AttachCopyFunction(button, CopyMath)
-
-				ghMath.parentElement!.replaceChild(mathFragment, ghMath)
-			}
-		}
-
-		// Footer
-		{
-			const footerFragment = footerTemplate.content.cloneNode(true) as DocumentFragment
-
-			const button = footerFragment.querySelector(".comment-toggle-reactions")!
-			button.addEventListener("click", ToggleReactions, { passive: true })
-
-			const reactions = footerFragment.querySelectorAll(".comment-reaction") as NodeListOf<HTMLButtonElement>
-			for (const reaction of reactions)
-			{
-				const key = reaction.name as keyof Reaction
-				const data = comment.reactionGroups.find(r => r.content == key)!
-				if (data.viewerHasReacted)
-					reaction.toggleAttribute("data-pressed")
-				UpdateReactionVisibility(reaction, false, data.users.totalCount)
-
-				reaction.addEventListener("click", ToggleReaction, { passive: true })
-			}
-
-			commentRoot.insertBefore(footerFragment, commentInput)
-		}
-
-		commentsParent.append(commentFragment)
-		return commentRoot
+		const errorMessage = commentsParent.querySelector("#comment-error") as HTMLElement
+		errorMessage.style.display = ""
+		return
 	}
 
-	console.log(discussion)
+	const discussion = json as IDiscussion
+	const commentTemplate = document.getElementById("comment-template") as HTMLTemplateElement
+	const replyTemplate = document.getElementById("comment-reply-template") as HTMLTemplateElement
+
+	const templates = {
+		header: document.getElementById("comment-header-template") as HTMLTemplateElement,
+		codeBlock: document.getElementById("comment-code-block-template") as HTMLTemplateElement,
+		mathInline: document.getElementById("comment-math-inline-template") as HTMLTemplateElement,
+		mathBlock: document.getElementById("comment-math-block-template") as HTMLTemplateElement,
+		footer: document.getElementById("comment-footer-template") as HTMLTemplateElement,
+	}
+
 	for (const comment of discussion.comments.nodes)
 	{
-		const commentRoot = CreateComment(commentsParent, commentTemplate, comment)
+		const commentRoot = CreateComment(commentsParent, templates, commentTemplate, comment)
 		const commentInput = commentRoot.querySelector(".comment-input") as HTMLElement
 
 		// Input
@@ -1068,7 +943,7 @@ async function CreateComments(discussion: IDiscussion)
 
 			for (const reply of comment.replies.nodes)
 			{
-				const replyRoot = CreateComment(repliesParent, replyTemplate, reply)
+				const replyRoot = CreateComment(repliesParent, templates, replyTemplate, reply)
 				replyRoot.classList.remove("comment")
 				replyRoot.classList.add("comment-reply")
 			}
@@ -1076,10 +951,139 @@ async function CreateComments(discussion: IDiscussion)
 	}
 }
 
-function ShowCommentsError(error: string)
+async function ReloadComments()
 {
-	// TODO: display an error
-	console.error(error)
+	const commentsParent = document.getElementById("comments")!
+	const comments = commentsParent.querySelectorAll(".comment")
+	for (const comment of comments)
+		comment.remove()
+
+	await InitComments()
+}
+
+function CreateComment(
+	commentsParent: HTMLElement,
+	templates: CommentTemplates,
+	commentTemplate: HTMLTemplateElement,
+	comment: ICommentBase)
+	: HTMLElement
+{
+	const commentFragment = commentTemplate.content.cloneNode(true) as DocumentFragment
+	const commentRoot = commentFragment.querySelector(".comment") as HTMLElement
+	const commentInput = commentFragment.querySelector(".comment-input") as HTMLElement
+	const commentContent = commentFragment.querySelector(".comment-content") as HTMLElement
+	commentContent.innerHTML = comment.bodyHTML
+
+	// Header
+	{
+		const headerFragment = templates.header.content.cloneNode(true) as DocumentFragment
+
+		const aAvatar = headerFragment.querySelector(".comment-avatar") as HTMLAnchorElement
+		aAvatar.href = comment.author.url
+		aAvatar.append(comment.author.login)
+
+		const img = aAvatar.querySelector("img")!
+		const url = new URL(comment.author.avatarUrl)
+		url.searchParams.append("size", (2 * img.width).toString())
+		img.src = url.toString()
+		img.style.display = "inline"
+
+		const aTime = headerFragment.querySelector(".comment-time") as HTMLAnchorElement
+		aTime.href = comment.url
+
+		const time = aTime.querySelector("time")!
+		time.dateTime = comment.createdAt
+		const date = new Date(comment.createdAt)
+		const formatter = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
+		time.innerText = formatter.format(date)
+
+		commentRoot.prepend(headerFragment)
+	}
+
+	// Code
+	{
+		function ConstructCodeBlock(root: Element, codeNode: Element)
+		{
+			const codeBlockFragment = templates.codeBlock.content.cloneNode(true) as DocumentFragment
+
+			const code = codeBlockFragment.querySelector("code")!
+			code.append(...codeNode.childNodes)
+
+			const button = codeBlockFragment.querySelector("button")!
+			AttachCopyFunction(button, CopyCode)
+			root.parentElement!.replaceChild(codeBlockFragment, root)
+		}
+
+		const blockCodes = commentContent.querySelectorAll("div.highlight")
+		for (const codeDiv of blockCodes)
+			ConstructCodeBlock(codeDiv, codeDiv);
+
+		const blockCodesNoLang = commentContent.querySelectorAll("div.snippet-clipboard-content")
+		for (const codeDiv of blockCodesNoLang)
+		{
+			const code = codeDiv.querySelector("pre > code")
+			if (code)
+				ConstructCodeBlock(codeDiv, code);
+		}
+	}
+
+	// Math
+	{
+		const inlineMaths = commentContent.querySelectorAll(".js-inline-math") as NodeListOf<HTMLElement>
+		for (const ghMath of inlineMaths)
+		{
+			const mathFragment = templates.mathInline.content.cloneNode(true) as DocumentFragment
+
+			const annotation = mathFragment.querySelector("annotation")!
+			let latex = ghMath.textContent!
+			latex = latex.replace(/^\$\`\s*|\s*\$\`$$/gm, "")
+			latex = latex.replace(/^\$\s*|\s*\$$/gm, "")
+			annotation.textContent = latex
+
+			ghMath.parentElement!.replaceChild(mathFragment, ghMath)
+		}
+
+		const displayMaths = commentContent.querySelectorAll(".js-display-math") as NodeListOf<HTMLElement>
+		for (const ghMath of displayMaths)
+		{
+			const mathFragment = templates.mathBlock.content.cloneNode(true) as DocumentFragment
+
+			const annotation = mathFragment.querySelector("annotation")!
+			let latex = ghMath.textContent!
+			latex = latex.replace(/^\$\$\s*|\s*\$\$$/gm, "")
+			annotation.textContent = latex
+
+			const button = mathFragment.querySelector("button")!
+			AttachCopyFunction(button, CopyMath)
+
+			ghMath.parentElement!.replaceChild(mathFragment, ghMath)
+		}
+	}
+
+	// Footer
+	{
+		const footerFragment = templates.footer.content.cloneNode(true) as DocumentFragment
+
+		const button = footerFragment.querySelector(".comment-toggle-reactions")!
+		button.addEventListener("click", ToggleReactions, { passive: true })
+
+		const reactions = footerFragment.querySelectorAll(".comment-reaction") as NodeListOf<HTMLButtonElement>
+		for (const reaction of reactions)
+		{
+			const key = reaction.name as keyof Reaction
+			const data = comment.reactionGroups.find(r => r.content == key)!
+			if (data.viewerHasReacted)
+				reaction.toggleAttribute("data-pressed")
+			UpdateReactionVisibility(reaction, false, data.users.totalCount)
+
+			reaction.addEventListener("click", ToggleReaction, { passive: true })
+		}
+
+		commentRoot.insertBefore(footerFragment, commentInput)
+	}
+
+	commentsParent.append(commentFragment)
+	return commentRoot
 }
 
 function ToggleReactions(e: Event)

@@ -23,3 +23,4 @@ Nerd Font Characters
 󰕄 Twitter  f0544 nf-md-twitter
 󰇮 Email    f01ee nf-md-email
  Smile    f0118 nf-fa-face_smile
+󰑐 Refresh  f0450 nf-md-refresh

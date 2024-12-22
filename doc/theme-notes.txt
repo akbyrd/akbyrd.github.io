@@ -1,11 +1,6 @@
 Palette
 -------
-Usage      | Dark             | Light
-Background | Gray 000 #212121 |
-Blog Title |
-Post Title |
-Post Date  |
-
+Material https://m2.material.io/design/color/the-color-system.html#color-theme-creation
 
 
 Inspiration

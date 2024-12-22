@@ -38,7 +38,7 @@
 	<style>
 		@font-face {
 			font-family: "code";
-			unicode-range: U+0000-00a0, U+feff, U+fffd, U+f426, U+f4a2, U+f4bb, U+f01ee, U+f02a4, U+f033b, U+f046b, U+f0544, U+f0ad1;
+			unicode-range: U+0000-00a0, U+feff, U+fffd, U+f426, U+f4a2, U+f4bb, U+f01ee, U+f02a4, U+f033b, U+f0450, U+f046b, U+f0544, U+f0ad1;
 			src:
 			url("{{ $woff2.RelPermalink }}") format("woff2"),
 			url("{{ $woff.RelPermalink }}") format("woff");
@@ -107,6 +107,11 @@
 
 		{{- if .Page.Params.comments }}
 		<section id="comments" class="no-mathml">
+			<div id="comment-error" style="display: none;">
+				<p>Failed to load comments</p>
+				<button class="symbol" type="button" aria-label="Retry">&#xf0450;</button>
+			</div>
+
 			<template id="comment-template">
 				<section class="comment">
 					<div class="comment-content">

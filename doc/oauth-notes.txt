@@ -88,9 +88,10 @@ BUG: Deploying sometimes hangs
 BUG: Building locally then remotely causes tsc not be flagged an executable
 BUG: doctl print incremental progress only once the process is complete
 Error messages aren't great
-Web requests don't generate activation records (use REST API and POST)
+Web requests don't generate activation records (use web interface or REST API and POST)
 Event object is empty when using REST API or browser tests
 Deploying blows up environment variables
+Doesn't have away to run locally
 
 doctl serverless watch api
 doctl serverless deploy api --remote-build

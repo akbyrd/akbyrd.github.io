@@ -21,6 +21,7 @@ foreach ($out in $codeOut)
 		--unicodes="uf01ee" <# nf-md-email #> `
 		--unicodes="uf02a4" <# nf-md-github #> `
 		--unicodes="uf033b" <# nf-md-linkedin #> `
+		--unicodes='uf0450' <# nf-md-refresh #> `
 		--unicodes="uf046b" <# nf-md-rss #> `
 		--unicodes="uf0544" <# nf-md-twitter #> `
 		--unicodes="uf0ad1" <# nf-md-mastodon #>
