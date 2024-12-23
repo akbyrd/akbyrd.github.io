@@ -20,8 +20,7 @@ interface IEvent
 	}
 	owner?: string
 	repo?: string
-	repoId?: string
-	categoryId?: string
+	category?: string
 	page?: string
 }
 
@@ -38,31 +37,17 @@ export async function main(event: IEvent): Promise<IReturn>
 	{
 		if (!process.env.APP_ID)      throw "App Id not set"
 		if (!process.env.PRIVATE_KEY) throw "Private Key not set"
+		if (!event.owner)             throw { body: { error: "Owner not specified"    }, statusCode: 400 }
+		if (!event.repo)              throw { body: { error: "Repo not specified"     }, statusCode: 400 }
+		if (!event.category)          throw { body: { error: "Category not specified" }, statusCode: 400 }
+		if (!event.page)              throw { body: { error: "Page not specified"     }, statusCode: 400 }
 
-		const token   = await CreateJWT(process.env.APP_ID, process.env.PRIVATE_KEY)
-		const install = await GetInstallation(token, event.owner, event.repo)
-		const access  = await GetAppToken(token, install)
-
-		if (event.http && event.http.path === "/categories")
-		{
-			if (!event.owner) throw { body: { error: "Owner not specified" }, statusCode: 400 }
-			if (!event.repo)  throw { body: { error: "Repo not specified"  }, statusCode: 400 }
-
-			const categories = await GetCategories(access, event.owner, event.repo)
-			return { body: categories, statusCode: 200 }
-		}
-		else
-		{
-			if (!event.owner)      throw { body: { error: "Owner not specified"       }, statusCode: 400 }
-			if (!event.repo)       throw { body: { error: "Repo not specified"        }, statusCode: 400 }
-			if (!event.repoId)     throw { body: { error: "Repo Id not specified"     }, statusCode: 400 }
-			if (!event.categoryId) throw { body: { error: "Category Id not specified" }, statusCode: 400 }
-			if (!event.page)       throw { body: { error: "Page not specified"        }, statusCode: 400 }
-
-			const originUrl = event.http ? event.http.headers.origin : "https://example.com"
-			const discussion = await GetDiscussion(access, event.owner, event.repo, event.repoId, event.categoryId, event.page, originUrl)
-			return { body: discussion, statusCode: 200 }
-		}
+		const originUrl  = event.http ? event.http.headers.origin : "https://example.com"
+		const token      = await CreateJWT(process.env.APP_ID, process.env.PRIVATE_KEY)
+		const install    = await GetInstallation(token, event.owner, event.repo)
+		const access     = await GetAppToken(token, install)
+		const discussion = await GetDiscussion(access, event.owner, event.repo, event.category, event.page, originUrl)
+		return { body: discussion, statusCode: 200 }
 	}
 	catch (error: unknown)
 	{
@@ -76,45 +61,6 @@ export async function main(event: IEvent): Promise<IReturn>
 			throw { body: { error: "Application error" }, statusCode: 500 }
 		}
 	}
-}
-
-// -------------------------------------------------------------------------------------------------
-// Category Search
-
-async function GetCategories(access: IAccess, owner: string, repo: string): Promise<{}>
-{
-	const cateogryQuery =
-	`query {
-		repository(owner: "${owner}", name: "${repo}") {
-			id
-			name
-			discussionCategories(first: 100) {
-				nodes {
-					id
-					name
-				}
-			}
-		}
-	}`
-
-	const response = await fetch("https://api.github.com/graphql", {
-		method: "POST",
-		headers: {
-			Authorization: `Bearer ${access.token}`,
-			"Accept": "application/vnd.github+json",
-			"Content-Type": "application/json",
-			"X-GitHub-Api-Version": "2022-11-28",
-			"X-Github-Next-Global-ID": "1",
-		},
-		body: JSON.stringify({
-			query: cateogryQuery,
-		}),
-	})
-
-	const json = await response.json()
-	if (!response.ok) throw json
-
-	return json
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -266,12 +212,7 @@ async function GetUserToken()
 // -------------------------------------------------------------------------------------------------
 // Discussion Query
 
-interface IDiscussion {}
-
-async function GetDiscussion(access: IAccess, owner: string, repo: string, repoId: string, categoryId: string, page: string, originUrl: string): Promise<IDiscussion>
-{
-	console.time(GetDiscussion.name)
-	const discussionData =
+const discussionQueryData =
 	`
 	bodyHTML
 	comments(first: 100) {
@@ -320,16 +261,20 @@ async function GetDiscussion(access: IAccess, owner: string, repo: string, repoI
 		}
 	}`
 
+interface IDiscussion {}
 
+async function GetDiscussion(access: IAccess, owner: string, repo: string, category: string, page: string, originUrl: string): Promise<IDiscussion>
+{
+	console.time(GetDiscussion.name)
 	const title = page.replace(/^\/?|\/?$/g, "")
 	const searchQuery = `repo:${owner}/${repo} in:title ${title}`
 	const discussionQuery =
 		`query($query: String!) {
-			search(type: DISCUSSION, query: $query, first: 1) {
+			search(type: DISCUSSION, query: $query, first: 2) {
 				discussionCount
 				nodes {
 					... on Discussion {
-						${discussionData}
+						${discussionQueryData}
 					}
 				}
 			}
@@ -360,41 +305,8 @@ async function GetDiscussion(access: IAccess, owner: string, repo: string, repoI
 	{
 		case 0:
 		{
-			console.time("CreateDiscussion")
-			if (originUrl.includes("localhost"))
-				throw { body: { error: "Creating discussions from localhost is disabled" }, statusCode: 400 }
-
-			const body = originUrl ? new URL(page, originUrl).toString() : ""
-			const mutation =
-				`mutation {
-					createDiscussion(input: {repositoryId: "${repoId}", categoryId: "${categoryId}", body: "${body}", title: "${title}"}) {
-						discussion {
-							${discussionData}
-						}
-					}
-				}`
-
-			const response = await fetch("https://api.github.com/graphql", {
-				method: "POST",
-				headers: {
-					"Accept": "application/vnd.github+json",
-					"Authorization": `Bearer ${access.token}`,
-					"Content-Type": "application/json",
-					"X-GitHub-Api-Version": "2022-11-28",
-				},
-				body: JSON.stringify({
-					query: mutation,
-				}),
-			})
-
-			const json = await response.json()
-			if (!response.ok) throw json
-			if ("errors" in json) throw json
-			if (json.extensions && json.extensions.warnings)
-				console.log(json.extensions.warnings)
-
-			discussion = json.data.createDiscussion.discussion as IDiscussion
-			console.timeEnd("CreateDiscussion")
+			const [repoId, categoryId] = await GetRepoAndCategoryIds(access, owner, repo, category)
+			discussion = await CreateDiscussion(access, repoId, categoryId, title, page, originUrl)
 			break
 		}
 
@@ -407,6 +319,86 @@ async function GetDiscussion(access: IAccess, owner: string, repo: string, repoI
 	}
 
 	return discussion
+}
+
+async function GetRepoAndCategoryIds(access: IAccess, owner: string, repo: string, category: string)
+{
+	console.time(GetRepoAndCategoryIds.name)
+	const query =
+		`query {
+			repository(owner: "${owner}", name: "${repo}") {
+				id
+				discussionCategories(first: 100) {
+					nodes {
+						id
+						name
+					}
+				}
+			}
+		}`
+
+	const response = await fetch("https://api.github.com/graphql", {
+		method: "POST",
+		headers: {
+			Authorization: `Bearer ${access.token}`,
+			"Accept": "application/vnd.github+json",
+			"Content-Type": "application/json",
+			"X-GitHub-Api-Version": "2022-11-28",
+			"X-Github-Next-Global-ID": "1",
+		},
+		body: JSON.stringify({
+			query: query,
+		}),
+	})
+
+	const json = await response.json()
+	if (!response.ok) throw json
+
+	const categories = json.data.repository.discussionCategories.nodes as { id: string, name: string }[]
+	const categoryNode = categories.find(c => c.name === category)
+	if (!categoryNode) throw { body: { error: "Category not found" }, statusCode: 400 }
+
+	console.timeEnd(GetRepoAndCategoryIds.name)
+	return [json.data.repository.id, categoryNode.id]
+}
+
+async function CreateDiscussion(access: IAccess, repoId: string, categoryId: string, title: string, page: string, originUrl: string)
+{
+	console.time("CreateDiscussion")
+	if (originUrl.includes("localhost"))
+		throw { body: { error: "Creating discussions from localhost is disabled" }, statusCode: 400 }
+
+	const body = originUrl ? new URL(page, originUrl).toString() : ""
+	const mutation =
+		`mutation {
+			createDiscussion(input: {repositoryId: "${repoId}", categoryId: "${categoryId}", body: "${body}", title: "${title}"}) {
+				discussion {
+					${discussionQueryData}
+				}
+			}
+		}`
+
+	const response = await fetch("https://api.github.com/graphql", {
+		method: "POST",
+		headers: {
+			"Accept": "application/vnd.github+json",
+			"Authorization": `Bearer ${access.token}`,
+			"Content-Type": "application/json",
+			"X-GitHub-Api-Version": "2022-11-28",
+		},
+		body: JSON.stringify({
+			query: mutation,
+		}),
+	})
+
+	const json = await response.json()
+	if (!response.ok) throw json
+	if ("errors" in json) throw json
+	if (json.extensions && json.extensions.warnings)
+		console.log(json.extensions.warnings)
+
+	console.timeEnd("CreateDiscussion")
+	return json.data.createDiscussion.discussion as IDiscussion
 }
 
 // -------------------------------------------------------------------------------------------------

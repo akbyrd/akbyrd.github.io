@@ -1,11 +1,9 @@
 General
 TODO: Implement comments
-	Fix DiscussionBot icon
 	Switch to another host
+	Authorize as me when creating discussion
 
 	Error Handling
-		Do errors show up for web calls?
-		Get notifications for errors?
 		User authentication
 			User doesn't authorize repo
 			User doesn't have access to repo

@@ -878,12 +878,10 @@ async function InitComments()
 	const reloadButton = commentsParent.querySelector("#comment-error button")!
 	reloadButton.addEventListener("click", ReloadComments, { passive: true })
 
-	const repoId = "R_kgDOCvzRFQ"
-	const categoryId = "DIC_kwDOCvzRFc4CbiP0"
-
 	const url = new URL("https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-a8e52261-669e-47a2-88db-6280c8b77099/default/api")
-	url.searchParams.append("repoId", repoId)
-	url.searchParams.append("categoryId", categoryId)
+	url.searchParams.append("owner", "akbyrd")
+	url.searchParams.append("repo", "akbyrd.github.io")
+	url.searchParams.append("category", "Blog Post Comments")
 	url.searchParams.append("page", location.pathname)
 
 	const response = await fetch(url, {

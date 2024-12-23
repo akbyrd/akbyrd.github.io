@@ -86,9 +86,10 @@ Digital Ocean
 Buggy
 BUG: Deploying sometimes hangs
 BUG: Building locally then remotely causes tsc not be flagged an executable
-BUG: doctl print incremental progress only once the process is complete
+BUG: doctl prints incremental progress only once the process is complete
 Error messages aren't great
-Web requests don't generate activation records (use web interface or REST API and POST)
+Web requests don't generate activation records or logging (can use web interface or REST API and POST when testing)
+NO way to get notifications for errors (unless moving to the App Platform)
 Event object is empty when using REST API or browser tests
 Deploying blows up environment variables
 Doesn't have a way to run entirely locally

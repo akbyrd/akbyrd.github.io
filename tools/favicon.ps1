@@ -32,7 +32,7 @@ function Generate-Favicons
 		--output $output_svg `
 		$output_svg
 
-	& $magick -size 512x512 -background none $output_svg $output_png
+	& $magick -size 368x368 -background none $output_svg -gravity Center -extent 512x512 $output_png
 	& $magick -size 32x32 -background none $output_svg $output_ico
 
 	& $magick `
