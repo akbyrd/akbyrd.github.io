@@ -1,6 +1,7 @@
 {
   "main": "lib/api.js",
   "devDependencies": {
+    "@types/node": "^22.10.2",
     "typescript": "^4"
   },
   "scripts": {

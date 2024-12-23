@@ -91,7 +91,8 @@ Error messages aren't great
 Web requests don't generate activation records (use web interface or REST API and POST)
 Event object is empty when using REST API or browser tests
 Deploying blows up environment variables
-Doesn't have away to run locally
+Doesn't have a way to run entirely locally
+Can't use paths/endpoints when testing in the web UI
 
 doctl serverless watch api
 doctl serverless deploy api --remote-build

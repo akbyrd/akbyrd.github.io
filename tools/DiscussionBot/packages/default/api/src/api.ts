@@ -1,78 +1,120 @@
 import * as crypto from "crypto"
 
-interface IEvent
+declare const process:
 {
-	http: {
-		headers: {
-			"accept": string,
-			"accept-encoding": string,
-			"content-type": string,
-			"user-agent": string,
-			"x-forwarded-for": string,
-			"x-forwarded-proto": string,
-			"x-request-id": string
-		},
-		method: string,
-		path: string,
-	},
-	owner?: string,
-	repo?: string,
-	page?: string,
+	env:
+	{
+		APP_ID?: string
+		PRIVATE_KEY?: string
+	}
 }
 
-interface IContext
+interface IEvent
 {
-	functionName: string,
-	functionVersion: string,
-	activationId: string,
-	requestId: string,
-	deadline: number,
-	apiHost: string,
-	apiKey: string,
-	namespace: string,
-
-	getRemainingTimeInMillis(): number,
+	http?: {
+		headers: {
+			origin: string
+		}
+		method: string
+		path: string
+	}
+	owner?: string
+	repo?: string
+	repoId?: string
+	categoryId?: string
+	page?: string
 }
 
 interface IReturn
 {
-	body: {},
-	statusCode: number,
-	headers?: {},
+	body: {}
+	statusCode: number
+	headers?: {}
 }
 
-export async function main(event: IEvent, context: IContext): Promise<IReturn>
+export async function main(event: IEvent): Promise<IReturn>
 {
 	try
 	{
-		CheckParameters(event)
-		const jwt = await CreateJWT(process.env.APP_ID, process.env.PRIVATE_KEY)
-		const installation = await GetInstallation(jwt, event.owner, event.repo)
-		const access = await GetAppToken(jwt, installation)
-		const discussion = await GetDiscussion(access, event.owner, event.repo, event.page)
-		return { body: discussion, statusCode: 200 }
+		if (!process.env.APP_ID)      throw "App Id not set"
+		if (!process.env.PRIVATE_KEY) throw "Private Key not set"
+
+		const token   = await CreateJWT(process.env.APP_ID, process.env.PRIVATE_KEY)
+		const install = await GetInstallation(token, event.owner, event.repo)
+		const access  = await GetAppToken(token, install)
+
+		if (event.http && event.http.path === "/categories")
+		{
+			if (!event.owner) throw { body: { error: "Owner not specified" }, statusCode: 400 }
+			if (!event.repo)  throw { body: { error: "Repo not specified"  }, statusCode: 400 }
+
+			const categories = await GetCategories(access, event.owner, event.repo)
+			return { body: categories, statusCode: 200 }
+		}
+		else
+		{
+			if (!event.owner)      throw { body: { error: "Owner not specified"       }, statusCode: 400 }
+			if (!event.repo)       throw { body: { error: "Repo not specified"        }, statusCode: 400 }
+			if (!event.repoId)     throw { body: { error: "Repo Id not specified"     }, statusCode: 400 }
+			if (!event.categoryId) throw { body: { error: "Category Id not specified" }, statusCode: 400 }
+			if (!event.page)       throw { body: { error: "Page not specified"        }, statusCode: 400 }
+
+			const originUrl = event.http ? event.http.headers.origin : "https://example.com"
+			const discussion = await GetDiscussion(access, event.owner, event.repo, event.repoId, event.categoryId, event.page, originUrl)
+			return { body: discussion, statusCode: 200 }
+		}
 	}
 	catch (error: unknown)
 	{
-		if (error instanceof Object && 'msg' in error && 'statusCode' in error)
+		if (error instanceof Object && 'body' in error && 'statusCode' in error)
 		{
 			throw error
 		}
 		else
 		{
-			console.log(error)
+			console.error(error)
 			throw { body: { error: "Application error" }, statusCode: 500 }
 		}
 	}
 }
 
-function CheckParameters(event: IEvent): void
+// -------------------------------------------------------------------------------------------------
+// Category Search
+
+async function GetCategories(access: IAccess, owner: string, repo: string): Promise<{}>
 {
-	if (!process.env.APP_ID)      throw { body: { error: "App Id not set"      }, statusCode: 500 }
-	if (!process.env.PRIVATE_KEY) throw { body: { error: "Private Key not set" }, statusCode: 500 }
-	if (!event.owner)             throw { body: { error: "Owner not specified" }, statusCode: 400 }
-	if (!event.repo)              throw { body: { error: "Repo not specified"  }, statusCode: 400 }
-	if (!event.page)              throw { body: { error: "Page not specified"  }, statusCode: 400 }
+	const cateogryQuery =
+	`query {
+		repository(owner: "${owner}", name: "${repo}") {
+			id
+			name
+			discussionCategories(first: 100) {
+				nodes {
+					id
+					name
+				}
+			}
+		}
+	}`
+
+	const response = await fetch("https://api.github.com/graphql", {
+		method: "POST",
+		headers: {
+			Authorization: `Bearer ${access.token}`,
+			"Accept": "application/vnd.github+json",
+			"Content-Type": "application/json",
+			"X-GitHub-Api-Version": "2022-11-28",
+			"X-Github-Next-Global-ID": "1",
+		},
+		body: JSON.stringify({
+			query: cateogryQuery,
+		}),
+	})
+
+	const json = await response.json()
+	if (!response.ok) throw json
+
+	return json
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -91,59 +133,82 @@ interface IAccess
 
 async function CreateJWT(appId: string, privateKey: string): Promise<string>
 {
+	// NOTE: Should really cache this token, but since we run this as a serverless function we don't
+	// have a good way to do so. We could include it in the encrypted session data we store on the
+	// client, but
+	// 1. It has a relatively short lifespan.
+	// 2. Different clients will have different tokens.
+	//
+	// Thus, it would only help for a single client hammering comments. We can share a token for
+	// multiple calls from the same user, but not between calls from multiple users. (Multiple JWTs
+	// can be in use at once.) Since comments lazily load it's somewhat hard for users to hammer
+	// them.
+
+	console.time(CreateJWT.name)
 	const key_b64 = b64tobytes(privateKey)
 	const alg = { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256", }
-	const cryptoKey = await crypto.subtle.importKey("pkcs8", key_b64, alg, false, ["sign"])
+	const key = await crypto.subtle.importKey("pkcs8", key_b64, alg, false, ["sign"])
 
 	const now = Math.floor(Date.now() / 1000 - 60)
 	const header_b64 = objtob64({ alg: "RS256", typ: "JWT", })
 	const payload_b64 = objtob64({ iat: now, exp: now + 300, iss: appId, })
 	const message_bytes = strtobytes(`${header_b64}.${payload_b64}`)
 
-	const signature_bytes = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", cryptoKey, message_bytes)
+	const signature_bytes = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", key, message_bytes)
 	const signature_b64 = bytestob64(signature_bytes)
 
-	const jwt = `${header_b64}.${payload_b64}.${signature_b64}`
-	return jwt
+	const token = `${header_b64}.${payload_b64}.${signature_b64}`
+	console.timeEnd(CreateJWT.name)
+	return token
 }
 
-async function GetInstallation(jwt: string, owner: string, repo: string): Promise<IInstallation>
+async function GetInstallation(token: string, owner: string, repo: string): Promise<IInstallation>
 {
+	console.time(GetInstallation.name)
 	const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/installation`, {
 		method: "GET",
 		headers: {
-			Authorization: `Bearer ${jwt}`,
+			"Accept": "application/vnd.github+json",
+			"Authorization": `Bearer ${token}`,
+			"Content-Type": "application/json",
+			"X-GitHub-Api-Version": "2022-11-28",
 		},
 	})
 
 	const json = await response.json()
 	if (!response.ok) throw json
 
-	const installation = json as IInstallation
-	return installation
+	console.timeEnd(GetInstallation.name)
+	return json as IInstallation
 }
 
-async function GetAppToken(jwt: string, installation: IInstallation): Promise<IAccess>
+async function GetAppToken(token: string, install: IInstallation): Promise<IAccess>
 {
-	const response = await fetch(installation.access_tokens_url, {
+	console.time(GetAppToken.name)
+	const response = await fetch(install.access_tokens_url, {
 		method: "POST",
 		headers: {
-			Authorization: `Bearer ${jwt}`,
+			"Accept": "application/vnd.github+json",
+			"Authorization": `Bearer ${token}`,
 			"Content-Type": "application/json",
+			"X-GitHub-Api-Version": "2022-11-28",
 		}
 	})
 
 	const json = await response.json()
 	if (!response.ok) throw json
+
+	console.timeEnd(GetAppToken.name)
 	return json as IAccess
 }
 
-/*
 // -------------------------------------------------------------------------------------------------
 // User Authorization
 
+/*
 async function GetUserToken()
 {
+	console.time(GetUserToken.name)
 	const code = sessionStorage.getItem("code")
 	sessionStorage.removeItem("code")
 
@@ -194,6 +259,7 @@ async function GetUserToken()
 			console.log(response)
 		}
 	}
+	console.timeEnd(GetUserToken.name)
 }
 */
 
@@ -201,71 +267,69 @@ async function GetUserToken()
 // Discussion Query
 
 interface IDiscussion {}
-interface IDiscussionSearch
+
+async function GetDiscussion(access: IAccess, owner: string, repo: string, repoId: string, categoryId: string, page: string, originUrl: string): Promise<IDiscussion>
 {
-	data: {
-		search: {
-			discussionCount: number
-			nodes: IDiscussion[]
+	console.time(GetDiscussion.name)
+	const discussionData =
+	`
+	bodyHTML
+	comments(first: 100) {
+		nodes {
+			bodyHTML
+			createdAt
+			url
+			author {
+				login
+				avatarUrl
+				url
+			}
+			reactionGroups {
+				content
+				viewerHasReacted
+				users {
+					totalCount
+				}
+			}
+			replies(first: 100) {
+				nodes {
+					bodyHTML
+					createdAt
+					url
+					author {
+						avatarUrl
+						login
+						url
+					}
+					reactionGroups {
+						content
+						viewerHasReacted
+						users {
+							totalCount
+						}
+					}
+				}
+			}
 		}
 	}
-}
+	reactionGroups {
+		content
+		viewerHasReacted
+		users {
+			totalCount
+		}
+	}`
 
-async function GetDiscussion(access: IAccess, owner: string, repo: string, page: string): Promise<IDiscussion>
-{
-	const searchQuery = `repo:${owner}/${repo} in:title ${page}`
+
+	const title = page.replace(/^\/?|\/?$/g, "")
+	const searchQuery = `repo:${owner}/${repo} in:title ${title}`
 	const discussionQuery =
 		`query($query: String!) {
 			search(type: DISCUSSION, query: $query, first: 1) {
 				discussionCount
 				nodes {
 					... on Discussion {
-						bodyHTML
-						comments(first: 100) {
-							nodes {
-								bodyHTML
-								createdAt
-								url
-								author {
-									login
-									avatarUrl
-									url
-								}
-								reactionGroups {
-									content
-									viewerHasReacted
-									users {
-										totalCount
-									}
-								}
-								replies(first: 100) {
-									nodes {
-										bodyHTML
-										createdAt
-										url
-										author {
-											avatarUrl
-											login
-											url
-										}
-										reactionGroups {
-											content
-											viewerHasReacted
-											users {
-												totalCount
-											}
-										}
-									}
-								}
-							}
-						}
-						reactionGroups {
-							content
-							viewerHasReacted
-							users {
-								totalCount
-							}
-						}
+						${discussionData}
 					}
 				}
 			}
@@ -274,8 +338,10 @@ async function GetDiscussion(access: IAccess, owner: string, repo: string, page:
 	const response = await fetch("https://api.github.com/graphql", {
 		method: "POST",
 		headers: {
-			Authorization: `Bearer ${access.token}`,
+			"Accept": "application/vnd.github+json",
+			"Authorization": `Bearer ${access.token}`,
 			"Content-Type": "application/json",
+			"X-GitHub-Api-Version": "2022-11-28",
 		},
 		body: JSON.stringify({
 			query: discussionQuery,
@@ -286,24 +352,65 @@ async function GetDiscussion(access: IAccess, owner: string, repo: string, page:
 	const json = await response.json()
 	if (!response.ok) throw json
 
-	const search = json as IDiscussionSearch
-	if (search.data.search.nodes.length != 1)
-		throw { body: { error: "Failed to find discussion" }, statusCode: 500 }
+	console.timeEnd(GetDiscussion.name)
 
-	return search.data.search.nodes[0]
+	let discussion = null
+	const discussions = json.data.search.nodes
+	switch (discussions.length)
+	{
+		case 0:
+		{
+			console.time("CreateDiscussion")
+			if (originUrl.includes("localhost"))
+				throw { body: { error: "Creating discussions from localhost is disabled" }, statusCode: 400 }
+
+			const body = originUrl ? new URL(page, originUrl).toString() : ""
+			const mutation =
+				`mutation {
+					createDiscussion(input: {repositoryId: "${repoId}", categoryId: "${categoryId}", body: "${body}", title: "${title}"}) {
+						discussion {
+							${discussionData}
+						}
+					}
+				}`
+
+			const response = await fetch("https://api.github.com/graphql", {
+				method: "POST",
+				headers: {
+					"Accept": "application/vnd.github+json",
+					"Authorization": `Bearer ${access.token}`,
+					"Content-Type": "application/json",
+					"X-GitHub-Api-Version": "2022-11-28",
+				},
+				body: JSON.stringify({
+					query: mutation,
+				}),
+			})
+
+			const json = await response.json()
+			if (!response.ok) throw json
+			if ("errors" in json) throw json
+			if (json.extensions && json.extensions.warnings)
+				console.log(json.extensions.warnings)
+
+			discussion = json.data.createDiscussion.discussion as IDiscussion
+			console.timeEnd("CreateDiscussion")
+			break
+		}
+
+		case 1:
+			discussion = discussions[0]
+			break
+
+		default:
+			throw { body: { error: "Failed to find discussion" }, statusCode: 500 }
+	}
+
+	return discussion
 }
 
 // -------------------------------------------------------------------------------------------------
 // Utilities
-
-declare const process:
-{
-	env:
-	{
-		APP_ID?: string
-		PRIVATE_KEY?: string
-	}
-}
 
 function strtobytes(s: string): ArrayBuffer
 {

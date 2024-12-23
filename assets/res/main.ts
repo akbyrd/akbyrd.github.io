@@ -41,7 +41,7 @@ function InitFeatures()
 			<math xmlns='http://www.w3.org/1998/Math/MathML'> \
 				<mspace height='23px' width='77px'></mspace> \
 			</math> \
-		</div>");
+		</div>")
 
 	const div = document.body.firstElementChild!
 	const mspace = div.firstElementChild!.firstElementChild!
@@ -878,12 +878,12 @@ async function InitComments()
 	const reloadButton = commentsParent.querySelector("#comment-error button")!
 	reloadButton.addEventListener("click", ReloadComments, { passive: true })
 
-	const owner = "akbyrd"
-	const repo = "akbyrd.github.io"
+	const repoId = "R_kgDOCvzRFQ"
+	const categoryId = "DIC_kwDOCvzRFc4CbiP0"
 
 	const url = new URL("https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-a8e52261-669e-47a2-88db-6280c8b77099/default/api")
-	url.searchParams.append("owner", owner)
-	url.searchParams.append("repo", repo)
+	url.searchParams.append("repoId", repoId)
+	url.searchParams.append("categoryId", categoryId)
 	url.searchParams.append("page", location.pathname)
 
 	const response = await fetch(url, {
@@ -891,7 +891,7 @@ async function InitComments()
 		headers: {
 			"Content-Type": "application/json",
 		},
-	});
+	})
 
 	const json = await response.json()
 	if (!response.ok)
@@ -951,6 +951,26 @@ async function InitComments()
 	}
 }
 
+export async function GetCategories()
+{
+	const owner = "akbyrd"
+	const repo = "akbyrd.github.io"
+
+	const url = new URL("https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-a8e52261-669e-47a2-88db-6280c8b77099/default/api/categories")
+	url.searchParams.append("owner", owner)
+	url.searchParams.append("repo", repo)
+
+	const response = await fetch(url, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+		},
+	})
+
+	const json = await response.json()
+	return json
+}
+
 async function ReloadComments()
 {
 	const commentsParent = document.getElementById("comments")!
@@ -994,7 +1014,7 @@ function CreateComment(
 		const time = aTime.querySelector("time")!
 		time.dateTime = comment.createdAt
 		const date = new Date(comment.createdAt)
-		const formatter = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
+		const formatter = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" })
 		time.innerText = formatter.format(date)
 
 		commentRoot.prepend(headerFragment)
@@ -1016,14 +1036,14 @@ function CreateComment(
 
 		const blockCodes = commentContent.querySelectorAll("div.highlight")
 		for (const codeDiv of blockCodes)
-			ConstructCodeBlock(codeDiv, codeDiv);
+			ConstructCodeBlock(codeDiv, codeDiv)
 
 		const blockCodesNoLang = commentContent.querySelectorAll("div.snippet-clipboard-content")
 		for (const codeDiv of blockCodesNoLang)
 		{
 			const code = codeDiv.querySelector("pre > code")
 			if (code)
-				ConstructCodeBlock(codeDiv, code);
+				ConstructCodeBlock(codeDiv, code)
 		}
 	}
 

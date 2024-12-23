@@ -1,13 +1,11 @@
 General
 TODO: Implement comments
+	Fix DiscussionBot icon
+	Switch to another host
+
 	Error Handling
-		App authentication
-			App isn't installed
-			App doesn't have access to repo
-			App is uninstalled
-			Rate limit
-			Token expired
-			Bad token
+		Do errors show up for web calls?
+		Get notifications for errors?
 		User authentication
 			User doesn't authorize repo
 			User doesn't have access to repo
@@ -15,10 +13,6 @@ TODO: Implement comments
 			Rate limit
 			Token expired
 			Bad token
-		Cache JWT
-		Create discussion if it doesn't exist
-		Consider showing emoji for post
-
 	Login
 		Swap button between submit and login
 		Disable submit button when no text
@@ -33,8 +27,11 @@ TODO: Implement comments
 		Animate when loading
 		Defer loading until scrolled into view
 	Polish
+		Consider showing emoji for post
+		Only create discussion when posting?
 		Save draft when typing
 		Set textarea maxlength from Github limit
+
 TODO: Fix scrolling on math in comments (don't use <math> because it behaves poorly)
 TODO: Check for missing math glyphs (should be using a single font, not falling back)
 TODO: Fix initial math style (incorrect until code runs)

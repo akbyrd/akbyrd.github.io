@@ -105,7 +105,7 @@
 	<main>
 		{{- block "main" . }}{{ end }}
 
-		{{- if .Page.Params.comments }}
+		{{- if and .Page.Params.comments (not .Page.Draft) }}
 		<section id="comments" class="no-mathml">
 			<div id="comment-error" style="display: none;">
 				<p>Failed to load comments</p>
