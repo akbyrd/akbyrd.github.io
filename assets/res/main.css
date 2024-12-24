@@ -292,7 +292,9 @@ section {
 }
 
 textarea {
-	white-space: pre;
+	hyphens: manual;
+	text-align: left;
+	white-space: pre-wrap;
 }
 
 textarea:focus {
@@ -573,6 +575,26 @@ code, annotation {
 /* ---------------------------------------------------------------------------------------------- */
 /* Comments */
 
+.end-mark {
+	align-items: center;
+	color: var(--outline);
+	display: flex;
+	font-size: 38px;
+	justify-content: space-evenly;
+	line-height: 0;
+	margin: 60px 0;
+	opacity: 60%;
+}
+
+.end-mark::before, .end-mark::after {
+	border-top: 1px solid var(--outline);
+	content: "";
+	height: 0;
+	position: relative;
+	top: 1px;
+	width: 33%;
+}
+
 #comments {
 	font-size: 12pt;
 
@@ -770,7 +792,7 @@ code, annotation {
 			margin-bottom: 0;
 			position: relative;
 
-			.comment-reply {
+			.reply {
 				margin: 0;
 			}
 
@@ -797,18 +819,14 @@ code, annotation {
 			}
 		}
 
-		.comment-input > div {
-			scroll-padding: 100px;
-		}
-
-		.comment-input {
+		.reply-input {
 			border-top-color: var(--outline);
 			border-top-style: solid;
 			border-top-width: 2px;
-			margin: 0;
 		}
 
-		.comment-input textarea {
+		.comment-input textarea,
+		.reply-input textarea {
 			box-sizing: border-box;
 			display: block;
 			font-family: sans-serif;
@@ -817,43 +835,44 @@ code, annotation {
 			padding: 16px;
 			padding-bottom: 14px;
 			resize: none;
-			transition-duration: 50ms;
-			transition-property: height;
 			width: 100%;
 		}
 
-		.comment-input > div {
-			display: flex;
-			justify-content: space-between;
-			margin: 0;
-		}
-
-		.comment-input > div {
+		.comment-input > div,
+		.reply-input > div {
 			border-color: var(--outline);
 			border-style: solid;
 			border-width: 0;
-			height: 0px;
-			padding: 0;
+			display: flex;
+			justify-content: space-between;
 			margin: 0 8px;
+			padding: 0;
+		}
+
+		.reply-input > div {
+			height: 0px;
 			transition-property: border, height, padding;
 			transition-duration: 200ms;
 		}
 
-		.comment-input:focus-within > div,
-		.comment-input textarea:not(:placeholder-shown) + div {
+		.comment-input > div,
+		.reply-input:focus-within > div,
+		.reply-input textarea:not(:placeholder-shown) + div {
 			border-width: 1px 0 0 0;
 			height: 30px;
 			padding: 8px 0;
 		}
 
-		.comment-input button {
+		.comment-input button,
+		.reply-input button {
 			display: inline-flex;
 			align-items: center;
 			gap: 8px;
 			padding: 0 8px;
 		}
 
-		.comment-input button span {
+		.comment-input button span,
+		.reply-input button span {
 			font-size: 32px;
 			line-height: 32px;
 		}

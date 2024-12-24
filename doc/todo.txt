@@ -2,6 +2,7 @@ General
 TODO: Implement comments
 	Switch to another host
 	Authorize as me when creating discussion
+	Configure DNS redirect
 
 	Error Handling
 		User authentication
@@ -16,6 +17,7 @@ TODO: Implement comments
 		Disable submit button when no text
 		Disable text area until logged in
 		Disable logout button until logged int
+		Store encrypted user token on client (maybe app access token url also)
 	Messages
 		Hook up emoji buttons
 		Hook up submit button

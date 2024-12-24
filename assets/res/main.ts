@@ -805,7 +805,13 @@ function SelectionFromHash()
 // -------------------------------------------------------------------------------------------------
 // Comments
 
-let syntheticClick = null as null | HTMLButtonElement
+let commentState: {
+	commentsParent: HTMLElement
+	errorMessage: HTMLElement
+	newComment: HTMLElement
+	commentInput: HTMLElement
+	syntheticClick?: HTMLButtonElement
+}
 
 interface CommentTemplates
 {
@@ -875,78 +881,17 @@ async function InitComments()
 	if (!commentsParent)
 		return
 
+	commentState = {
+		commentsParent,
+		newComment: commentsParent.querySelector("#comment-new") as HTMLElement,
+		commentInput: commentsParent.querySelector("#comment-input") as HTMLElement,
+		errorMessage: commentsParent.querySelector("#comment-error") as HTMLElement,
+	}
+
 	const reloadButton = commentsParent.querySelector("#comment-error button")!
 	reloadButton.addEventListener("click", ReloadComments, { passive: true })
 
-	const url = new URL("https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-a8e52261-669e-47a2-88db-6280c8b77099/default/api")
-	url.searchParams.append("owner", "akbyrd")
-	url.searchParams.append("repo", "akbyrd.github.io")
-	url.searchParams.append("category", "Blog Post Comments")
-	url.searchParams.append("page", location.pathname)
-
-	const response = await fetch(url, {
-		method: "GET",
-		headers: {
-			"Content-Type": "application/json",
-		},
-	})
-
-	const json = await response.json()
-	if (!response.ok)
-	{
-		const errorMessage = commentsParent.querySelector("#comment-error") as HTMLElement
-		errorMessage.style.display = ""
-		return
-	}
-
-	const discussion = json as IDiscussion
-	const commentTemplate = document.getElementById("comment-template") as HTMLTemplateElement
-	const replyTemplate = document.getElementById("comment-reply-template") as HTMLTemplateElement
-
-	const templates = {
-		header: document.getElementById("comment-header-template") as HTMLTemplateElement,
-		codeBlock: document.getElementById("comment-code-block-template") as HTMLTemplateElement,
-		mathInline: document.getElementById("comment-math-inline-template") as HTMLTemplateElement,
-		mathBlock: document.getElementById("comment-math-block-template") as HTMLTemplateElement,
-		footer: document.getElementById("comment-footer-template") as HTMLTemplateElement,
-	}
-
-	for (const comment of discussion.comments.nodes)
-	{
-		const commentRoot = CreateComment(commentsParent, templates, commentTemplate, comment)
-		const commentInput = commentRoot.querySelector(".comment-input") as HTMLElement
-
-		// Input
-		{
-			const commentTextArea = commentInput.querySelector("textarea")!
-			commentTextArea.placeholder = "Write a reply"
-			commentTextArea.addEventListener("input", UpdateInputHeight, { passive: true })
-
-			const commentSubmit = commentInput.querySelector(".comment-submit") as HTMLElement
-			//commentSubmit.innerText = "Reply"
-
-			const commentLogout = commentInput.querySelector(".comment-logout") as HTMLElement
-			//commentLogout.style.display = "none"
-		}
-
-		// Replies
-		if (comment.replies.nodes.length)
-		{
-			const repliesParent = commentRoot.insertBefore(document.createElement("section"), commentInput)
-			repliesParent.classList.add("comment-replies")
-
-			const repliesLine = document.createElement("section")
-			repliesLine.classList.add("reply-line")
-			repliesParent.prepend(repliesLine)
-
-			for (const reply of comment.replies.nodes)
-			{
-				const replyRoot = CreateComment(repliesParent, templates, replyTemplate, reply)
-				replyRoot.classList.remove("comment")
-				replyRoot.classList.add("comment-reply")
-			}
-		}
-	}
+	await LoadComments()
 }
 
 export async function GetCategories()
@@ -971,24 +916,104 @@ export async function GetCategories()
 
 async function ReloadComments()
 {
-	const commentsParent = document.getElementById("comments")!
-	const comments = commentsParent.querySelectorAll(".comment")
+	const comments = commentState.commentsParent.querySelectorAll(".comment")
 	for (const comment of comments)
 		comment.remove()
 
-	await InitComments()
+	await LoadComments()
 }
 
-function CreateComment(
-	commentsParent: HTMLElement,
-	templates: CommentTemplates,
-	commentTemplate: HTMLTemplateElement,
-	comment: ICommentBase)
-	: HTMLElement
+async function LoadComments()
+{
+	const url = new URL("https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-a8e52261-669e-47a2-88db-6280c8b77099/default/api")
+	url.searchParams.append("owner", "akbyrd")
+	url.searchParams.append("repo", "akbyrd.github.io")
+	url.searchParams.append("category", "Blog Post Comments")
+	url.searchParams.append("page", location.pathname)
+
+	const response = await fetch(url, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+		},
+	})
+
+	const json = await response.json()
+	if (!response.ok)
+	{
+		commentState.errorMessage.style.display = ""
+		return
+	}
+
+	const discussion = json as IDiscussion
+	const commentTemplate = document.getElementById("comment-template") as HTMLTemplateElement
+	const replyTemplate = document.getElementById("reply-template") as HTMLTemplateElement
+
+	const templates = {
+		header: document.getElementById("comment-header-template") as HTMLTemplateElement,
+		codeBlock: document.getElementById("comment-code-block-template") as HTMLTemplateElement,
+		mathInline: document.getElementById("comment-math-inline-template") as HTMLTemplateElement,
+		mathBlock: document.getElementById("comment-math-block-template") as HTMLTemplateElement,
+		footer: document.getElementById("comment-footer-template") as HTMLTemplateElement,
+	}
+
+	for (const comment of discussion.comments.nodes)
+	{
+		const commentElems = CreateComment(templates, commentTemplate, comment)
+		commentState.commentsParent.insertBefore(commentElems.fragment, commentState.newComment)
+
+		// Input
+		{
+			const commentTextArea = commentElems.input.querySelector("textarea")!
+			commentTextArea.addEventListener("input", UpdateInputHeight, { passive: true })
+
+			// TODO: Put text in HTML and swap visibility
+			const commentSubmit = commentElems.input.querySelector(".comment-submit") as HTMLElement
+			//commentSubmit.innerText = "Reply"
+
+			const commentLogout = commentElems.input.querySelector(".comment-logout") as HTMLElement
+			//commentLogout.style.display = "none"
+		}
+
+		// Replies
+		if (comment.replies.nodes.length)
+		{
+			const repliesParent = document.createElement("section")
+			repliesParent.classList.add("comment-replies")
+			commentElems.root.insertBefore(repliesParent, commentElems.input)
+
+			const repliesLine = document.createElement("div")
+			repliesLine.classList.add("reply-line")
+			repliesParent.prepend(repliesLine)
+
+			for (const reply of comment.replies.nodes)
+			{
+				const replyElems = CreateComment(templates, replyTemplate, reply)
+				repliesParent.append(replyElems.fragment)
+			}
+		}
+	}
+
+	const commentTextArea = commentState.commentsParent.querySelector(".comment-input textarea")!
+	commentTextArea.addEventListener("input", UpdateInputHeight, { passive: true })
+
+	//const submitButtons = commentState.commentsParent.querySelectorAll(".comment-submit")
+	//for (const submitButton of submitButtons)
+		//submitButton.addEventListener("click", SubmitComment, { passive: true })
+}
+
+interface ICommentElements
+{
+	fragment: DocumentFragment
+	root: HTMLElement
+	input: HTMLElement
+}
+
+function CreateComment(templates: CommentTemplates, commentTemplate: HTMLTemplateElement, comment: ICommentBase): ICommentElements
 {
 	const commentFragment = commentTemplate.content.cloneNode(true) as DocumentFragment
-	const commentRoot = commentFragment.querySelector(".comment") as HTMLElement
-	const commentInput = commentFragment.querySelector(".comment-input") as HTMLElement
+	const commentRoot = commentFragment.querySelector("section")!
+	const replyInput = commentFragment.querySelector(".reply-input") as HTMLElement
 	const commentContent = commentFragment.querySelector(".comment-content") as HTMLElement
 	commentContent.innerHTML = comment.bodyHTML
 
@@ -1097,11 +1122,14 @@ function CreateComment(
 			reaction.addEventListener("click", ToggleReaction, { passive: true })
 		}
 
-		commentRoot.insertBefore(footerFragment, commentInput)
+		commentRoot.insertBefore(footerFragment, replyInput)
 	}
 
-	commentsParent.append(commentFragment)
-	return commentRoot
+	return {
+		fragment: commentFragment,
+		root: commentRoot,
+		input: replyInput,
+	}
 }
 
 function ToggleReactions(e: Event)
@@ -1118,7 +1146,7 @@ function ToggleReactions(e: Event)
 			document.addEventListener("click", {
 				handleEvent(e: Event)
 				{
-					if (syntheticClick && syntheticClick != target) return
+					if (commentState.syntheticClick && commentState.syntheticClick != target) return
 
 					const clickedFooter = target.parentElement!.contains(e.target as Node)
 					const clickedButton = target == e.target
@@ -1127,9 +1155,9 @@ function ToggleReactions(e: Event)
 						document.removeEventListener("click", this)
 						if (target.hasAttribute("data-pressed"))
 						{
-							syntheticClick = target
+							commentState.syntheticClick = target
 							target.click()
-							syntheticClick = null
+							commentState.syntheticClick = undefined
 						}
 					}
 				}
@@ -1183,6 +1211,22 @@ function UpdateInputHeight(e: Event)
 	commentTextArea.style.height = `${newHeight}px`
 
 	requestAnimationFrame(() => commentTextArea.scrollTop = 0)
+
+	if (commentTextArea.selectionEnd
+		&& commentTextArea.selectionEnd == commentTextArea.selectionStart
+		&& commentTextArea.selectionEnd == commentTextArea.textLength)
+	{
+		const threshold = 0.15
+		const height    = document.documentElement.clientHeight
+		const y         = commentTextArea.getBoundingClientRect().bottom
+		const target    = (1 - threshold) * height
+		if (y > target)
+			window.scrollBy({ top: y - target, behavior: "instant" })
+	}
+}
+
+async function SubmitComment()
+{
 }
 
 // -------------------------------------------------------------------------------------------------

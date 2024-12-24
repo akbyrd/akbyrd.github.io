@@ -38,10 +38,9 @@
 	<style>
 		@font-face {
 			font-family: "code";
-			unicode-range: U+0000-00a0, U+feff, U+fffd, U+f426, U+f4a2, U+f4bb, U+f01ee, U+f02a4, U+f033b, U+f0450, U+f046b, U+f0544, U+f0ad1;
 			src:
-			url("{{ $woff2.RelPermalink }}") format("woff2"),
-			url("{{ $woff.RelPermalink }}") format("woff");
+				url("{{ $woff2.RelPermalink }}") format("woff2"),
+				url("{{ $woff.RelPermalink }}") format("woff");
 		}
 	</style>
 	{{- end }}
@@ -106,28 +105,40 @@
 		{{- block "main" . }}{{ end }}
 
 		{{- if and .Page.Params.comments (not .Page.Draft) }}
+		<div class="end-mark symbol">&#xe22e;</div>
+
 		<section id="comments" class="no-mathml">
 			<div id="comment-error" style="display: none;">
 				<p>Failed to load comments</p>
 				<button class="symbol" type="button" aria-label="Retry">&#xf0450;</button>
 			</div>
 
+			<section class="comment" id="comment-new">
+				<form class="comment-input">
+					<textarea aria-label="Enter Comment Text" placeholder="Write a comment" required rows="1"></textarea>
+					<div>
+						<button class="comment-logout" type="button" aria-label="Sign Out"><span class="symbol">&#xf426;</span>Sign out</button>
+						<button class="comment-submit" type="submit" aria-label="Post Comment"><span class="symbol">&#xf02a4;</span>Sign in with Github</button>
+					</div>
+				</form>
+			</section>
+
 			<template id="comment-template">
 				<section class="comment">
 					<div class="comment-content">
 					</div>
-					<form class="comment-input">
-						<textarea aria-label="Enter Comment Text" placeholder="Write a comment" required rows="1"></textarea>
+					<form class="reply-input">
+						<textarea aria-label="Enter Reply Text" placeholder="Write a reply" required rows="1"></textarea>
 						<div>
 							<button class="comment-logout" type="button" aria-label="Sign Out"><span class="symbol">&#xf426;</span>Sign out</button>
-							<button class="comment-submit" type="submit" aria-label="Post Comment"><span class="symbol">&#xf02a4;</span>Sign in with Github</button>
+							<button class="comment-submit" type="submit" aria-label="Post Reply"><span class="symbol">&#xf02a4;</span>Sign in with Github</button>
 						</div>
 					</form>
 				</section>
 			</template>
 
-			<template id="comment-reply-template">
-				<section class="comment">
+			<template id="reply-template">
+				<section class="reply">
 					<div class="comment-content">
 					</div>
 				</section>

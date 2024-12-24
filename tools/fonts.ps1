@@ -15,6 +15,7 @@ foreach ($out in $codeOut)
 		--drop-tables="PfEd, BASE" `
 		--layout-features="ss01" `
 		--unicodes="u0000-00a0,ufeff,ufffd" `
+		--unicodes="ue22e"  <# nf-fae-planet #> `
 		--unicodes="uf426"  <# nf-oct-sign_out #> `
 		--unicodes="uf4a2"  <# nf-oct-smiley #> `
 		--unicodes="uf4bb"  <# nf-oct-copy #> `
@@ -25,7 +26,6 @@ foreach ($out in $codeOut)
 		--unicodes="uf046b" <# nf-md-rss #> `
 		--unicodes="uf0544" <# nf-md-twitter #> `
 		--unicodes="uf0ad1" <# nf-md-mastodon #>
-
 
 	$name = Split-Path -Leaf $out
 	$size = (Get-Item $out).Length / 1024
