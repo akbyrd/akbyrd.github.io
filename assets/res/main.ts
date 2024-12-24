@@ -888,6 +888,10 @@ async function InitComments()
 		errorMessage: commentsParent.querySelector("#comment-error") as HTMLElement,
 	}
 
+	const session = localStorage.getItem("session")
+	const loginClass = session ? "comments-logged-in" : "comments-logged-out"
+	commentsParent.classList.add(loginClass)
+
 	const reloadButton = commentsParent.querySelector("#comment-error button")!
 	reloadButton.addEventListener("click", ReloadComments, { passive: true })
 
@@ -966,13 +970,6 @@ async function LoadComments()
 		{
 			const commentTextArea = commentElems.input.querySelector("textarea")!
 			commentTextArea.addEventListener("input", UpdateInputHeight, { passive: true })
-
-			// TODO: Put text in HTML and swap visibility
-			const commentSubmit = commentElems.input.querySelector(".comment-submit") as HTMLElement
-			//commentSubmit.innerText = "Reply"
-
-			const commentLogout = commentElems.input.querySelector(".comment-logout") as HTMLElement
-			//commentLogout.style.display = "none"
 		}
 
 		// Replies
