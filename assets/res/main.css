@@ -866,18 +866,19 @@ code, annotation {
 	padding: 8px 0;
 }
 
-.comment-input button > span,
-.reply-input button > span {
+.comment-input button,
+.reply-input button {
 	display: inline-flex;
 	align-items: center;
 	gap: 8px;
+	justify-content: center;
 	padding: 0 8px;
 }
 
 .comment-input .symbol,
 .reply-input .symbol {
 	font-size: 32px;
-	line-height: 32px;
+	line-height: 0px;
 }
 
 .comment-submit {
@@ -891,11 +892,12 @@ code, annotation {
 	background-color: #37843c;
 }
 
-.comments-logged-in .comment-submit > span:last-of-type {
+.comments-logged-out .comment-submit :nth-child(1) {
 	display: none;
 }
 
-.comments-logged-out .comment-submit > span:first-of-type {
+.comments-logged-in .comment-submit :nth-child(2),
+.comments-logged-in .comment-submit :nth-child(3) {
 	display: none;
 }
 
