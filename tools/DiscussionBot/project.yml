@@ -4,5 +4,6 @@ packages:
         - name: api
           runtime: nodejs:18
           environment:
-            APP_ID: "${APP_ID}"
+            CLIENT_ID: "${CLIENT_ID}"
+            CLIENT_SECRET: "${CLIENT_SECRET}"
             PRIVATE_KEY: "${PRIVATE_KEY}"

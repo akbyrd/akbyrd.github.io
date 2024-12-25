@@ -877,6 +877,15 @@ enum Reaction
 
 async function InitComments()
 {
+	const url = new URL(location.href)
+	const session = url.searchParams.get("session")
+	if (session)
+	{
+		url.searchParams.delete("session")
+		localStorage.setItem("session", session)
+		history.replaceState(history.state, "", url.toString())
+	}
+
 	const commentsParent = document.getElementById("comments")
 	if (!commentsParent)
 		return
@@ -888,34 +897,10 @@ async function InitComments()
 		errorMessage: commentsParent.querySelector("#comment-error") as HTMLElement,
 	}
 
-	const session = localStorage.getItem("session")
-	const loginClass = session ? "comments-logged-in" : "comments-logged-out"
-	commentsParent.classList.add(loginClass)
-
 	const reloadButton = commentsParent.querySelector("#comment-error button")!
 	reloadButton.addEventListener("click", ReloadComments, { passive: true })
 
 	await LoadComments()
-}
-
-export async function GetCategories()
-{
-	const owner = "akbyrd"
-	const repo = "akbyrd.github.io"
-
-	const url = new URL("https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-a8e52261-669e-47a2-88db-6280c8b77099/default/api/categories")
-	url.searchParams.append("owner", owner)
-	url.searchParams.append("repo", repo)
-
-	const response = await fetch(url, {
-		method: "GET",
-		headers: {
-			"Content-Type": "application/json",
-		},
-	})
-
-	const json = await response.json()
-	return json
 }
 
 async function ReloadComments()
@@ -923,6 +908,10 @@ async function ReloadComments()
 	const comments = commentState.commentsParent.querySelectorAll(".comment")
 	for (const comment of comments)
 		comment.remove()
+
+	commentState.commentsParent.classList.remove("comments-logged-in")
+	commentState.commentsParent.classList.remove("comments-logged-out")
+	commentState.newComment.style.display = "none"
 
 	await LoadComments()
 }
@@ -935,12 +924,22 @@ async function LoadComments()
 	url.searchParams.append("category", "Blog Post Comments")
 	url.searchParams.append("page", location.pathname)
 
-	const response = await fetch(url, {
-		method: "GET",
-		headers: {
-			"Content-Type": "application/json",
-		},
-	})
+	let response
+	try
+	{
+		response = await fetch(url, {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+				"Credentials": "include",
+			},
+		})
+	}
+	catch
+	{
+		commentState.errorMessage.style.display = ""
+		return
+	}
 
 	const json = await response.json()
 	if (!response.ok)
@@ -991,12 +990,24 @@ async function LoadComments()
 		}
 	}
 
-	const commentTextArea = commentState.commentsParent.querySelector(".comment-input textarea")!
+	commentState.newComment.style.display = ""
+	commentState.errorMessage.style.display = "none"
+
+	//const session = localStorage.getItem("session")
+	const session = false // TODO: Remove
+	const loginClass = session ? "comments-logged-in" : "comments-logged-out"
+	commentState.commentsParent.classList.add(loginClass)
+
+	const commentTextArea = commentState.newComment.querySelector("textarea")!
 	commentTextArea.addEventListener("input", UpdateInputHeight, { passive: true })
 
-	//const submitButtons = commentState.commentsParent.querySelectorAll(".comment-submit")
-	//for (const submitButton of submitButtons)
-		//submitButton.addEventListener("click", SubmitComment, { passive: true })
+	const submitButtons = commentState.commentsParent.querySelectorAll(".comment-submit")
+	for (const submitButton of submitButtons)
+		submitButton.addEventListener("click", LoginOrSubmit, { passive: true })
+
+	const logoutButtons = commentState.commentsParent.querySelectorAll(".comment-logout")
+	for (const logoutButton of logoutButtons)
+		logoutButton.addEventListener("click", Logout, { passive: true })
 }
 
 interface ICommentElements
@@ -1222,8 +1233,27 @@ function UpdateInputHeight(e: Event)
 	}
 }
 
-async function SubmitComment()
+async function LoginOrSubmit()
 {
+	// TODO: Update
+	const loggedIn = localStorage.getItem("session")
+	if (!loggedIn)
+	{
+		const url = new URL("https://github.com/login/oauth/authorize")
+		url.searchParams.append("client_id", "Iv23liF0BbZzzsm6OCu8")
+		url.searchParams.append("redirect_uri", "https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-a8e52261-669e-47a2-88db-6280c8b77099/default/api/login")
+		url.searchParams.append("state", location.href)
+		location.href = url.toString();
+	}
+	else
+	{
+	}
+}
+
+async function Logout()
+{
+	const loggedIn = localStorage.getItem("session")
+	if (!loggedIn) return
 }
 
 // -------------------------------------------------------------------------------------------------

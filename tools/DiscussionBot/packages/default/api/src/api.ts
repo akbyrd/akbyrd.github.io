@@ -4,7 +4,8 @@ declare const process:
 {
 	env:
 	{
-		APP_ID?: string
+		CLIENT_ID?: string
+		CLIENT_SECRET?: string
 		PRIVATE_KEY?: string
 	}
 }
@@ -14,40 +15,94 @@ interface IEvent
 	http?: {
 		headers: {
 			origin: string
+			cookie: string
 		}
 		method: string
 		path: string
 	}
+
+	// Login
+	state?: string
+	error: string
+	error_description: string
+	code?: string
+
+	// Get Discussion
 	owner?: string
 	repo?: string
 	category?: string
 	page?: string
+	session?: string
+}
+
+interface IContext
+{
+	activationId: string
+	apiHost: string
+	apiKey: string
+	deadline: number
+	functionName: string
+	functionVersion: string
+	namespace: string
+	requestId: string
 }
 
 interface IReturn
 {
-	body: {}
 	statusCode: number
 	headers?: {}
+	body?: {}
 }
 
-export async function main(event: IEvent): Promise<IReturn>
+export async function main(event: IEvent, context: IContext): Promise<IReturn>
 {
 	try
 	{
-		if (!process.env.APP_ID)      throw "App Id not set"
-		if (!process.env.PRIVATE_KEY) throw "Private Key not set"
-		if (!event.owner)             throw { body: { error: "Owner not specified"    }, statusCode: 400 }
-		if (!event.repo)              throw { body: { error: "Repo not specified"     }, statusCode: 400 }
-		if (!event.category)          throw { body: { error: "Category not specified" }, statusCode: 400 }
-		if (!event.page)              throw { body: { error: "Page not specified"     }, statusCode: 400 }
+		if (!process.env.CLIENT_ID)     throw "Client Id not set"
+		if (!process.env.CLIENT_SECRET) throw "Client Secret not set"
+		if (!process.env.PRIVATE_KEY)   throw "Private Key not set"
 
-		const originUrl  = event.http ? event.http.headers.origin : "https://example.com"
-		const token      = await CreateJWT(process.env.APP_ID, process.env.PRIVATE_KEY)
-		const install    = await GetInstallation(token, event.owner, event.repo)
-		const access     = await GetAppToken(token, install)
-		const discussion = await GetDiscussion(access, event.owner, event.repo, event.category, event.page, originUrl)
-		return { body: discussion, statusCode: 200 }
+		if (event.http && event.http.path === "/login")
+		{
+			if (!event.state) throw { statusCode: 400, body: { error: "State not specified" } }
+
+			const headers = { location: event.state }
+			if (event.code)
+			{
+				// TODO: Clear cookie if auth fails
+				// TODO: Update cookie if auth refreshes
+
+				const userAuth = await GetUserAuth(process.env.CLIENT_ID, process.env.CLIENT_SECRET, event.code)
+				const session = Encrypt(userAuth)
+				const expires = new Date(userAuth.refreshExp * 1000).toUTCString()
+				headers["set-cookie"] = `session=${session}; Expires=${expires}; Secure; HttpOnly; SameSite=Lax`
+			}
+
+			return { statusCode: 302, headers }
+		}
+		else
+		{
+			if (!event.owner)    throw { statusCode: 400, body: { error: "Owner not specified"    } }
+			if (!event.repo)     throw { statusCode: 400, body: { error: "Repo not specified"     } }
+			if (!event.category) throw { statusCode: 400, body: { error: "Category not specified" } }
+			if (!event.page)     throw { statusCode: 400, body: { error: "Page not specified"     } }
+
+			const cookies = event.http?.headers.cookie
+			const session = cookies?.match(/session=([^;]*)/)?.[1]
+			if (session)
+			{
+				throw "Not implemented"
+			}
+			else
+			{
+				const originUrl  = event.http ? event.http.headers.origin : "https://example.com"
+				const token      = await CreateJWT(process.env.CLIENT_ID, process.env.PRIVATE_KEY)
+				const appAuthUrl = await GetAppAuthUrl(token, event.owner, event.repo)
+				const appAuth    = await GetAppAuth(token, appAuthUrl)
+				const discussion = await GetDiscussion(appAuth, event.owner, event.repo, event.category, event.page, originUrl)
+				return { statusCode: 200, body: discussion }
+			}
+		}
 	}
 	catch (error: unknown)
 	{
@@ -58,7 +113,7 @@ export async function main(event: IEvent): Promise<IReturn>
 		else
 		{
 			console.error(error)
-			throw { body: { error: "Application error" }, statusCode: 500 }
+			throw { statusCode: 500, body: { error: "Application error" } }
 		}
 	}
 }
@@ -66,18 +121,13 @@ export async function main(event: IEvent): Promise<IReturn>
 // -------------------------------------------------------------------------------------------------
 // App Authorization
 
-interface IInstallation
+interface IAuth
 {
-	access_tokens_url: string
-}
-
-interface IAccess
-{
-	expires_at: string
 	token: string
+	tokenExp: number
 }
 
-async function CreateJWT(appId: string, privateKey: string): Promise<string>
+async function CreateJWT(clientId: string, privateKey: string): Promise<string>
 {
 	// NOTE: Should really cache this token, but since we run this as a serverless function we don't
 	// have a good way to do so. We could include it in the encrypted session data we store on the
@@ -97,7 +147,7 @@ async function CreateJWT(appId: string, privateKey: string): Promise<string>
 
 	const now = Math.floor(Date.now() / 1000 - 60)
 	const header_b64 = objtob64({ alg: "RS256", typ: "JWT", })
-	const payload_b64 = objtob64({ iat: now, exp: now + 300, iss: appId, })
+	const payload_b64 = objtob64({ iat: now, exp: now + 300, iss: clientId, })
 	const message_bytes = strtobytes(`${header_b64}.${payload_b64}`)
 
 	const signature_bytes = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", key, message_bytes)
@@ -108,9 +158,9 @@ async function CreateJWT(appId: string, privateKey: string): Promise<string>
 	return token
 }
 
-async function GetInstallation(token: string, owner: string, repo: string): Promise<IInstallation>
+async function GetAppAuthUrl(token: string, owner: string, repo: string): Promise<string>
 {
-	console.time(GetInstallation.name)
+	console.time(GetAppAuthUrl.name)
 	const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/installation`, {
 		method: "GET",
 		headers: {
@@ -124,14 +174,14 @@ async function GetInstallation(token: string, owner: string, repo: string): Prom
 	const json = await response.json()
 	if (!response.ok) throw json
 
-	console.timeEnd(GetInstallation.name)
-	return json as IInstallation
+	console.timeEnd(GetAppAuthUrl.name)
+	return json.access_tokens_url
 }
 
-async function GetAppToken(token: string, install: IInstallation): Promise<IAccess>
+async function GetAppAuth(token: string, appAuthUrl: string): Promise<IAuth>
 {
-	console.time(GetAppToken.name)
-	const response = await fetch(install.access_tokens_url, {
+	console.time(GetAppAuth.name)
+	const response = await fetch(appAuthUrl, {
 		method: "POST",
 		headers: {
 			"Accept": "application/vnd.github+json",
@@ -144,70 +194,58 @@ async function GetAppToken(token: string, install: IInstallation): Promise<IAcce
 	const json = await response.json()
 	if (!response.ok) throw json
 
-	console.timeEnd(GetAppToken.name)
-	return json as IAccess
+	const auth = {
+		token:    json.token,
+		tokenExp: json.expires_at,
+	}
+
+	console.timeEnd(GetAppAuth.name)
+	return auth
 }
 
 // -------------------------------------------------------------------------------------------------
 // User Authorization
 
-/*
-async function GetUserToken()
+interface IUserAuth extends IAuth
 {
-	console.time(GetUserToken.name)
-	const code = sessionStorage.getItem("code")
-	sessionStorage.removeItem("code")
-
-	if (!code)
-	{
-		const bytes = crypto.getRandomValues(new Uint8Array(16))
-		const state = bytestob64(bytes)
-		sessionStorage.setItem("state", state)
-		sessionStorage.setItem("url", location.href)
-
-		const url = new URL("https://github.com/login/oauth/authorize")
-		url.searchParams.append("client_id", clientId)
-		url.searchParams.append("state", state)
-		url.searchParams.append("redirect_uri", `${location.origin}/github`)
-		location.href = url.toString()
-	}
-	else
-	{
-		if (false)
-		{
-			const url = new URL("https://github.com/login/oauth/access_token")
-			url.searchParams.append("client_id", clientId)
-			url.searchParams.append("client_secret", clientSecret)
-			url.searchParams.append("code", code)
-			//url.searchParams.append("redirect_uri", )
-			//url.searchParams.append("repository_id", )
-
-			const response = await fetch(url.toString(), {
-				method: "POST",
-			})
-
-			const accessToken = params.get("access_token")
-			const expiresIn = params.get("expires_in")
-			const refreshToken = params.get("refresh_token")
-			const refreshTokenExpiresIn = params.get("refresh_token_expires_in")
-			const scope = params.get("scope")
-			const tokenType = params.get("token_type")
-			console.log(accessToken, expiresIn, refreshToken, refreshTokenExpiresIn, scope, tokenType)
-		}
-		else
-		{
-			const url = new URL("http://localhost:3000/login")
-			url.searchParams.append("code", code)
-
-			const response = await fetch(url.toString(), {
-				method: "GET",
-			})
-			console.log(response)
-		}
-	}
-	console.timeEnd(GetUserToken.name)
+	refresh:    string
+	refreshExp: number
 }
-*/
+
+// TODO: Handle errors
+async function GetUserAuth(clientId: string, clientSecret: string, code: string): Promise<IUserAuth>
+{
+	console.time(GetUserAuth.name)
+	const url = new URL("https://github.com/login/oauth/access_token")
+	url.searchParams.append("client_id", clientId)
+	url.searchParams.append("client_secret", clientSecret)
+	url.searchParams.append("code", code)
+
+	const response = await fetch(url.toString(), {
+		method: "POST",
+		headers: {
+			"Accept": "application/vnd.github+json",
+			"Content-Type": "application/json",
+			"X-GitHub-Api-Version": "2022-11-28",
+		},
+	})
+
+	const json = await response.json()
+	if (!response.ok) throw json
+
+	const now = Math.floor(Date.now() / 1000 - 60)
+	const auth = {
+		token:      json.access_token,
+		tokenExp:   now + Number(json.expires_in),
+		refresh:    json.refresh_token,
+		refreshExp: now + Number(json.refresh_token_expires_in),
+	}
+	if (Number.isNaN(auth.tokenExp))   throw "Failed to parse user token expiration"
+	if (Number.isNaN(auth.refreshExp)) throw "Failed to parse user token refresh expiration"
+
+	console.timeEnd(GetUserAuth.name)
+	return auth
+}
 
 // -------------------------------------------------------------------------------------------------
 // Discussion Query
@@ -263,7 +301,7 @@ const discussionQueryData =
 
 interface IDiscussion {}
 
-async function GetDiscussion(access: IAccess, owner: string, repo: string, category: string, page: string, originUrl: string): Promise<IDiscussion>
+async function GetDiscussion(auth: IAuth, owner: string, repo: string, category: string, page: string, originUrl: string): Promise<IDiscussion>
 {
 	console.time(GetDiscussion.name)
 	const title = page.replace(/^\/?|\/?$/g, "")
@@ -284,7 +322,7 @@ async function GetDiscussion(access: IAccess, owner: string, repo: string, categ
 		method: "POST",
 		headers: {
 			"Accept": "application/vnd.github+json",
-			"Authorization": `Bearer ${access.token}`,
+			"Authorization": `Bearer ${auth.token}`,
 			"Content-Type": "application/json",
 			"X-GitHub-Api-Version": "2022-11-28",
 		},
@@ -305,8 +343,8 @@ async function GetDiscussion(access: IAccess, owner: string, repo: string, categ
 	{
 		case 0:
 		{
-			const [repoId, categoryId] = await GetRepoAndCategoryIds(access, owner, repo, category)
-			discussion = await CreateDiscussion(access, repoId, categoryId, title, page, originUrl)
+			const [repoId, categoryId] = await GetRepoAndCategoryIds(auth, owner, repo, category)
+			discussion = await CreateDiscussion(auth, repoId, categoryId, title, page, originUrl)
 			break
 		}
 
@@ -315,13 +353,14 @@ async function GetDiscussion(access: IAccess, owner: string, repo: string, categ
 			break
 
 		default:
-			throw { body: { error: "Failed to find discussion" }, statusCode: 500 }
+			throw { statusCode: 500, body: { error: "Failed to find discussion" } }
 	}
 
+	discussion.loggedIn = false
 	return discussion
 }
 
-async function GetRepoAndCategoryIds(access: IAccess, owner: string, repo: string, category: string)
+async function GetRepoAndCategoryIds(auth: IAuth, owner: string, repo: string, category: string)
 {
 	console.time(GetRepoAndCategoryIds.name)
 	const query =
@@ -340,7 +379,7 @@ async function GetRepoAndCategoryIds(access: IAccess, owner: string, repo: strin
 	const response = await fetch("https://api.github.com/graphql", {
 		method: "POST",
 		headers: {
-			Authorization: `Bearer ${access.token}`,
+			Authorization: `Bearer ${auth.token}`,
 			"Accept": "application/vnd.github+json",
 			"Content-Type": "application/json",
 			"X-GitHub-Api-Version": "2022-11-28",
@@ -356,17 +395,17 @@ async function GetRepoAndCategoryIds(access: IAccess, owner: string, repo: strin
 
 	const categories = json.data.repository.discussionCategories.nodes as { id: string, name: string }[]
 	const categoryNode = categories.find(c => c.name === category)
-	if (!categoryNode) throw { body: { error: "Category not found" }, statusCode: 400 }
+	if (!categoryNode) throw { statusCode: 400, body: { error: "Category not found" } }
 
 	console.timeEnd(GetRepoAndCategoryIds.name)
 	return [json.data.repository.id, categoryNode.id]
 }
 
-async function CreateDiscussion(access: IAccess, repoId: string, categoryId: string, title: string, page: string, originUrl: string)
+async function CreateDiscussion(auth: IAuth, repoId: string, categoryId: string, title: string, page: string, originUrl: string)
 {
 	console.time("CreateDiscussion")
 	if (originUrl.includes("localhost"))
-		throw { body: { error: "Creating discussions from localhost is disabled" }, statusCode: 400 }
+		throw { statusCode: 400, body: { error: "Creating discussions from localhost is disabled" } }
 
 	const body = originUrl ? new URL(page, originUrl).toString() : ""
 	const mutation =
@@ -382,7 +421,7 @@ async function CreateDiscussion(access: IAccess, repoId: string, categoryId: str
 		method: "POST",
 		headers: {
 			"Accept": "application/vnd.github+json",
-			"Authorization": `Bearer ${access.token}`,
+			"Authorization": `Bearer ${auth.token}`,
 			"Content-Type": "application/json",
 			"X-GitHub-Api-Version": "2022-11-28",
 		},
@@ -403,6 +442,16 @@ async function CreateDiscussion(access: IAccess, repoId: string, categoryId: str
 
 // -------------------------------------------------------------------------------------------------
 // Utilities
+
+function Encrypt(obj: {}): string
+{
+	return btoa(JSON.stringify(obj))
+}
+
+function Decrypt(s: string): {}
+{
+	return JSON.parse(atob(s))
+}
 
 function strtobytes(s: string): ArrayBuffer
 {

@@ -1,5 +1,8 @@
 Documentation
 -------------
+OAuth
+https://datatracker.ietf.org/doc/html/rfc6749
+
 Github supports auth through Github Apps and OAuth
 https://docs.github.com/en/graphql/guides/forming-calls-with-graphql#authenticating-with-graphql
 	App - OAuth 2.0. User or Self. Fine-grained permissions.
@@ -47,6 +50,23 @@ Repository owners must install the app to allow it to read and write Discussions
 Users must authorize the app to post Discussion comments on their behalf.
 Thus, the app _only_ has access to Discussions.
 But I think a user authorizing the bot on one blog will apply to all blogs that use it.
+
+
+
+User Auth Flow
+--------------
+There are a few different options:
+1. client > github > client > server
+	This is insecure before the auth grant code is transmitted to client
+2. client > server > github > server > client
+	This is the recommended flow but it requires an extra redirect / step
+3. client > github > server > client
+	This seems like a happy middle ground. It should have similar security as the recommended flow
+	but requires one less redirect and simplifies the server. It doesn't use the state parameter to
+	protect from CSRF attacks, but I don't think that's relevant to this use case. CORS will prevent
+	a different site from abusing the API. A serverless function can never stop non-browsers from
+	abusing the API, since it can't store the state during the auth flow. The client needs to know
+	the app client id, but that's not a secret.
 
 
 
