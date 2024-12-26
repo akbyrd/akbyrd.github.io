@@ -916,9 +916,12 @@ async function ReloadComments()
 	await LoadComments()
 }
 
+//const apiUrl = "http://localhost:3000"
+const apiUrl = "https://discussion-bot.vercel.app"
+
 async function LoadComments()
 {
-	const url = new URL("https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-a8e52261-669e-47a2-88db-6280c8b77099/default/api")
+	const url = new URL(apiUrl)
 	url.searchParams.append("owner", "akbyrd")
 	url.searchParams.append("repo", "akbyrd.github.io")
 	url.searchParams.append("category", "Blog Post Comments")
@@ -927,11 +930,20 @@ async function LoadComments()
 	let response
 	try
 	{
+		// NOTE: Including cookies is tricky
+		// * Must use credentials: include
+		// * Must use access-control-allow-credentials: true
+		// * Must use access-control-allow-origin: <domain> (not *)
+		// * Must use SameSite: None
+		// * Must use Secure
+		// * Must use HTTPS
+
 		response = await fetch(url, {
 			method: "GET",
+			credentials: "include",
 			headers: {
-				"Content-Type": "application/json",
-				"Credentials": "include",
+				"content-type": "application/json",
+				"credentials": "include",
 			},
 		})
 	}
@@ -1241,7 +1253,7 @@ async function LoginOrSubmit()
 	{
 		const url = new URL("https://github.com/login/oauth/authorize")
 		url.searchParams.append("client_id", "Iv23liF0BbZzzsm6OCu8")
-		url.searchParams.append("redirect_uri", "https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-a8e52261-669e-47a2-88db-6280c8b77099/default/api/login")
+		url.searchParams.append("redirect_uri", `${apiUrl}/login`)
 		url.searchParams.append("state", location.href)
 		location.href = url.toString();
 	}

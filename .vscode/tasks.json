@@ -53,19 +53,19 @@
 			"label": "test-file",
 			"detail": "hugo test (development)",
 			"type": "shell",
-			"command": "hugo server -e development --cleanDestinationDir --printPathWarnings --noHTTPCache --ignoreCache",
+			"command": "hugo server -e development --tlsAuto --cleanDestinationDir --printPathWarnings --noHTTPCache --ignoreCache",
 		},
 		{
 			"label": "test-project",
 			"detail": "hugo test (staging)",
 			"type": "shell",
-			"command": "hugo server-e staging --cleanDestinationDir --printPathWarnings --noHTTPCache --ignoreCache --minify",
+			"command": "hugo server-e staging --tlsAuto --cleanDestinationDir --printPathWarnings --noHTTPCache --ignoreCache --minify",
 		},
 		{
 			"label": "test-solution",
 			"detail": "hugo test (production)",
 			"type": "shell",
-			"command": "hugo server-e production --cleanDestinationDir --printPathWarnings --noHTTPCache --ignoreCache --minify",
+			"command": "hugo server-e production --tlsAuto --cleanDestinationDir --printPathWarnings --noHTTPCache --ignoreCache --minify",
 		},
 		{
 			"label": "profile-solution",

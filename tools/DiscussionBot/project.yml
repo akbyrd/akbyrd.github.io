@@ -1,9 +1,0 @@
-packages:
-    - name: default
-      functions:
-        - name: api
-          runtime: nodejs:18
-          environment:
-            CLIENT_ID: "${CLIENT_ID}"
-            CLIENT_SECRET: "${CLIENT_SECRET}"
-            PRIVATE_KEY: "${PRIVATE_KEY}"

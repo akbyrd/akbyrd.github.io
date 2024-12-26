@@ -92,7 +92,7 @@ Microsoft Azure    - TS, JS, C#, F#, Py, pwsh, Java
 Google Cloud       - Node, Go, .NET Core, Py, Java, Ruby, PHP
 Cloudflare Workers - TS, JS, WASM, Py. Sounds fast
 Netlify            - TS, JS, Go. Maybe easier to automate? AWS.
-Vercel             - Node, Go, Py, Ruby, Deno, Rust. Maybe easier to automate? Sounds fast. AWS.
+Vercel             - Node, Go, WASM, Py, Ruby, Deno, Rust. AWS. CLI. Sounds fast.
 Digital Ocean      - Node, Go, Py, PHP. CLI.
 
 Requirements
@@ -101,19 +101,47 @@ Custom domain
 
 
 
+Hosting Requirements
+--------------------
+CLI for deployment
+Testing on local machine
+Testing in web interface
+Logging for all requests
+Alerting for errors
+Access-Control-Allow-Origin overriding
+Env vars specified in web interface
+A runtime with the function dependencies below
+
+
+
+Function Dependencies
+---------------------
+btoa / atob
+crypto.subtle.importKey
+crypto.subtle.sign
+JSON.stringify
+
+
+
 Digital Ocean
 -------------
-Buggy
+Buggy and unpleasant to use
 BUG: Deploying sometimes hangs
 BUG: Building locally then remotely causes tsc not be flagged an executable
 BUG: doctl prints incremental progress only once the process is complete
+BUG: Can't override access-control-allow-origin
+Old Node.js versions (16 and 18)
 Error messages aren't great
 Web requests don't generate activation records or logging (can use web interface or REST API and POST when testing)
-NO way to get notifications for errors (unless moving to the App Platform)
+No way to get notifications for errors (unless moving to the App Platform)
 Event object is empty when using REST API or browser tests
 Deploying blows up environment variables
 Doesn't have a way to run entirely locally
 Can't use paths/endpoints when testing in the web UI
+Support responses are fast. Absolutely worthless though.
+Fixed hosting server.
+Heavily filtered input
+Execution: 900 ms, 8.42 kB
 
 doctl serverless watch api
 doctl serverless deploy api --remote-build
@@ -122,12 +150,27 @@ doctl serverless activations logs --follow
 
 
 
-Dependencies
-------------
-btoa / atob
-crypto.subtle.importKey
-crypto.subtle.sign
-JSON.stringify
+Vercel
+------
+QUESTION: Alerts for failed web calls
+QUESTION: Ability to test from web UI
+Has a CLI
+Dynamic hosting server.
+Requires a phone number for signup
+Avoid the need for github access by using CLI
+npm + 243 dependencies for the CLI
+Can't save over existing env vars
+Has logging for web calls
+BUG: Automatically deployed to production the first time
+Unfiltered input
+Can't to HTTPS locally
+https://vercel.com/templates/other/nodejs-serverless-function-express
+TODO: Try out the Edge runtime ("lightweight JS runtime that exposes a set of Web Standard APIs")
+
+vercel dev
+vercel env pull
+vercel build
+vercel deploy --logs --prod --prebuilt
 
 
 

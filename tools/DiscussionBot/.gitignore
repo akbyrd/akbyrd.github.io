@@ -1,6 +1,2 @@
-.deployed
-.env
-__deployer__.zip
+.vercel
 node_modules
-package-lock.json
-lib/

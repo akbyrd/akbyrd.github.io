@@ -1,8 +1,8 @@
 General
 TODO: Implement comments
-	Switch to another host
 	Configure DNS redirect
 	Configure CORS
+	Can use TextEncoder now since it's not on the client
 
 	Error Handling
 		User authentication

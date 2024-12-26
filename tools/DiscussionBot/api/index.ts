@@ -1,4 +1,10 @@
-import * as crypto from "crypto"
+import { VercelRequest } from "@vercel/node"
+import { VercelResponse } from "@vercel/node"
+
+// TODO: Try to get it on the same domain
+// TODO: Why's it so fucking slow? 800ms!
+// TODO: Read about vercel.json
+// TODO: Read about content-type
 
 declare const process:
 {
@@ -10,110 +16,104 @@ declare const process:
 	}
 }
 
-interface IEvent
-{
-	http?: {
-		headers: {
-			origin: string
-			cookie: string
-		}
-		method: string
-		path: string
-	}
+/*
+// Login
+state?: string
+error: string
+error_description: string
+code?: string
 
-	// Login
-	state?: string
-	error: string
-	error_description: string
-	code?: string
+// Get Discussion
+owner?: string
+repo?: string
+category?: string
+page?: string
+session?: string
+*/
 
-	// Get Discussion
-	owner?: string
-	repo?: string
-	category?: string
-	page?: string
-	session?: string
+export const config = {
+	//runtime: "nodejs",
 }
 
-interface IContext
-{
-	activationId: string
-	apiHost: string
-	apiKey: string
-	deadline: number
-	functionName: string
-	functionVersion: string
-	namespace: string
-	requestId: string
-}
-
-interface IReturn
-{
-	statusCode: number
-	headers?: {}
-	body?: {}
-}
-
-export async function main(event: IEvent, context: IContext): Promise<IReturn>
+export default async function handler(request: VercelRequest, response: VercelResponse)
 {
 	try
 	{
+		response.setHeader("access-control-allow-credentials", "true")
+		response.setHeader("access-control-allow-headers",     "content-type, credentials")
+		response.setHeader("access-control-allow-origin",      "https://localhost:1313")
+
 		if (!process.env.CLIENT_ID)     throw "Client Id not set"
 		if (!process.env.CLIENT_SECRET) throw "Client Secret not set"
 		if (!process.env.PRIVATE_KEY)   throw "Private Key not set"
 
-		if (event.http && event.http.path === "/login")
+		const url = new URL(request.url || "", `http://${request.headers.host}`);
+		if (url.pathname == "/login")
 		{
-			if (!event.state) throw { statusCode: 400, body: { error: "State not specified" } }
+			const code  = request.query.code  as string
+			const state = request.query.state as string
 
-			const headers = { location: event.state }
-			if (event.code)
+			if (!state) throw { statusCode: 400, body: { error: "State not specified" } }
+
+			if (code)
 			{
 				// TODO: Clear cookie if auth fails
 				// TODO: Update cookie if auth refreshes
 
-				const userAuth = await GetUserAuth(process.env.CLIENT_ID, process.env.CLIENT_SECRET, event.code)
-				const session = Encrypt(userAuth)
-				const expires = new Date(userAuth.refreshExp * 1000).toUTCString()
-				headers["set-cookie"] = `session=${session}; Expires=${expires}; Secure; HttpOnly; SameSite=Lax`
+				const userAuth = await GetUserAuth(process.env.CLIENT_ID, process.env.CLIENT_SECRET, code)
+				const session  = Encrypt(userAuth)
+				const expires  = new Date(userAuth.refreshExp * 1000).toUTCString()
+				const cookie   = `session=${session}; Expires=${expires}; Secure; HttpOnly; SameSite=None`
+				response.setHeader("set-cookie", cookie)
+
+				//if (request.method == "OPTIONS")
+					//return response.status(204).send(null)
 			}
 
-			return { statusCode: 302, headers }
+			return response.redirect(302, state)
 		}
 		else
 		{
-			if (!event.owner)    throw { statusCode: 400, body: { error: "Owner not specified"    } }
-			if (!event.repo)     throw { statusCode: 400, body: { error: "Repo not specified"     } }
-			if (!event.category) throw { statusCode: 400, body: { error: "Category not specified" } }
-			if (!event.page)     throw { statusCode: 400, body: { error: "Page not specified"     } }
+			const owner    = request.query.owner    as string
+			const repo     = request.query.repo     as string
+			const category = request.query.category as string
+			const page     = request.query.page     as string
 
-			const cookies = event.http?.headers.cookie
-			const session = cookies?.match(/session=([^;]*)/)?.[1]
-			if (session)
+			if (!owner)    throw { statusCode: 400, body: { error: "Owner not specified"    } }
+			if (!repo)     throw { statusCode: 400, body: { error: "Repo not specified"     } }
+			if (!category) throw { statusCode: 400, body: { error: "Category not specified" } }
+			if (!page)     throw { statusCode: 400, body: { error: "Page not specified"     } }
+
+			const session = request.cookies.session
+			console.log("cookies", request.cookies) // TODO: Remove once working
+			//if (session)
+			//{
+			//	throw "Not implemented"
+			//}
+			//else
 			{
-				throw "Not implemented"
-			}
-			else
-			{
-				const originUrl  = event.http ? event.http.headers.origin : "https://example.com"
+				const originUrl  = request.headers.origin ?? "https://example.com"
 				const token      = await CreateJWT(process.env.CLIENT_ID, process.env.PRIVATE_KEY)
-				const appAuthUrl = await GetAppAuthUrl(token, event.owner, event.repo)
+				const appAuthUrl = await GetAppAuthUrl(token, owner, repo)
 				const appAuth    = await GetAppAuth(token, appAuthUrl)
-				const discussion = await GetDiscussion(appAuth, event.owner, event.repo, event.category, event.page, originUrl)
-				return { statusCode: 200, body: discussion }
+				const discussion = await GetDiscussion(appAuth, owner, repo, category, page, originUrl)
+				return response.status(200).json(discussion)
 			}
 		}
+
+		throw "Failed to return a value"
 	}
 	catch (error: unknown)
 	{
-		if (error instanceof Object && 'body' in error && 'statusCode' in error)
+		if (error instanceof Object && "body" in error && "statusCode" in error)
 		{
-			throw error
+			const status = error.statusCode as number
+			return response.status(status).json(error.body)
 		}
 		else
 		{
 			console.error(error)
-			throw { statusCode: 500, body: { error: "Application error" } }
+			return response.status(500).json({ error: "Application error" })
 		}
 	}
 }

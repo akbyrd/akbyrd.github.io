@@ -1,0 +1,9 @@
+{
+	"repository": "https://github.com/akbyrd/akbyrd.github.io",
+	"type": "module",
+	"devDependencies": {
+		"@types/node": "^22.10.2",
+		"@vercel/node": "latest",
+		"typescript": "latest"
+	}
+}
