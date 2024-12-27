@@ -763,9 +763,8 @@ function CalculateHash()
 
 function SelectionFromHash()
 {
-	// TODO: Reduce js version and replace matchAll
-	const regex = /^#(.+?)(?:L(\d+)(?:-(\d+))?)?$/g
-	const [match] = location.hash.matchAll(regex)
+	const regex = /^#(.+?)(?:L(\d+)(?:-(\d+))?)?$/
+	const match = location.hash.match(regex)
 	if (match)
 	{
 		const [hash, id, sa, sb] = match
@@ -1054,7 +1053,7 @@ function CreateComment(templates: CommentTemplates, commentTemplate: HTMLTemplat
 		const time = aTime.querySelector("time")!
 		time.dateTime = comment.createdAt
 		const date = new Date(comment.createdAt)
-		const formatter = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" })
+		const formatter = new Intl.DateTimeFormat(undefined, { year: "numeric", month: "short", day: "2-digit" })
 		time.innerText = formatter.format(date)
 
 		commentRoot.prepend(headerFragment)
