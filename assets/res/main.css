@@ -196,6 +196,14 @@ button {
 	cursor: pointer;
 	overflow: hidden;
 	user-select: none;
+
+	transition-duration: 200ms;
+	transition-property: opacity;
+}
+
+button:disabled {
+	opacity: 50%;
+	pointer-events: none;
 }
 
 details {

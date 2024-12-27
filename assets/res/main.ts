@@ -807,9 +807,16 @@ function SelectionFromHash()
 let commentState: {
 	commentsParent: HTMLElement
 	errorMessage: HTMLElement
-	newComment: HTMLElement
-	commentInput: HTMLElement
 	syntheticClick?: HTMLButtonElement
+	inputs: IInputElements[]
+}
+
+interface IInputElements
+{
+	root: HTMLElement
+	textArea: HTMLTextAreaElement
+	submitButton: HTMLButtonElement
+	logoutButton: HTMLButtonElement
 }
 
 interface CommentTemplates
@@ -883,9 +890,13 @@ async function InitComments()
 
 	commentState = {
 		commentsParent,
-		newComment: commentsParent.querySelector("#comment-new") as HTMLElement,
-		commentInput: commentsParent.querySelector("#comment-input") as HTMLElement,
 		errorMessage: commentsParent.querySelector("#comment-error") as HTMLElement,
+		inputs: [{
+			root: commentsParent.querySelector("#comment-new") as HTMLElement,
+			textArea: commentsParent.querySelector("#comment-new textarea") as HTMLTextAreaElement,
+			submitButton: commentsParent.querySelector("#comment-new .comment-submit") as HTMLButtonElement,
+			logoutButton: commentsParent.querySelector("#comment-new .comment-logout") as HTMLButtonElement,
+		}],
 	}
 
 	const reloadButton = commentsParent.querySelector("#comment-error button")!
@@ -896,13 +907,13 @@ async function InitComments()
 
 async function ReloadComments()
 {
+	commentState.inputs = [commentState.inputs[0]]
 	const comments = commentState.commentsParent.querySelectorAll(".comment")
 	for (const comment of comments)
 		comment.remove()
 
 	commentState.commentsParent.classList.remove("comments-logged-in")
 	commentState.commentsParent.classList.remove("comments-logged-out")
-	commentState.newComment.style.display = "none"
 
 	await LoadComments()
 }
@@ -917,6 +928,8 @@ async function LoadComments()
 	url.searchParams.append("repo", "akbyrd.github.io")
 	url.searchParams.append("category", "Blog Post Comments")
 	url.searchParams.append("page", location.pathname)
+
+	commentState.inputs[0].root.style.display = "none"
 
 	let response
 	try
@@ -965,12 +978,18 @@ async function LoadComments()
 	for (const comment of discussion.comments.nodes)
 	{
 		const commentElems = CreateComment(templates, commentTemplate, comment)
-		commentState.commentsParent.insertBefore(commentElems.fragment, commentState.newComment)
+		commentState.commentsParent.insertBefore(commentElems.fragment, commentState.inputs[0].root)
 
 		// Input
 		{
-			const commentTextArea = commentElems.input.querySelector("textarea")!
-			commentTextArea.addEventListener("input", UpdateInputHeight, { passive: true })
+			const input = {
+				root:         commentElems.input,
+				textArea:     commentElems.input.querySelector("textarea") as HTMLTextAreaElement,
+				submitButton: commentElems.input.querySelector(".comment-submit") as HTMLButtonElement,
+				logoutButton: commentElems.input.querySelector(".comment-logout") as HTMLButtonElement,
+			}
+			input.textArea.addEventListener("input", () => UpdateInputHeight(input), { passive: true })
+			commentState.inputs.push(input)
 		}
 
 		// Replies
@@ -992,7 +1011,7 @@ async function LoadComments()
 		}
 	}
 
-	commentState.newComment.style.display = ""
+	commentState.inputs[0].root.style.display = ""
 	commentState.errorMessage.style.display = "none"
 
 	if (discussion.loggedIn)
@@ -1006,16 +1025,16 @@ async function LoadComments()
 		commentState.commentsParent.classList.add("comments-logged-out")
 	}
 
-	const commentTextArea = commentState.newComment.querySelector("textarea")!
-	commentTextArea.addEventListener("input", UpdateInputHeight, { passive: true })
+	const input = commentState.inputs[0]
+	input.textArea.required = discussion.loggedIn
+	input.textArea.addEventListener("input", () => UpdateInputHeight(input), { passive: true })
 
-	const submitButtons = commentState.commentsParent.querySelectorAll(".comment-submit")
-	for (const submitButton of submitButtons)
-		submitButton.addEventListener("click", LoginOrSubmit, { passive: true })
-
-	const logoutButtons = commentState.commentsParent.querySelectorAll(".comment-logout")
-	for (const logoutButton of logoutButtons)
-		logoutButton.addEventListener("click", Logout, { passive: true })
+	for (const input of commentState.inputs)
+	{
+		input.submitButton.disabled = discussion.loggedIn
+		input.submitButton.addEventListener("click", () => LoginOrSubmit(input), { passive: true })
+		input.logoutButton.addEventListener("click", () => Logout(input), { passive: true })
+	}
 }
 
 interface ICommentElements
@@ -1211,40 +1230,42 @@ function UpdateReactionVisibility(reaction: HTMLButtonElement, showReactions: bo
 	}
 }
 
-function UpdateInputHeight(e: Event)
+function UpdateInputHeight(input: IInputElements)
 {
-	const commentTextArea = e.currentTarget as HTMLTextAreaElement
+	const loggedIn = localStorage.getItem("loggedIn")
+	if (loggedIn)
+		input.submitButton.disabled = input.textArea.textLength == 0
 
-	const oldHeight = commentTextArea.clientHeight
-	commentTextArea.style.height = "auto"
+	const oldHeight = input.textArea.clientHeight
+	input.textArea.style.height = "auto"
 
-	const newHeightRect = commentTextArea.getClientRects()[0].height
-	const newHeightScroll = commentTextArea.scrollHeight
+	const newHeightRect = input.textArea.getClientRects()[0].height
+	const newHeightScroll = input.textArea.scrollHeight
 	const newHeight = Math.abs(newHeightRect - newHeightScroll) < 1 ? newHeightRect : newHeightScroll
-	commentTextArea.style.height = `${oldHeight}px`
+	input.textArea.style.height = `${oldHeight}px`
 
-	const reflow = commentTextArea.scrollHeight
-	commentTextArea.style.height = `${newHeight}px`
+	const reflow = input.textArea.scrollHeight
+	input.textArea.style.height = `${newHeight}px`
 
-	requestAnimationFrame(() => commentTextArea.scrollTop = 0)
+	requestAnimationFrame(() => input.textArea.scrollTop = 0)
 
-	if (commentTextArea.selectionEnd
-		&& commentTextArea.selectionEnd == commentTextArea.selectionStart
-		&& commentTextArea.selectionEnd == commentTextArea.textLength)
+	if (input.textArea.selectionEnd
+		&& input.textArea.selectionEnd == input.textArea.selectionStart
+		&& input.textArea.selectionEnd == input.textArea.textLength)
 	{
 		const threshold = 0.15
 		const height    = document.documentElement.clientHeight
-		const y         = commentTextArea.getBoundingClientRect().bottom
+		const y         = input.textArea.getBoundingClientRect().bottom
 		const target    = (1 - threshold) * height
 		if (y > target)
 			window.scrollBy({ top: y - target, behavior: "instant" })
 	}
 }
 
-async function LoginOrSubmit()
+async function LoginOrSubmit(input: IInputElements)
 {
 	const loggedIn = localStorage.getItem("loggedIn")
-	if (loggedIn == null || true)
+	if (loggedIn == null)
 	{
 		const url = new URL("https://github.com/login/oauth/authorize")
 		url.searchParams.append("client_id", "Iv23liF0BbZzzsm6OCu8")
@@ -1257,25 +1278,35 @@ async function LoginOrSubmit()
 	}
 }
 
-async function Logout()
+async function Logout(input: IInputElements)
 {
-	// TODO: Test failures. Do they throw?
-	const response = await fetch(`${apiUrl}/logout`, {
-		method: "POST",
-		credentials: "include",
-	})
-
-	if (!response.ok)
+	let response
+	try
 	{
-		// TODO: Better error handling for this case
-		commentState.errorMessage.style.display = ""
+		response = await fetch(`${apiUrl}/logout`, {
+			method: "POST",
+			credentials: "include",
+		})
+	}
+	catch
+	{
+		input.logoutButton.style.border = "1px solid red"
 		return
 	}
 
-	console.log("Logged out")
+	if (!response.ok)
+	{
+		input.logoutButton.style.border = "1px solid red"
+		return
+	}
+
 	localStorage.removeItem("loggedIn")
+	input.logoutButton.style.border = ""
 	commentState.commentsParent.classList.remove("comments-logged-in")
 	commentState.commentsParent.classList.add("comments-logged-out")
+
+	for (const commentInput of commentState.inputs)
+		commentInput.submitButton.disabled = false
 }
 
 // -------------------------------------------------------------------------------------------------

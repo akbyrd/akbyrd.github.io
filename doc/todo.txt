@@ -1,9 +1,5 @@
 General
 TODO: Implement comments
-	Configure DNS redirect
-	Configure CORS
-	Can use TextEncoder now since it's not on the client
-
 	Error Handling
 		User authentication
 			User doesn't authorize repo
