@@ -163,13 +163,15 @@ Can't save over existing env vars
 Has logging for web calls
 BUG: Automatically deployed to production the first time
 Unfiltered input
-Can't to HTTPS locally
+Can't do HTTPS locally
+Can use custom URL
+Local dev is slow. 800 ms to recompile on every request
 https://vercel.com/templates/other/nodejs-serverless-function-express
 TODO: Try out the Edge runtime ("lightweight JS runtime that exposes a set of Web Standard APIs")
 
 vercel dev
 vercel env pull
-vercel build
+vercel build --prod
 vercel deploy --logs --prod --prebuilt
 
 

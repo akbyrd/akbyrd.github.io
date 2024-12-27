@@ -1,11 +1,6 @@
 import { VercelRequest } from "@vercel/node"
 import { VercelResponse } from "@vercel/node"
 
-// TODO: Try to get it on the same domain
-// TODO: Why's it so fucking slow? 800ms!
-// TODO: Read about vercel.json
-// TODO: Read about content-type
-
 declare const process:
 {
 	env:
@@ -16,21 +11,6 @@ declare const process:
 	}
 }
 
-/*
-// Login
-state?: string
-error: string
-error_description: string
-code?: string
-
-// Get Discussion
-owner?: string
-repo?: string
-category?: string
-page?: string
-session?: string
-*/
-
 export const config = {
 	//runtime: "nodejs",
 }
@@ -39,64 +19,89 @@ export default async function handler(request: VercelRequest, response: VercelRe
 {
 	try
 	{
-		response.setHeader("access-control-allow-credentials", "true")
-		response.setHeader("access-control-allow-headers",     "content-type, credentials")
-		response.setHeader("access-control-allow-origin",      "https://localhost:1313")
-
 		if (!process.env.CLIENT_ID)     throw "Client Id not set"
 		if (!process.env.CLIENT_SECRET) throw "Client Secret not set"
 		if (!process.env.PRIVATE_KEY)   throw "Private Key not set"
 
+		const prodOrigin  = "https://akbyrd.dev"
+		const devOrigin   = "https://localhost:1313"
+		const prodRequest = request.headers.origin == prodOrigin
+		const devRequest  = request.headers.origin == devOrigin
+		if (prodRequest || devRequest)
+		{
+			response.setHeader("access-control-allow-credentials", "true")
+			response.setHeader("access-control-allow-headers",     "credentials")
+			response.setHeader("access-control-allow-origin",      request.headers.origin!)
+		}
+
 		const url = new URL(request.url || "", `http://${request.headers.host}`);
-		if (url.pathname == "/login")
+		if (request.method == "OPTIONS")
+		{
+			return response.status(204).send(null)
+		}
+		else if (url.pathname == "/login")
 		{
 			const code  = request.query.code  as string
 			const state = request.query.state as string
 
+			if (!code)  throw { statusCode: 400, body: { error: "Code not specified"  } }
 			if (!state) throw { statusCode: 400, body: { error: "State not specified" } }
 
-			if (code)
-			{
-				// TODO: Clear cookie if auth fails
-				// TODO: Update cookie if auth refreshes
-
-				const userAuth = await GetUserAuth(process.env.CLIENT_ID, process.env.CLIENT_SECRET, code)
-				const session  = Encrypt(userAuth)
-				const expires  = new Date(userAuth.refreshExp * 1000).toUTCString()
-				const cookie   = `session=${session}; Expires=${expires}; Secure; HttpOnly; SameSite=None`
-				response.setHeader("set-cookie", cookie)
-
-				//if (request.method == "OPTIONS")
-					//return response.status(204).send(null)
-			}
+			const userAuth    = await GetUserAuth(process.env.CLIENT_ID, process.env.CLIENT_SECRET, code)
+			const session     = Encrypt(userAuth)
+			const expires     = new Date(userAuth.refreshExp * 1000).toUTCString()
+			const devRedirect = new URL(state).origin == devOrigin
+			const sameSite    = devRequest || devRedirect ? "None" : "Strict"
+			// TODO: Understand why partition doesn't work
+			//const partitioned = devRequest || devRedirect ? "; Partitioned" : ""
+			const cookie      = `session=${session}; Expires=${expires}; SameSite=${sameSite}; Secure; HttpOnly`
+			response.setHeader("set-cookie", cookie)
 
 			return response.redirect(302, state)
 		}
+		else if (url.pathname == "/logout")
+		{
+			const session = request.cookies.session as string
+
+			if (!session) throw { statusCode: 400, body: { error: "Session not specified" } }
+
+			const sameSite = devRequest ? "None" : "Strict"
+			const cookie   = `session=goaway; Max-Age=0; SameSite=${sameSite}; Secure; HttpOnly`
+			response.setHeader("set-cookie", cookie)
+
+			return response.status(204).send(null)
+		}
 		else
 		{
-			const owner    = request.query.owner    as string
-			const repo     = request.query.repo     as string
-			const category = request.query.category as string
-			const page     = request.query.page     as string
+			const session  = request.cookies.session as string
+			const origin   = request.headers.origin  as string
+			const owner    = request.query.owner     as string
+			const repo     = request.query.repo      as string
+			const category = request.query.category  as string
+			const page     = request.query.page      as string
 
+			if (!origin)   throw { statusCode: 400, body: { error: "Origin not specified"   } }
 			if (!owner)    throw { statusCode: 400, body: { error: "Owner not specified"    } }
 			if (!repo)     throw { statusCode: 400, body: { error: "Repo not specified"     } }
 			if (!category) throw { statusCode: 400, body: { error: "Category not specified" } }
 			if (!page)     throw { statusCode: 400, body: { error: "Page not specified"     } }
 
-			const session = request.cookies.session
-			console.log("cookies", request.cookies) // TODO: Remove once working
-			//if (session)
-			//{
-			//	throw "Not implemented"
-			//}
-			//else
+			if (session)
 			{
-				const originUrl  = request.headers.origin ?? "https://example.com"
+				const userAuth   = Decrypt(session) as IUserAuth
+				const discussion = await GetDiscussion(userAuth, owner, repo, category, page, origin)
+
+				discussion.loggedIn = true
+				return response.status(200).json(discussion)
+			}
+			else
+			{
 				const token      = await CreateJWT(process.env.CLIENT_ID, process.env.PRIVATE_KEY)
 				const appAuthUrl = await GetAppAuthUrl(token, owner, repo)
 				const appAuth    = await GetAppAuth(token, appAuthUrl)
-				const discussion = await GetDiscussion(appAuth, owner, repo, category, page, originUrl)
+				const discussion = await GetDiscussion(appAuth, owner, repo, category, page, origin)
+
+				discussion.loggedIn = false
 				return response.status(200).json(discussion)
 			}
 		}
@@ -299,7 +304,10 @@ const discussionQueryData =
 		}
 	}`
 
-interface IDiscussion {}
+interface IDiscussion
+{
+	loggedIn: boolean
+}
 
 async function GetDiscussion(auth: IAuth, owner: string, repo: string, category: string, page: string, originUrl: string): Promise<IDiscussion>
 {

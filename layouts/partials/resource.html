@@ -31,7 +31,8 @@
 	{{ end }}
 
 	{{ if (eq $type "typescript") }}
-		{{ $opts := dict "minify" $minify "sourceMap" $sourceMap }}
+		{{ $defines := dict "isProduction" (ne hugo.Environment "development") }}
+		{{ $opts := dict "minify" $minify "sourceMap" $sourceMap "defines" $defines }}
 		{{ $resource = $resource | js.Build $opts }}
 		{{ $name = replaceRE `\.ts\z` ".js" $name }}
 	{{ end }}

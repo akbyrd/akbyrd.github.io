@@ -1,6 +1,6 @@
 # NOTE: Configuring headers only works in development
 [[headers]]
-	for = '/res/comments.css'
+	for = '*'
 
 	[headers.values]
-		Access-Control-Allow-Origin = 'https://giscus.app'
+		Access-Control-Allow-Origin = '*'

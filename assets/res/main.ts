@@ -824,6 +824,7 @@ interface CommentTemplates
 
 interface IDiscussion
 {
+	loggedIn: boolean
 	bodyHTML: string
 	comments: { nodes: IComment[] }
 	reactionGroups: IReactionGroup[]
@@ -877,15 +878,6 @@ enum Reaction
 
 async function InitComments()
 {
-	const url = new URL(location.href)
-	const session = url.searchParams.get("session")
-	if (session)
-	{
-		url.searchParams.delete("session")
-		localStorage.setItem("session", session)
-		history.replaceState(history.state, "", url.toString())
-	}
-
 	const commentsParent = document.getElementById("comments")
 	if (!commentsParent)
 		return
@@ -916,8 +908,8 @@ async function ReloadComments()
 	await LoadComments()
 }
 
-//const apiUrl = "http://localhost:3000"
-const apiUrl = "https://discussion-bot.vercel.app"
+declare const isProduction: boolean;
+const apiUrl = isProduction ? "https://comments.akbyrd.dev" : "http://localhost:3000";
 
 async function LoadComments()
 {
@@ -942,7 +934,6 @@ async function LoadComments()
 			method: "GET",
 			credentials: "include",
 			headers: {
-				"content-type": "application/json",
 				"credentials": "include",
 			},
 		})
@@ -1005,10 +996,16 @@ async function LoadComments()
 	commentState.newComment.style.display = ""
 	commentState.errorMessage.style.display = "none"
 
-	//const session = localStorage.getItem("session")
-	const session = false // TODO: Remove
-	const loginClass = session ? "comments-logged-in" : "comments-logged-out"
-	commentState.commentsParent.classList.add(loginClass)
+	if (discussion.loggedIn)
+	{
+		localStorage.setItem("loggedIn", "")
+		commentState.commentsParent.classList.add("comments-logged-in")
+	}
+	else
+	{
+		localStorage.removeItem("loggedIn")
+		commentState.commentsParent.classList.add("comments-logged-out")
+	}
 
 	const commentTextArea = commentState.newComment.querySelector("textarea")!
 	commentTextArea.addEventListener("input", UpdateInputHeight, { passive: true })
@@ -1247,9 +1244,8 @@ function UpdateInputHeight(e: Event)
 
 async function LoginOrSubmit()
 {
-	// TODO: Update
-	const loggedIn = localStorage.getItem("session")
-	if (!loggedIn)
+	const loggedIn = localStorage.getItem("loggedIn")
+	if (loggedIn == null || true)
 	{
 		const url = new URL("https://github.com/login/oauth/authorize")
 		url.searchParams.append("client_id", "Iv23liF0BbZzzsm6OCu8")
@@ -1264,8 +1260,23 @@ async function LoginOrSubmit()
 
 async function Logout()
 {
-	const loggedIn = localStorage.getItem("session")
-	if (!loggedIn) return
+	// TODO: Test failures. Do they throw?
+	const response = await fetch(`${apiUrl}/logout`, {
+		method: "POST",
+		credentials: "include",
+	})
+
+	if (!response.ok)
+	{
+		// TODO: Better error handling for this case
+		commentState.errorMessage.style.display = ""
+		return
+	}
+
+	console.log("Logged out")
+	localStorage.removeItem("loggedIn")
+	commentState.commentsParent.classList.remove("comments-logged-in")
+	commentState.commentsParent.classList.add("comments-logged-out")
 }
 
 // -------------------------------------------------------------------------------------------------

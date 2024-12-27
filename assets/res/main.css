@@ -584,6 +584,7 @@ code, annotation {
 	line-height: 0;
 	margin: 60px 0;
 	opacity: 60%;
+	user-select: none;
 }
 
 .end-mark::before, .end-mark::after {
