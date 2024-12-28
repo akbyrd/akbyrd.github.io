@@ -1050,8 +1050,8 @@ async function LoadComments()
 	for (const input of commentState.inputs)
 	{
 		input.submitButton.disabled = discussion.loggedIn
-		input.submitButton.addEventListener("click", () => LoginOrSubmit(input), { passive: true })
-		input.logoutButton.addEventListener("click", () => Logout(input), { passive: true })
+		input.submitButton.addEventListener("click", (e) => LoginOrSubmit(e, input), { passive: false })
+		input.logoutButton.addEventListener("click", (e) => Logout(e, input), { passive: false })
 	}
 }
 
@@ -1280,8 +1280,10 @@ function UpdateInputHeight(input: IInputElements)
 	}
 }
 
-async function LoginOrSubmit(input: IInputElements)
+async function LoginOrSubmit(e: Event, input: IInputElements)
 {
+	e.preventDefault()
+
 	const loggedIn = localStorage.getItem("loggedIn")
 	if (loggedIn == null)
 	{
@@ -1289,15 +1291,17 @@ async function LoginOrSubmit(input: IInputElements)
 		url.searchParams.append("client_id", "Iv23liF0BbZzzsm6OCu8")
 		url.searchParams.append("redirect_uri", `${commentState.apiUrl}/login`)
 		url.searchParams.append("state", location.href)
-		location.href = url.toString();
+		location.href = url.toString()
 	}
 	else
 	{
 	}
 }
 
-async function Logout(input: IInputElements)
+async function Logout(e: Event, input: IInputElements)
 {
+	e.preventDefault()
+
 	let response
 	try
 	{
