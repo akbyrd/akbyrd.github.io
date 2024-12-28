@@ -804,8 +804,20 @@ function SelectionFromHash()
 // -------------------------------------------------------------------------------------------------
 // Comments
 
+enum DeploymentEnv
+{
+	Development = "development",
+	Staging     = "staging",
+	Production  = "production",
+}
+
+declare const deploymentEnv: DeploymentEnv;
+declare const stagingKey: string;
+
 let commentState: {
+	apiUrl: string
 	commentsParent: HTMLElement
+	reloadButton: HTMLButtonElement
 	errorMessage: HTMLElement
 	syntheticClick?: HTMLButtonElement
 	inputs: IInputElements[]
@@ -888,9 +900,19 @@ async function InitComments()
 	if (!commentsParent)
 		return
 
+	let apiUrl = ""
+	switch (deploymentEnv)
+	{
+		case DeploymentEnv.Development: apiUrl = "http://localhost:3000"; break
+		case DeploymentEnv.Staging:     apiUrl = "https://staging.comments.akbyrd.dev"; break
+		case DeploymentEnv.Production:  apiUrl = "https://comments.akbyrd.dev"; break
+	}
+
 	commentState = {
+		apiUrl,
 		commentsParent,
 		errorMessage: commentsParent.querySelector("#comment-error") as HTMLElement,
+		reloadButton: commentsParent.querySelector("#comment-error button") as HTMLButtonElement,
 		inputs: [{
 			root: commentsParent.querySelector("#comment-new") as HTMLElement,
 			textArea: commentsParent.querySelector("#comment-new textarea") as HTMLTextAreaElement,
@@ -899,8 +921,8 @@ async function InitComments()
 		}],
 	}
 
-	const reloadButton = commentsParent.querySelector("#comment-error button")!
-	reloadButton.addEventListener("click", ReloadComments, { passive: true })
+	commentState.reloadButton.addEventListener("click", ReloadComments, { passive: true })
+	commentState.inputs[0].root.style.display = "none"
 
 	await LoadComments()
 }
@@ -918,18 +940,13 @@ async function ReloadComments()
 	await LoadComments()
 }
 
-declare const isProduction: boolean;
-const apiUrl = isProduction ? "https://comments.akbyrd.dev" : "http://localhost:3000";
-
 async function LoadComments()
 {
-	const url = new URL(apiUrl)
+	const url = new URL(commentState.apiUrl)
 	url.searchParams.append("owner", "akbyrd")
 	url.searchParams.append("repo", "akbyrd.github.io")
 	url.searchParams.append("category", "Blog Post Comments")
 	url.searchParams.append("page", location.pathname)
-
-	commentState.inputs[0].root.style.display = "none"
 
 	let response
 	try
@@ -947,6 +964,7 @@ async function LoadComments()
 			credentials: "include",
 			headers: {
 				"credentials": "include",
+				"x-vercel-protection-bypass": stagingKey,
 			},
 		})
 	}
@@ -1269,7 +1287,7 @@ async function LoginOrSubmit(input: IInputElements)
 	{
 		const url = new URL("https://github.com/login/oauth/authorize")
 		url.searchParams.append("client_id", "Iv23liF0BbZzzsm6OCu8")
-		url.searchParams.append("redirect_uri", `${apiUrl}/login`)
+		url.searchParams.append("redirect_uri", `${commentState.apiUrl}/login`)
 		url.searchParams.append("state", location.href)
 		location.href = url.toString();
 	}
@@ -1283,7 +1301,7 @@ async function Logout(input: IInputElements)
 	let response
 	try
 	{
-		response = await fetch(`${apiUrl}/logout`, {
+		response = await fetch(`${commentState.apiUrl}/logout`, {
 			method: "POST",
 			credentials: "include",
 		})
@@ -1307,6 +1325,10 @@ async function Logout(input: IInputElements)
 
 	for (const commentInput of commentState.inputs)
 		commentInput.submitButton.disabled = false
+
+	const reactions = commentState.commentsParent.querySelectorAll(".comment-reaction") as NodeListOf<HTMLButtonElement>
+	for (const reaction of reactions)
+		reaction.removeAttribute("data-pressed")
 }
 
 // -------------------------------------------------------------------------------------------------

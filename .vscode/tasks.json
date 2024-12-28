@@ -32,53 +32,94 @@
 			"dependsOn": "vcs-git"
 		},
 		{
+			// u
 			"label": "build-file",
 			"detail": "hugo build (development)",
 			"type": "shell",
 			"command": "hugo -e development --cleanDestinationDir --printPathWarnings",
 		},
 		{
+			// i
 			"label": "build-project",
 			"detail": "hugo build (staging)",
 			"type": "shell",
-			"command": "hugo -e staging --cleanDestinationDir --printPathWarnings --minify",
+			"command": "hugo -e staging --cleanDestinationDir --printPathWarnings",
 		},
 		{
+			// o
 			"label": "build-solution",
 			"detail": "hugo build (production)",
 			"type": "shell",
 			"command": "hugo -e production --cleanDestinationDir --printPathWarnings --minify",
 		},
 		{
+			// q
 			"label": "test-file",
 			"detail": "hugo test (development)",
 			"type": "shell",
+			"hide": true,
 			"command": "hugo server -e development --bind 0.0.0.0 --tlsAuto --cleanDestinationDir --printPathWarnings --noHTTPCache --ignoreCache",
 		},
 		{
+			// w
 			"label": "test-project",
 			"detail": "hugo test (staging)",
 			"type": "shell",
-			"command": "hugo server -e staging --bind 0.0.0.0 --tlsAuto --cleanDestinationDir --printPathWarnings --noHTTPCache --ignoreCache --minify",
+			"command": "hugo server -e staging --bind 0.0.0.0 --tlsAuto --cleanDestinationDir --printPathWarnings --noHTTPCache --ignoreCache",
+			"dependsOn": ["deploy-api-staging"],
 		},
 		{
+			// e
 			"label": "test-solution",
 			"detail": "hugo test (production)",
 			"type": "shell",
 			"command": "hugo server -e production --bind 0.0.0.0 --tlsAuto --cleanDestinationDir --printPathWarnings --noHTTPCache --ignoreCache --minify",
 		},
 		{
+			// a
+			"label": "profile-file",
+			"detail": "deploy API (development)",
+			"type": "shell",
+			"options": { "cwd": "tools/DiscussionBot", },
+			"command": "vercel dev",
+		},
+		{
+			// s
+			"label": "profile-project",
+			"detail": "deploy API (staging)",
+			"type": "shell",
+			"options": { "cwd": "tools/DiscussionBot", },
+			"command": "vercel build && ($url = vercel deploy --logs --prebuilt) && vercel alias $url staging.comments.akbyrd.dev",
+		},
+		{
+			// d
 			"label": "profile-solution",
+			"detail": "deploy API (production)",
+			"type": "shell",
+			"options": { "cwd": "tools/DiscussionBot", },
+			"command": "vercel build --prod && vercel deploy --logs --prebuilt --prod",
+		},
+		{
+			// h
+			"label": "rebuild-file",
 			"detail": "hugo site",
 			"type": "shell",
 			"command": "Start-Process https://localhost:1313/",
 		},
 		{
-			"label": "build-favicon",
+			// j
+			"label": "rebuild-project",
 			"detail": "build favicon variants",
 			"type": "shell",
 			"command": "tools/favicon.ps1",
 			"args": [ "themes/akbyrd/assets/res/favicon-source.svg" ]
+		},
+		{
+			// k
+			"label": "rebuild-solution",
+			"detail": "build fonts",
+			"type": "shell",
+			"command": "tools/fonts.ps1",
 		},
 	],
 }

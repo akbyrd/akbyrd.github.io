@@ -2,3 +2,4 @@
 /browser-tests/
 /public/
 /resources/
+.env

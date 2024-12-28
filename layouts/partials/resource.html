@@ -1,15 +1,8 @@
 {{ $ret := dict }}
 
 {{ $name := . }}
-{{ $rename := true }}
-{{ $minify := true }}
-{{ $sourceMap := "" }}
-
-{{ if eq hugo.Environment "development" }}
-	{{ $rename = false }}
-	{{ $minify = false }}
-	{{ $sourceMap = "external" }}
-{{ end }}
+{{ $rename := not hugo.IsDevelopment }}
+{{ $minify := hugo.IsProduction }}
 
 {{ if reflect.IsMap . }}
 	{{ $name = .Name }}
@@ -31,8 +24,13 @@
 	{{ end }}
 
 	{{ if (eq $type "typescript") }}
-		{{ $defines := dict "isProduction" (ne hugo.Environment "development") }}
-		{{ $opts := dict "minify" $minify "sourceMap" $sourceMap "defines" $defines }}
+		{{/* NOTE: Can't cache-bust the source map because we need to know the name of the file before */}}
+		{{/* we compile. But the name of the file comes from hashing the compiled output. Chicken and egg. */}}
+		{{ $env := readFile ".env" }}
+		{{ $stagingKey := findRESubmatch `VERCEL_AUTOMATION_BYPASS_SECRET=("[^"]*")` $env 1 }}
+		{{ $stagingKey = default "" (index (index $stagingKey 0) 1) }}
+		{{ $defines := dict "deploymentEnv" (printf `"%s"` hugo.Environment) "stagingKey" $stagingKey }}
+		{{ $opts := dict "target" "es2015" "sourceMap" "linked" "defines" $defines "minify" $minify }}
 		{{ $resource = $resource | js.Build $opts }}
 		{{ $name = replaceRE `\.ts\z` ".js" $name }}
 	{{ end }}

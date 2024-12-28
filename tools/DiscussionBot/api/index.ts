@@ -17,21 +17,33 @@ export const config = {
 
 export default async function handler(request: VercelRequest, response: VercelResponse)
 {
+	// NOTE: Unhandled failure modes:
+	// * Large requests  - limited to 4.5 MB or 4 MB, depdending on runtime
+	// * Time outs       - limited to 10s or 25s, depending on runtime
+	// * Expired tokens  - TODO (auth and refresh)
+	// * Invalid session - TODO
+
 	try
 	{
+		console.log(`\n${request.method}\n${request.url}`)
+
 		if (!process.env.CLIENT_ID)     throw "Client Id not set"
 		if (!process.env.CLIENT_SECRET) throw "Client Secret not set"
 		if (!process.env.PRIVATE_KEY)   throw "Private Key not set"
 
-		const prodOrigin  = "https://akbyrd.dev"
-		const devOrigin   = "https://localhost:1313"
-		const prodRequest = request.headers.origin == prodOrigin
-		const devRequest  = request.headers.origin == devOrigin
-		if (prodRequest || devRequest)
+		const prodOrigin = "https://akbyrd.dev"
+		const devOrigin  = "https://localhost:1313"
+		switch (request.headers.origin)
 		{
-			response.setHeader("access-control-allow-credentials", "true")
-			response.setHeader("access-control-allow-headers",     "credentials")
-			response.setHeader("access-control-allow-origin",      request.headers.origin!)
+			case devOrigin:
+				response.setHeader("access-control-allow-credentials", "true")
+				response.setHeader("access-control-allow-headers",     "credentials, x-vercel-protection-bypass, x-vercel-set-bypass-cookie")
+				response.setHeader("access-control-allow-origin",      devOrigin)
+				break
+
+			case prodOrigin:
+				response.setHeader("access-control-allow-origin",      prodOrigin)
+				break
 		}
 
 		const url = new URL(request.url || "", `http://${request.headers.host}`);
@@ -50,6 +62,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
 			const userAuth    = await GetUserAuth(process.env.CLIENT_ID, process.env.CLIENT_SECRET, code)
 			const session     = Encrypt(userAuth)
 			const expires     = new Date(userAuth.refreshExp * 1000).toUTCString()
+			const devRequest  = request.headers.origin == devOrigin
 			const devRedirect = new URL(state).origin == devOrigin
 			const sameSite    = devRequest || devRedirect ? "None" : "Strict"
 			// TODO: Understand why partition doesn't work
@@ -65,8 +78,9 @@ export default async function handler(request: VercelRequest, response: VercelRe
 
 			if (!session) throw { statusCode: 400, body: { error: "Session not specified" } }
 
-			const sameSite = devRequest ? "None" : "Strict"
-			const cookie   = `session=goaway; Max-Age=0; SameSite=${sameSite}; Secure; HttpOnly`
+			const devRequest = request.headers.origin == devOrigin
+			const sameSite   = devRequest ? "None" : "Strict"
+			const cookie     = `session=goaway; Max-Age=0; SameSite=${sameSite}; Secure; HttpOnly`
 			response.setHeader("set-cookie", cookie)
 
 			return response.status(204).send(null)

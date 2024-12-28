@@ -1,5 +1,14 @@
 General
 TODO: Implement comments
+	Clear cookie if auth fails
+	Update cookie if auth refreshes
+	Real encryption
+	Regenerate secrets
+	Store session for app access tokens?
+	Hook up buttons
+	Lazy loading
+	Loading indicator
+
 	Error Handling
 		User authentication
 			User doesn't authorize repo
@@ -87,6 +96,7 @@ TODO: "css overflow auto causing jitter"?
 TODO: Improve rendering perf of code (grid? (has border-collapse) less html?)
 
 Theme
+TODO: Fix colors in print preview
 TODO: Pay a UI designer for a review and recommendations
 TODO: Read about meterial design https://m3.material.io/
 TODO: Pick a font for headers (ensure no padding built into characters)
