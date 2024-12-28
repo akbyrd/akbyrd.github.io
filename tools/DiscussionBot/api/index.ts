@@ -51,6 +51,10 @@ export default async function handler(request: VercelRequest, response: VercelRe
 		{
 			return response.status(204).send(null)
 		}
+		if (url.pathname == "/")
+		{
+			return response.status(200).json({ message: "hello" })
+		}
 		else if (url.pathname == "/login")
 		{
 			const code  = request.query.code  as string
@@ -85,7 +89,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
 
 			return response.status(204).send(null)
 		}
-		else
+		else if (url.pathname == "/get")
 		{
 			const session  = request.cookies.session as string
 			const origin   = request.headers.origin  as string
@@ -99,6 +103,8 @@ export default async function handler(request: VercelRequest, response: VercelRe
 			if (!repo)     throw { statusCode: 400, body: { error: "Repo not specified"     } }
 			if (!category) throw { statusCode: 400, body: { error: "Category not specified" } }
 			if (!page)     throw { statusCode: 400, body: { error: "Page not specified"     } }
+
+			console.log("Session:", !!session)
 
 			if (session)
 			{

@@ -942,7 +942,7 @@ async function ReloadComments()
 
 async function LoadComments()
 {
-	const url = new URL(commentState.apiUrl)
+	const url = new URL(`${commentState.apiUrl}/get`)
 	url.searchParams.append("owner", "akbyrd")
 	url.searchParams.append("repo", "akbyrd.github.io")
 	url.searchParams.append("category", "Blog Post Comments")
@@ -959,13 +959,27 @@ async function LoadComments()
 		// * Must use Secure
 		// * Must use HTTPS
 
+		const headers = {} as { [key: string]: string }
+		switch (deploymentEnv)
+		{
+			case DeploymentEnv.Development:
+				headers["credentials"] = "include"
+				break;
+
+			case DeploymentEnv.Staging:
+				headers["credentials"] = "include"
+				headers["x-vercel-protection-bypass"] = stagingKey
+				break;
+
+			case DeploymentEnv.Production:
+				headers["credentials"] = "include"
+				break;
+		}
+
 		response = await fetch(url, {
 			method: "GET",
 			credentials: "include",
-			headers: {
-				"credentials": "include",
-				"x-vercel-protection-bypass": stagingKey,
-			},
+			headers,
 		})
 	}
 	catch
