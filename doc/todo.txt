@@ -1,5 +1,6 @@
 General
 TODO: Implement comments
+	Function seems to run for a long time in some cases
 	Clear cookie if auth fails
 	Update cookie if auth refreshes
 	Real encryption
@@ -35,6 +36,7 @@ TODO: Implement comments
 		Only create discussion when posting
 		Save draft when typing
 		Set textarea maxlength from Github limit
+		Reload comments after posting
 
 TODO: Fix scrolling on math in comments (don't use <math> because it behaves poorly)
 TODO: Check for missing math glyphs (should be using a single font, not falling back)
@@ -96,17 +98,14 @@ TODO: "css overflow auto causing jitter"?
 TODO: Improve rendering perf of code (grid? (has border-collapse) less html?)
 
 Theme
-TODO: Fix colors in print preview
+TODO: Improve checkboxes on Chrome
 TODO: Pay a UI designer for a review and recommendations
+TODO: Fix colors in print preview
 TODO: Read about meterial design https://m3.material.io/
-TODO: Pick a font for headers (ensure no padding built into characters)
-TODO: Pick a font for body text
-TODO: Pick a color scheme
 TODO: Add text selection color
 TODO: Light theme for code
 
 Testing / Compatibility
-TODO: Split up test pages
 TODO: Theme transition isn't smooth on mobile
 TODO: Remove nesting/& (2024), :has (2024), :not (2021) selectors, nth-child (2023)
 TODO: Test in safari
@@ -114,10 +113,9 @@ TODO: Test apple touch icon
 TODO: Test theme-color on android
 TODO: Test search engine results
 TODO: Test double tap to zoom on text
-TODO: Attempt to remove `unset: all`
-TODO: Run site audit as part of deployment
 TODO: Add syntax highlighting samples test page
 TODO: 1 frame of missing text in firefox
+TODO: Run site audit as part of deployment
 TODO: https://jigsaw.w3.org/css-validator/
 TODO: https://validator.w3.org/
 TODO: https://validator.w3.org/feed/

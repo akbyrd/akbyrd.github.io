@@ -36,15 +36,18 @@ export default async function handler(request: VercelRequest, response: VercelRe
 		switch (request.headers.origin)
 		{
 			case devOrigin:
-				response.setHeader("access-control-allow-credentials", "true")
-				response.setHeader("access-control-allow-headers",     "credentials, x-vercel-protection-bypass, x-vercel-set-bypass-cookie")
-				response.setHeader("access-control-allow-origin",      devOrigin)
+				response.setHeader("access-control-allow-headers", "credentials, x-vercel-protection-bypass, x-vercel-set-bypass-cookie")
+				response.setHeader("access-control-allow-origin",  devOrigin)
 				break
 
 			case prodOrigin:
-				response.setHeader("access-control-allow-origin",      prodOrigin)
+				response.setHeader("access-control-allow-headers", "credentials")
+				response.setHeader("access-control-allow-origin",  prodOrigin)
 				break
 		}
+
+		response.setHeader("access-control-allow-credentials", "true")
+		response.setHeader("vary",                             "origin")
 
 		const url = new URL(request.url || "", `http://${request.headers.host}`);
 		if (request.method == "OPTIONS")

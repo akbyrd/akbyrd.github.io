@@ -29,6 +29,7 @@
 		{{ $env := readFile ".env" }}
 		{{ $stagingKey := findRESubmatch `VERCEL_AUTOMATION_BYPASS_SECRET=("[^"]*")` $env 1 }}
 		{{ $stagingKey = default `""` (index (index $stagingKey 0) 1) }}
+		{{ if eq $stagingKey `""` }} {{ warnf "Staging key missing" }} {{ end }}
 		{{ $defines := dict "deploymentEnv" (printf `"%s"` hugo.Environment) "stagingKey" $stagingKey }}
 		{{ $opts := dict "target" "es2015" "sourceMap" "linked" "defines" $defines "minify" $minify }}
 		{{ $resource = $resource | js.Build $opts }}

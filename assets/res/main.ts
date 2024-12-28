@@ -960,21 +960,8 @@ async function LoadComments()
 		// * Must use HTTPS
 
 		const headers = {} as { [key: string]: string }
-		switch (deploymentEnv)
-		{
-			case DeploymentEnv.Development:
-				headers["credentials"] = "include"
-				break;
-
-			case DeploymentEnv.Staging:
-				headers["credentials"] = "include"
+		if (deploymentEnv == DeploymentEnv.Staging)
 				headers["x-vercel-protection-bypass"] = stagingKey
-				break;
-
-			case DeploymentEnv.Production:
-				headers["credentials"] = "include"
-				break;
-		}
 
 		response = await fetch(url, {
 			method: "GET",
