@@ -105,3 +105,6 @@ https://www.unicode.org/charts/PDF/U1D400.pdf
 
 Practice
 https://flexboxfroggy.com/
+
+Loading Indicators
+https://css-loaders.com/
