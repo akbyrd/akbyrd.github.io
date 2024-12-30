@@ -816,11 +816,21 @@ declare const stagingKey: string;
 
 let commentState: {
 	apiUrl: string
-	commentsParent: HTMLElement
-	reloadButton: HTMLButtonElement
-	errorMessage: HTMLElement
+	parent: HTMLElement
+	templatesContainer: HTMLElement
+	loadingContainer: HTMLElement
+	errorContainer: HTMLElement
+	successContainer: HTMLElement
 	syntheticClick?: HTMLButtonElement
 	inputs: IInputElements[]
+}
+
+enum CommentsState
+{
+	Disabled,
+	Loading,
+	Error,
+	Success,
 }
 
 interface IInputElements
@@ -896,8 +906,8 @@ enum Reaction
 
 async function InitComments()
 {
-	const commentsParent = document.getElementById("comments")
-	if (!commentsParent)
+	const parent = document.getElementById("comments")
+	if (!parent)
 		return
 
 	let apiUrl = ""
@@ -910,38 +920,65 @@ async function InitComments()
 
 	commentState = {
 		apiUrl,
-		commentsParent,
-		errorMessage: commentsParent.querySelector("#comment-error") as HTMLElement,
-		reloadButton: commentsParent.querySelector("#comment-error button") as HTMLButtonElement,
+		parent,
+		templatesContainer: parent.querySelector(".comments-state-templates") as HTMLElement,
+		loadingContainer: parent.querySelector(".comments-state-loading") as HTMLElement,
+		errorContainer: parent.querySelector(".comments-state-error") as HTMLElement,
+		successContainer: parent.querySelector(".comments-state-success") as HTMLElement,
 		inputs: [{
-			root: commentsParent.querySelector("#comment-new") as HTMLElement,
-			textArea: commentsParent.querySelector("#comment-new textarea") as HTMLTextAreaElement,
-			submitButton: commentsParent.querySelector("#comment-new .comment-submit") as HTMLButtonElement,
-			logoutButton: commentsParent.querySelector("#comment-new .comment-logout") as HTMLButtonElement,
+			root: parent.querySelector("#comment-new") as HTMLElement,
+			textArea: parent.querySelector("#comment-new textarea") as HTMLTextAreaElement,
+			submitButton: parent.querySelector("#comment-new .comment-submit") as HTMLButtonElement,
+			logoutButton: parent.querySelector("#comment-new .comment-logout") as HTMLButtonElement,
 		}],
 	}
 
-	commentState.reloadButton.addEventListener("click", ReloadComments, { passive: true })
-	commentState.inputs[0].root.style.display = "none"
+	const reloadButton = commentState.errorContainer.querySelector("button")!
+	reloadButton.addEventListener("click", ReloadComments, { passive: true })
 
-	await LoadComments()
+	SetCommentsState(CommentsState.Disabled)
+
+	const observer = new IntersectionObserver(OnCommentsVisible, { threshold: 1.0, });
+	observer.observe(commentState.parent)
+}
+
+function SetCommentsState(state: CommentsState)
+{
+	commentState.loadingContainer.toggleAttribute("data-disabled", state != CommentsState.Loading)
+	commentState.errorContainer  .toggleAttribute("data-disabled", state != CommentsState.Error)
+	commentState.successContainer.toggleAttribute("data-disabled", state != CommentsState.Success)
+}
+
+async function OnCommentsVisible(entries: IntersectionObserverEntry[], observer: IntersectionObserver)
+{
+	for (const entry of entries)
+	{
+		if (entry.isIntersecting)
+		{
+			LoadComments()
+			observer.unobserve(entry.target)
+		}
+	}
 }
 
 async function ReloadComments()
 {
 	commentState.inputs = [commentState.inputs[0]]
-	const comments = commentState.commentsParent.querySelectorAll(".comment")
+
+	const comments = commentState.parent.querySelectorAll(".comment:not(:last-child")
 	for (const comment of comments)
 		comment.remove()
 
-	commentState.commentsParent.classList.remove("comments-logged-in")
-	commentState.commentsParent.classList.remove("comments-logged-out")
+	commentState.parent.classList.remove("comments-logged-in")
+	commentState.parent.classList.remove("comments-logged-out")
 
 	await LoadComments()
 }
 
 async function LoadComments()
 {
+	SetCommentsState(CommentsState.Loading)
+
 	const url = new URL(`${commentState.apiUrl}/get`)
 	url.searchParams.append("owner", "akbyrd")
 	url.searchParams.append("repo", "akbyrd.github.io")
@@ -971,14 +1008,14 @@ async function LoadComments()
 	}
 	catch
 	{
-		commentState.errorMessage.style.display = ""
+		SetCommentsState(CommentsState.Error)
 		return
 	}
 
 	const json = await response.json()
 	if (!response.ok)
 	{
-		commentState.errorMessage.style.display = ""
+		SetCommentsState(CommentsState.Error)
 		return
 	}
 
@@ -997,7 +1034,7 @@ async function LoadComments()
 	for (const comment of discussion.comments.nodes)
 	{
 		const commentElems = CreateComment(templates, commentTemplate, comment)
-		commentState.commentsParent.insertBefore(commentElems.fragment, commentState.inputs[0].root)
+		commentState.successContainer.insertBefore(commentElems.fragment, commentState.inputs[0].root)
 
 		// Input
 		{
@@ -1030,18 +1067,17 @@ async function LoadComments()
 		}
 	}
 
-	commentState.inputs[0].root.style.display = ""
-	commentState.errorMessage.style.display = "none"
+	SetCommentsState(CommentsState.Success)
 
 	if (discussion.loggedIn)
 	{
 		localStorage.setItem("loggedIn", "")
-		commentState.commentsParent.classList.add("comments-logged-in")
+		commentState.parent.classList.add("comments-logged-in")
 	}
 	else
 	{
 		localStorage.removeItem("loggedIn")
-		commentState.commentsParent.classList.add("comments-logged-out")
+		commentState.parent.classList.add("comments-logged-out")
 	}
 
 	const input = commentState.inputs[0]
@@ -1325,13 +1361,13 @@ async function Logout(e: Event, input: IInputElements)
 
 	localStorage.removeItem("loggedIn")
 	input.logoutButton.style.border = ""
-	commentState.commentsParent.classList.remove("comments-logged-in")
-	commentState.commentsParent.classList.add("comments-logged-out")
+	commentState.parent.classList.remove("comments-logged-in")
+	commentState.parent.classList.add("comments-logged-out")
 
 	for (const commentInput of commentState.inputs)
 		commentInput.submitButton.disabled = false
 
-	const reactions = commentState.commentsParent.querySelectorAll(".comment-reaction") as NodeListOf<HTMLButtonElement>
+	const reactions = commentState.parent.querySelectorAll(".comment-reaction") as NodeListOf<HTMLButtonElement>
 	for (const reaction of reactions)
 		reaction.removeAttribute("data-pressed")
 }

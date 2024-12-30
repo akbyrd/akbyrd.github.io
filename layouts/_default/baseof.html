@@ -106,129 +106,119 @@
 
 		{{- if and .Page.Params.comments (not .Page.Draft) }}
 		<div class="end-mark symbol">&#xe22e;</div>
+		<section id="comments" class="require-js no-mathml">
+			<div class="comments-templates" style="display: none;">
+				<template id="comment-template">
+					<section class="comment">
+						<div class="comment-content">
+						</div>
+						<form class="reply-input">
+							<textarea aria-label="Enter Reply Text" placeholder="Write a reply" required rows="1"></textarea>
+							<div>
+								<button class="comment-logout" type="button" aria-label="Sign Out">
+									<span class="symbol">&#xf426;</span>
+									<span>Sign out</span>
+								</button>
+								<button class="comment-submit" type="submit" disabled aria-label="Post Reply">
+									<span>Comment</span>
+									<span class="symbol">&#xf02a4;</span>
+									<span>Sign in</span>
+								</button>
+							</div>
+						</form>
+					</section>
+				</template>
 
-		<div class="comments-loading">
-			<div class="spinner"></div>
-			<div class="loader1"></div>
-			<div class="loader2"></div>
-			<div class="loader3"></div>
-			<div class="loader4"></div>
-			<div class="loader5"></div>
-			<div class="loader6"></div>
-			<div class="loader7"></div>
-			<div class="loader8"></div>
-			<div class="loader9"></div>
-			<div class="loader10"></div>
-			<div class="loader11"></div>
-			<div class="loader12"></div>
-			<div class="loader13"></div>
-		</div>
+				<template id="reply-template">
+					<section class="reply">
+						<div class="comment-content">
+						</div>
+					</section>
+				</template>
 
-		<section id="comments" class="no-mathml">
-			<div id="comment-error" style="display: none;">
-				<p>Failed to load comments</p>
-				<button class="symbol" type="button" aria-label="Retry">&#xf0450;</button>
+				<template id="comment-header-template">
+					<header>
+						<a class="comment-avatar" href="" rel="nofollow noopener noreferrer">
+							<img src="" width="40px" height="40px" loading="lazy" />
+						</a>
+						<a class="comment-time" href="" rel="nofollow noopener noreferrer">
+							<time datetime=""></time>
+						</a>
+					</header>
+				</template>
+
+				<template id="comment-footer-template">
+					<footer>
+						<button class="comment-toggle-reactions symbol" type="button" aria-label="Toggle Reaction Visibility">&#xf4a2;</button>
+						<div class="comment-reactions">
+							<button class="comment-reaction" type="button" aria-label="Toggle Thumbs Up Reaction" disabled="" name="THUMBS_UP"><span>👍</span><span class="comment-reaction-count">0</span></button>
+							<button class="comment-reaction" type="button" aria-label="Toggle Thumbs Down Reaction" disabled="" name="THUMBS_DOWN"><span>👎</span><span class="comment-reaction-count">0</span></button>
+							<button class="comment-reaction" type="button" aria-label="Toggle Laugh Reaction" disabled="" name="LAUGH"><span>😄</span><span class="comment-reaction-count">0</span></button>
+							<button class="comment-reaction" type="button" aria-label="Toggle Hooray Reaction" disabled="" name="HOORAY"><span>🎉</span><span class="comment-reaction-count">0</span></button>
+							<button class="comment-reaction" type="button" aria-label="Toggle Confused Reaction" disabled="" name="CONFUSED"><span>😕</span><span class="comment-reaction-count">0</span></button>
+							<button class="comment-reaction" type="button" aria-label="Toggle Heart Reaction" disabled="" name="HEART"><span>❤️</span><span class="comment-reaction-count">0</span></button>
+							<button class="comment-reaction" type="button" aria-label="Toggle Rocket Reaction" disabled="" name="ROCKET"><span>🚀</span><span class="comment-reaction-count">0</span></button>
+							<button class="comment-reaction" type="button" aria-label="Toggle Eyes Reaction" disabled="" name="EYES"><span>👀</span><span class="comment-reaction-count">0</span></button>
+						</div>
+					</footer>
+				</template>
+
+				<template id="comment-code-block-template">
+					<div class="container code">
+						<pre class="scroll"><code></code></pre>
+						<button class="copy-block" type="button" aria-label="Copy">&#xf4bb;</button>
+					</div>
+				</template>
+
+				<template id="comment-math-inline-template">
+					<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">
+						<semantics>
+							<annotation encoding="application/x-tex"></annotation>
+						</semantics>
+					</math>
+				</template>
+
+				<template id="comment-math-block-template">
+					<div class="container math">
+						<div class="scroll">
+							<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+								<semantics>
+									<annotation encoding="application/x-tex"></annotation>
+								</semantics>
+							</math>
+							<button class="copy-block" type="button" aria-label="Copy">&#xf4bb;</button>
+						</div>
+					</div>
+				</template>
 			</div>
 
-			<section class="comment" id="comment-new">
-				<form class="comment-input">
-					<textarea aria-label="Enter Comment Text" placeholder="Write a comment" required rows="1"></textarea>
-					<div>
-						<button class="comment-logout" type="button" aria-label="Sign Out">
-							<span class="symbol">&#xf426;</span>
-							<span>Sign out</span>
-						</button>
-						<button class="comment-submit" type="submit" disabled aria-label="Post Comment">
-							<span>Reply</span>
-							<span class="symbol">&#xf02a4;</span>
-							<span>Sign in</span>
-						</button>
-					</div>
-				</form>
-			</section>
+			<div class="comments-state comments-state-loading" data-disabled>
+				<span class="loading-spinner"></span>
+			</div>
 
-			<template id="comment-template">
-				<section class="comment">
-					<div class="comment-content">
-					</div>
-					<form class="reply-input">
-						<textarea aria-label="Enter Reply Text" placeholder="Write a reply" required rows="1"></textarea>
+			<div class="comments-state comments-state-error symbol" data-disabled>
+				<p>Failed to load comments</p>
+				<button type="button" aria-label="Retry">&#xf0450;</button>
+			</div>
+
+			<div class="comments-state comments-state-success" data-disabled>
+				<section class="comment" id="comment-new">
+					<form class="comment-input">
+						<textarea aria-label="Enter Comment Text" placeholder="Write a comment" required rows="1"></textarea>
 						<div>
 							<button class="comment-logout" type="button" aria-label="Sign Out">
 								<span class="symbol">&#xf426;</span>
 								<span>Sign out</span>
 							</button>
-							<button class="comment-submit" type="submit" disabled aria-label="Post Reply">
-								<span>Comment</span>
+							<button class="comment-submit" type="submit" disabled aria-label="Post Comment">
+								<span>Reply</span>
 								<span class="symbol">&#xf02a4;</span>
 								<span>Sign in</span>
 							</button>
 						</div>
 					</form>
 				</section>
-			</template>
-
-			<template id="reply-template">
-				<section class="reply">
-					<div class="comment-content">
-					</div>
-				</section>
-			</template>
-
-			<template id="comment-header-template">
-				<header>
-					<a class="comment-avatar" href="" rel="nofollow noopener noreferrer">
-						<img src="" width="40px" height="40px" loading="lazy" />
-					</a>
-					<a class="comment-time" href="" rel="nofollow noopener noreferrer">
-						<time datetime=""></time>
-					</a>
-				</header>
-			</template>
-
-			<template id="comment-footer-template">
-				<footer>
-					<button class="comment-toggle-reactions" type="button" aria-label="Toggle Reaction Visibility">&#xf4a2;</button>
-					<div class="comment-reactions">
-						<button class="comment-reaction" type="button" aria-label="Toggle Thumbs Up Reaction" disabled="" name="THUMBS_UP"><span>👍</span><span class="comment-reaction-count">0</span></button>
-						<button class="comment-reaction" type="button" aria-label="Toggle Thumbs Down Reaction" disabled="" name="THUMBS_DOWN"><span>👎</span><span class="comment-reaction-count">0</span></button>
-						<button class="comment-reaction" type="button" aria-label="Toggle Laugh Reaction" disabled="" name="LAUGH"><span>😄</span><span class="comment-reaction-count">0</span></button>
-						<button class="comment-reaction" type="button" aria-label="Toggle Hooray Reaction" disabled="" name="HOORAY"><span>🎉</span><span class="comment-reaction-count">0</span></button>
-						<button class="comment-reaction" type="button" aria-label="Toggle Confused Reaction" disabled="" name="CONFUSED"><span>😕</span><span class="comment-reaction-count">0</span></button>
-						<button class="comment-reaction" type="button" aria-label="Toggle Heart Reaction" disabled="" name="HEART"><span>❤️</span><span class="comment-reaction-count">0</span></button>
-						<button class="comment-reaction" type="button" aria-label="Toggle Rocket Reaction" disabled="" name="ROCKET"><span>🚀</span><span class="comment-reaction-count">0</span></button>
-						<button class="comment-reaction" type="button" aria-label="Toggle Eyes Reaction" disabled="" name="EYES"><span>👀</span><span class="comment-reaction-count">0</span></button>
-					</div>
-				</footer>
-			</template>
-
-			<template id="comment-code-block-template">
-				<div class="container code">
-					<pre class="scroll"><code></code></pre>
-					<button class="copy-block" type="button" aria-label="Copy">&#xf4bb;</button>
-				</div>
-			</template>
-
-			<template id="comment-math-inline-template">
-				<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">
-					<semantics>
-						<annotation encoding="application/x-tex"></annotation>
-					</semantics>
-				</math>
-			</template>
-
-			<template id="comment-math-block-template">
-				<div class="container math">
-					<div class="scroll">
-						<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
-							<semantics>
-								<annotation encoding="application/x-tex"></annotation>
-							</semantics>
-						</math>
-						<button class="copy-block" type="button" aria-label="Copy">&#xf4bb;</button>
-					</div>
-				</div>
-			</template>
+			</div>
 		</section>
 		{{- end }}
 	</main>

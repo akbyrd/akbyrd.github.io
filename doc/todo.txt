@@ -28,9 +28,6 @@ TODO: Implement comments
 		Hook up submit button
 		Hook up login button
 		Disable buttons while pending
-	Loading
-		Animate when loading
-		Defer loading until scrolled into view
 	Polish
 		Consider showing emoji for post
 		Only create discussion when posting

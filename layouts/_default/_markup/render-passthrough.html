@@ -10,7 +10,7 @@
 	{{- $result = replaceRE "span>$" "div>" $result }}
 
 	{{- /* Add copy button */}}
-	{{- $tail := `<button class="copy-block require-js" type="button" aria-label="Copy">&#xf4bb;</button>` }}
+	{{- $tail := `<button class="copy-block symbol require-js" type="button" aria-label="Copy">&#xf4bb;</button>` }}
 	{{- $tail = printf "\n%s\n</div>" $tail }}
 	{{- $result = replaceRE `</div>$` $tail $result }}
 
