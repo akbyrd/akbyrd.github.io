@@ -860,6 +860,7 @@ interface IDiscussion
 
 interface ICommentBase
 {
+	id: string
 	author: IAuthor
 	bodyHTML: string
 	createdAt: string
@@ -985,6 +986,10 @@ async function LoadComments()
 	url.searchParams.append("category", "Blog Post Comments")
 	url.searchParams.append("page", location.pathname)
 
+	const headers = {} as { [key: string]: string }
+	if (deploymentEnv == DeploymentEnv.Staging)
+			headers["x-vercel-protection-bypass"] = stagingKey
+
 	let response
 	try
 	{
@@ -995,10 +1000,6 @@ async function LoadComments()
 		// * Must use SameSite: None
 		// * Must use Secure
 		// * Must use HTTPS
-
-		const headers = {} as { [key: string]: string }
-		if (deploymentEnv == DeploymentEnv.Staging)
-				headers["x-vercel-protection-bypass"] = stagingKey
 
 		response = await fetch(url, {
 			method: "GET",
@@ -1209,7 +1210,7 @@ function CreateComment(templates: CommentTemplates, commentTemplate: HTMLTemplat
 				reaction.toggleAttribute("data-pressed")
 			UpdateReactionVisibility(reaction, false, data.users.totalCount)
 
-			reaction.addEventListener("click", ToggleReaction, { passive: true })
+			reaction.addEventListener("click", (e) => ToggleReaction(e, comment), { passive: true })
 		}
 
 		commentRoot.insertBefore(footerFragment, replyInput)
@@ -1261,14 +1262,52 @@ function ToggleReactions(e: Event)
 	}
 }
 
-function ToggleReaction(e: Event)
+async function ToggleReaction(e: Event, comment: ICommentBase)
 {
-	const reaction = e.currentTarget as HTMLButtonElement
-	const reactionsDiv = reaction.parentElement!.parentElement!
+	const reactionButton = e.currentTarget as HTMLButtonElement
+	reactionButton.disabled = true
+
+	const reaction = reactionButton.name as keyof Reaction
+	const add = !reactionButton.hasAttribute("data-pressed")
+
+	const url = new URL(`${commentState.apiUrl}/react`)
+	url.searchParams.append("subjectId", comment.id)
+	url.searchParams.append("reaction", reaction)
+	url.searchParams.append("add", add.toString())
+
+	const headers = {} as { [key: string]: string }
+	if (deploymentEnv == DeploymentEnv.Staging)
+			headers["x-vercel-protection-bypass"] = stagingKey
+
+	let response
+	try
+	{
+		response = await fetch(url, {
+			method: "GET",
+			credentials: "include",
+			headers,
+		})
+	}
+	catch
+	{
+		reactionButton.disabled = false
+		return
+	}
+
+	if (!response.ok)
+	{
+		reactionButton.disabled = false
+		return
+	}
+
+	reactionButton.disabled = false
+	reactionButton.toggleAttribute("data-pressed")
+
+	const reactionsDiv = reactionButton.parentElement!.parentElement!
 	const reactionsButton = reactionsDiv.querySelector(".comment-toggle-reactions") as HTMLButtonElement
 	const showReactions = reactionsButton.hasAttribute("data-pressed")
-	const countOffset = reaction.toggleAttribute("data-pressed") ? 1 : -1
-	UpdateReactionVisibility(reaction, showReactions, countOffset)
+	const countOffset = add ? 1 : -1
+	UpdateReactionVisibility(reactionButton, showReactions, countOffset)
 }
 
 function UpdateReactionVisibility(reaction: HTMLButtonElement, showReactions: boolean, countOffset: number)

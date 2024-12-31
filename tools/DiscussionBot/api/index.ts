@@ -124,6 +124,22 @@ export default async function handler(request: VercelRequest, response: VercelRe
 				return response.status(200).json(discussion)
 			}
 		}
+		else if (url.pathname == "/react")
+		{
+			const session   = request.cookies.session as string
+			const subjectId = request.query.subjectId as string
+			const reaction  = request.query.reaction  as string
+			const add       = request.query.add       as string
+
+			if (!session)   throw { statusCode: 400, body: { error: "Session not specified"    } }
+			if (!subjectId) throw { statusCode: 400, body: { error: "Subject Id not specified" } }
+			if (!reaction)  throw { statusCode: 400, body: { error: "Reaction not specified"   } }
+			if (!add)       throw { statusCode: 400, body: { error: "Add not specified"        } }
+
+			const userAuth = Decrypt(session) as IUserAuth
+			await SetReaction(userAuth, subjectId, reaction, add)
+			return response.status(204).send(null)
+		}
 
 		throw "Failed to return a value"
 	}
@@ -136,7 +152,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
 		}
 		else
 		{
-			console.error(error)
+			console.dir(error, { depth: null })
 			return response.status(500).json({ error: "Application error" })
 		}
 	}
@@ -185,19 +201,7 @@ async function CreateJWT(clientId: string, privateKey: string): Promise<string>
 async function GetAppAuthUrl(token: string, owner: string, repo: string): Promise<string>
 {
 	console.time(GetAppAuthUrl.name)
-	const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/installation`, {
-		method: "GET",
-		headers: {
-			"Accept": "application/vnd.github+json",
-			"Authorization": `Bearer ${token}`,
-			"Content-Type": "application/json",
-			"X-GitHub-Api-Version": "2022-11-28",
-		},
-	})
-
-	const json = await response.json()
-	if (!response.ok) throw json
-
+	const json = await RESTRequest(token, "GET", `https://api.github.com/repos/${owner}/${repo}/installation`)
 	console.timeEnd(GetAppAuthUrl.name)
 	return json.access_tokens_url
 }
@@ -205,26 +209,12 @@ async function GetAppAuthUrl(token: string, owner: string, repo: string): Promis
 async function GetAppAuth(token: string, appAuthUrl: string): Promise<IAuth>
 {
 	console.time(GetAppAuth.name)
-	const response = await fetch(appAuthUrl, {
-		method: "POST",
-		headers: {
-			"Accept": "application/vnd.github+json",
-			"Authorization": `Bearer ${token}`,
-			"Content-Type": "application/json",
-			"X-GitHub-Api-Version": "2022-11-28",
-		}
-	})
-
-	const json = await response.json()
-	if (!response.ok) throw json
-
-	const auth = {
+	const json = await RESTRequest(token, "POST", appAuthUrl)
+	console.timeEnd(GetAppAuth.name)
+	return {
 		token:    json.token,
 		tokenExp: json.expires_at,
 	}
-
-	console.timeEnd(GetAppAuth.name)
-	return auth
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -275,10 +265,10 @@ async function GetUserAuth(clientId: string, clientSecret: string, code: string)
 // Discussion Query
 
 const discussionQueryData =
-	`
-	bodyHTML
+	`bodyHTML
 	comments(first: 100) {
 		nodes {
+			id
 			bodyHTML
 			createdAt
 			url
@@ -296,6 +286,7 @@ const discussionQueryData =
 			}
 			replies(first: 100) {
 				nodes {
+					id
 					bodyHTML
 					createdAt
 					url
@@ -333,7 +324,7 @@ async function GetDiscussion(auth: IAuth, owner: string, repo: string, category:
 	console.time(GetDiscussion.name)
 	const title = page.replace(/^\/?|\/?$/g, "")
 	const searchQuery = `repo:${owner}/${repo} in:title ${title}`
-	const discussionQuery =
+	const json = await GraphQLRequest(auth,
 		`query($query: String!) {
 			search(type: DISCUSSION, query: $query, first: 2) {
 				discussionCount
@@ -343,25 +334,7 @@ async function GetDiscussion(auth: IAuth, owner: string, repo: string, category:
 					}
 				}
 			}
-		}`
-
-	const response = await fetch("https://api.github.com/graphql", {
-		method: "POST",
-		headers: {
-			"Accept": "application/vnd.github+json",
-			"Authorization": `Bearer ${auth.token}`,
-			"Content-Type": "application/json",
-			"X-GitHub-Api-Version": "2022-11-28",
-		},
-		body: JSON.stringify({
-			query: discussionQuery,
-			variables: { query: searchQuery, },
-		}),
-	})
-
-	const json = await response.json()
-	if (!response.ok) throw json
-
+		}`, { query: searchQuery })
 	console.timeEnd(GetDiscussion.name)
 
 	let discussion = null
@@ -390,7 +363,7 @@ async function GetDiscussion(auth: IAuth, owner: string, repo: string, category:
 async function GetRepoAndCategoryIds(auth: IAuth, owner: string, repo: string, category: string)
 {
 	console.time(GetRepoAndCategoryIds.name)
-	const query =
+	const json = await GraphQLRequest(auth,
 		`query {
 			repository(owner: "${owner}", name: "${repo}") {
 				id
@@ -401,24 +374,7 @@ async function GetRepoAndCategoryIds(auth: IAuth, owner: string, repo: string, c
 					}
 				}
 			}
-		}`
-
-	const response = await fetch("https://api.github.com/graphql", {
-		method: "POST",
-		headers: {
-			Authorization: `Bearer ${auth.token}`,
-			"Accept": "application/vnd.github+json",
-			"Content-Type": "application/json",
-			"X-GitHub-Api-Version": "2022-11-28",
-			"X-Github-Next-Global-ID": "1",
-		},
-		body: JSON.stringify({
-			query: query,
-		}),
-	})
-
-	const json = await response.json()
-	if (!response.ok) throw json
+		}`)
 
 	const categories = json.data.repository.discussionCategories.nodes as { id: string, name: string }[]
 	const categoryNode = categories.find(c => c.name === category)
@@ -435,31 +391,15 @@ async function CreateDiscussion(auth: IAuth, repoId: string, categoryId: string,
 		throw { statusCode: 400, body: { error: "Creating discussions from localhost is disabled" } }
 
 	const body = originUrl ? new URL(page, originUrl).toString() : ""
-	const mutation =
+	const json = await GraphQLRequest(auth,
 		`mutation {
 			createDiscussion(input: {repositoryId: "${repoId}", categoryId: "${categoryId}", body: "${body}", title: "${title}"}) {
 				discussion {
 					${discussionQueryData}
 				}
 			}
-		}`
+		}`)
 
-	const response = await fetch("https://api.github.com/graphql", {
-		method: "POST",
-		headers: {
-			"Accept": "application/vnd.github+json",
-			"Authorization": `Bearer ${auth.token}`,
-			"Content-Type": "application/json",
-			"X-GitHub-Api-Version": "2022-11-28",
-		},
-		body: JSON.stringify({
-			query: mutation,
-		}),
-	})
-
-	const json = await response.json()
-	if (!response.ok) throw json
-	if ("errors" in json) throw json
 	if (json.extensions && json.extensions.warnings)
 		console.log(json.extensions.warnings)
 
@@ -468,7 +408,69 @@ async function CreateDiscussion(auth: IAuth, repoId: string, categoryId: string,
 }
 
 // -------------------------------------------------------------------------------------------------
+// Mutations
+
+async function SetReaction(auth: IAuth, subjectId: string, reaction: string, add: string)
+{
+	console.time(SetReaction.name)
+
+	const mutationId = crypto.randomUUID()
+	const op = add == "true" ? "addReaction" : "removeReaction"
+	const mutation =
+		`mutation {
+			${op}(input: {clientMutationId: "${mutationId}", content: ${reaction}, subjectId: "${subjectId}"}) {
+				clientMutationId
+			}
+		}`
+
+	const json = await GraphQLRequest(auth, mutation)
+	if (json.data[op].clientMutationId != mutationId) throw json
+
+	console.timeEnd(SetReaction.name)
+}
+
+// -------------------------------------------------------------------------------------------------
 // Utilities
+
+async function RESTRequest(token: string, method: string, url: string)
+{
+	const response = await fetch(url, {
+		method,
+		headers: {
+			"Accept": "application/vnd.github+json",
+			"Authorization": `Bearer ${token}`,
+			"Content-Type": "application/json",
+			"X-GitHub-Api-Version": "2022-11-28",
+		},
+	})
+
+	const json = await response.json()
+	if (!response.ok) throw json
+	return json
+}
+
+async function GraphQLRequest(auth: IAuth, query: string, variables?: {})
+{
+	const response = await fetch("https://api.github.com/graphql", {
+		method: "POST",
+		headers: {
+			"Accept": "application/vnd.github+json",
+			"Authorization": `Bearer ${auth.token}`,
+			"Content-Type": "application/json",
+			"X-GitHub-Api-Version": "2022-11-28",
+			"X-Github-Next-Global-ID": "1",
+		},
+		body: JSON.stringify({
+			query,
+			variables,
+		}),
+	})
+
+	const json = await response.json()
+	if (!response.ok) throw json
+	if ("errors" in json) throw json
+	return json
+}
 
 function Encrypt(obj: {}): string
 {

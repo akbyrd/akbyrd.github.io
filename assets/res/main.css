@@ -138,7 +138,7 @@ html * {
 	outline-offset: 3px;
 	outline-style: solid;
 	transition-duration: 200ms;
-	transition-property: outline-offset, outline-color;
+	transition-property: inherit, outline-offset, outline-color;
 }
 
 @supports not selector(:focus-visible) {
@@ -147,7 +147,7 @@ html * {
 		outline-offset: 3px;
 		outline-style: solid;
 		transition-duration: 200ms;
-		transition-property: outline-offset, outline-color;
+		transition-property: inherit, outline-offset, outline-color;
 	}
 }
 
@@ -197,7 +197,7 @@ button {
 	user-select: none;
 
 	transition-duration: 200ms;
-	transition-property: opacity;
+	transition-property: inherit, background-color, opacity;
 }
 
 button:disabled {
@@ -219,7 +219,7 @@ details {
 		padding: 4px 6px;
 		user-select: none;
 		transition-duration: 100ms;
-		transition-property: background-color;
+		transition-property: inherit, background-color;
 
 		&:hover {
 			background-color: var(--outline);
@@ -585,14 +585,14 @@ code, annotation {
 	&:focus-visible {
 		opacity: 100%;
 		transition-duration: 200ms;
-		transition-property: opacity, outline-color, outline-offset;
+		transition-property: inherit, opacity;
 	}
 
 	@supports not selector(:focus-visible) {
 		&:focus & {
 			opacity: 100%;
 			transition-duration: 200ms;
-			transition-property: opacity, outline-color, outline-offset;
+			transition-property: inherit, opacity;
 		}
 	}
 }
@@ -633,7 +633,7 @@ code, annotation {
 	margin: 0;
 	opacity: 100%;
 	transition-duration: 200ms;
-	transition-property: opacity;
+	transition-property: inherit, opacity;
 	transition-timing-function: ease-in;
 }
 
@@ -796,7 +796,7 @@ code, annotation {
 	position: relative;
 	right: 0px;
 	transition-duration: 85ms;
-	transition-property: border-width, width, margin, right, opacity;
+	transition-property: inherit, border-width, width, margin, right;
 	transition-timing-function: ease-out;
 	white-space: pre;
 }
