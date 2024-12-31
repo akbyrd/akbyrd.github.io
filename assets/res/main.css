@@ -196,7 +196,7 @@ button {
 	overflow: hidden;
 	user-select: none;
 
-	transition-duration: 200ms;
+	transition-duration: 100ms;
 	transition-property: inherit, background-color, opacity;
 }
 
@@ -748,20 +748,17 @@ code, annotation {
 
 .comment footer {
 	display: grid;
-	grid-template-columns: 0fr 1fr;
+	grid-template-columns: auto 1fr;
 	margin: 16px;
 }
 
 .comment-toggle-reactions {
-	border-color: var(--text-detail-2);
 	border-radius: 50%;
-	border-style: solid;
-	border-width: 1px;
 	color: var(--text-detail);
-	font-size: 32px;
-	height: 24px;
+	font-size: 38px;
 	line-height: 24px;
 	text-align: center;
+	height: 24px;
 	width: 24px;
 }
 
@@ -770,6 +767,7 @@ code, annotation {
 }
 
 .comment-reactions {
+	align-items: center;
 	display: inline-flex;
 	flex-wrap: wrap;
 	flex-shrink: 0;

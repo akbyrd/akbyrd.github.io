@@ -23,7 +23,6 @@ TODO: Implement comments
 	Messages
 		Hook up submit button (disable while pending)
 	Polish
-		Try removing outline on toggle reactions button
 		Fix enable state on submit button
 		Does logout button need to be disabled while pending?
 		Disable "please fill out this field" tooltip
