@@ -1087,6 +1087,7 @@ async function LoadComments()
 
 	for (const input of commentState.inputs)
 	{
+		input.textArea.readOnly = !discussion.loggedIn
 		input.submitButton.disabled = discussion.loggedIn
 		input.submitButton.addEventListener("click", (e) => LoginOrSubmit(e, input), { passive: false })
 		input.logoutButton.addEventListener("click", (e) => Logout(e, input), { passive: false })
@@ -1327,10 +1328,10 @@ function UpdateReactionVisibility(reaction: HTMLButtonElement, showReactions: bo
 function UpdateInputHeight(input: IInputElements)
 {
 	const loggedIn = localStorage.getItem("loggedIn")
-	if (loggedIn)
+	if (loggedIn != null)
 		input.submitButton.disabled = input.textArea.textLength == 0
 
-	const oldHeight = input.textArea.clientHeight
+	const oldHeight = input.textArea.getClientRects()[0].height
 	input.textArea.style.height = "auto"
 
 	const newHeightRect = input.textArea.getClientRects()[0].height
@@ -1404,7 +1405,10 @@ async function Logout(e: Event, input: IInputElements)
 	commentState.parent.classList.add("comments-logged-out")
 
 	for (const commentInput of commentState.inputs)
+	{
+		commentInput.textArea.readOnly = true
 		commentInput.submitButton.disabled = false
+	}
 
 	const reactions = commentState.parent.querySelectorAll(".comment-reaction") as NodeListOf<HTMLButtonElement>
 	for (const reaction of reactions)
