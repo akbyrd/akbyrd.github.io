@@ -980,7 +980,7 @@ async function LoadComments()
 {
 	SetCommentsState(CommentsState.Loading)
 
-	const url = new URL(`${commentState.apiUrl}/get`)
+	const url = new URL(`${commentState.apiUrl}/discussion`)
 	url.searchParams.append("owner", "akbyrd")
 	url.searchParams.append("repo", "akbyrd.github.io")
 	url.searchParams.append("category", "Blog Post Comments")

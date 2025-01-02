@@ -152,10 +152,10 @@ doctl serverless activations logs --follow
 
 Vercel
 ------
+QUESTION: Is there a way to debug locally?
 QUESTION: Alerts for failed web calls
-QUESTION: Ability to test from web UI
 Has a CLI
-Dynamic hosting server.
+Dynamic hosting server location
 Requires a phone number for signup
 Avoid the need for github access by using CLI
 npm + 243 dependencies for the CLI
@@ -168,6 +168,8 @@ Can use custom URL
 Local dev is slow. 800 ms to recompile on every request
 https://vercel.com/templates/other/nodejs-serverless-function-express
 TODO: Try out the Edge runtime ("lightweight JS runtime that exposes a set of Web Standard APIs")
+Doesn't look like there's a way to test from the web ui
+BUG: Stack traces are incorrect
 
 vercel dev
 vercel env pull

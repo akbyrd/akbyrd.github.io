@@ -11,21 +11,34 @@ declare const process:
 	}
 }
 
-export const config = {
-	//runtime: "nodejs",
+interface ISession
+{
+	appUrl?: string
+	userAuth?: IUserAuth
 }
 
+interface IDiscussionContext
+{
+	owner:    string
+	repo:     string
+	category: string
+	page:     string
+	origin:   string
+}
+
+// TODO: This whole file needs to be rewritten. It's a mess.
 export default async function handler(request: VercelRequest, response: VercelResponse)
 {
+
 	// NOTE: Unhandled failure modes:
 	// * Large requests  - limited to 4.5 MB or 4 MB, depdending on runtime
 	// * Time outs       - limited to 10s or 25s, depending on runtime
-	// * Expired tokens  - TODO (auth and refresh)
 	// * Invalid session - TODO
 
 	try
 	{
 		console.log(`\n${request.method}\n${request.url}`)
+		console.time("Total")
 
 		if (!process.env.CLIENT_ID)     throw "Client Id not set"
 		if (!process.env.CLIENT_SECRET) throw "Client Secret not set"
@@ -43,105 +56,89 @@ export default async function handler(request: VercelRequest, response: VercelRe
 			response.setHeader("access-control-allow-origin",      request.headers.origin!)
 			response.setHeader("vary",                             "origin")
 		}
-		else
-		{
-			console.log("origin", request.headers.origin)
-			console.log("headers", request.headers)
-		}
+
+		if (request.method == "OPTIONS")
+			return response.status(204).send(null)
 
 		const url = new URL(request.url || "", `http://${request.headers.host}`);
-		if (request.method == "OPTIONS")
+		switch (url.pathname)
 		{
-			return response.status(204).send(null)
-		}
-		if (url.pathname == "/")
-		{
-			return response.status(200).json({ message: "hello" })
-		}
-		else if (url.pathname == "/login")
-		{
-			const code  = request.query.code  as string
-			const state = request.query.state as string
-
-			if (!code)  throw { statusCode: 400, body: { error: "Code not specified"  } }
-			if (!state) throw { statusCode: 400, body: { error: "State not specified" } }
-
-			const userAuth    = await GetUserAuth(process.env.CLIENT_ID, process.env.CLIENT_SECRET, code)
-			const session     = Encrypt(userAuth)
-			const expires     = new Date(userAuth.refreshExp * 1000).toUTCString()
-			const devRedirect = devOrigins.includes(new URL(state).origin)
-			const sameSite    = devRequest || devRedirect ? "None" : "Strict"
-			const cookie      = `session=${session}; Expires=${expires}; SameSite=${sameSite}; Secure; HttpOnly`
-			response.setHeader("set-cookie", cookie)
-
-			return response.redirect(302, state)
-		}
-		else if (url.pathname == "/logout")
-		{
-			const session = request.cookies.session as string
-
-			if (!session) throw { statusCode: 400, body: { error: "Session not specified" } }
-
-			const sameSite   = devRequest ? "None" : "Strict"
-			const cookie     = `session=goaway; Max-Age=0; SameSite=${sameSite}; Secure; HttpOnly`
-			response.setHeader("set-cookie", cookie)
-
-			return response.status(204).send(null)
-		}
-		else if (url.pathname == "/get")
-		{
-			const session  = request.cookies.session as string
-			const origin   = request.headers.origin  as string
-			const owner    = request.query.owner     as string
-			const repo     = request.query.repo      as string
-			const category = request.query.category  as string
-			const page     = request.query.page      as string
-
-			if (!origin)   throw { statusCode: 400, body: { error: "Origin not specified"   } }
-			if (!owner)    throw { statusCode: 400, body: { error: "Owner not specified"    } }
-			if (!repo)     throw { statusCode: 400, body: { error: "Repo not specified"     } }
-			if (!category) throw { statusCode: 400, body: { error: "Category not specified" } }
-			if (!page)     throw { statusCode: 400, body: { error: "Page not specified"     } }
-
-			console.log("Session:", !!session)
-
-			if (session)
+			default:
 			{
-				const userAuth   = Decrypt(session) as IUserAuth
-				const discussion = await GetDiscussion(userAuth, owner, repo, category, page, origin)
-
-				discussion.loggedIn = true
-				return response.status(200).json(discussion)
+				throw { statusCode: 404, body: {} }
 			}
-			else
+
+			case "/":
 			{
-				const token      = await CreateJWT(process.env.CLIENT_ID, process.env.PRIVATE_KEY)
-				const appAuthUrl = await GetAppAuthUrl(token, owner, repo)
+				return response.status(200).json({ message: "hello" })
+			}
+
+			case "/login":
+			{
+				const code  = Validate(400, request.query, "code")
+				const state = Validate(400, request.query, "state")
+
+				const userAuth    = await GetUserAuth(code)
+				const session     = EncryptSession({ userAuth })
+				const expires     = new Date(userAuth.refreshExp * 1000).toUTCString()
+				const devRedirect = devOrigins.includes(new URL(state).origin)
+				const sameSite    = devRequest || devRedirect ? "None" : "Strict"
+				const cookie      = `session=${session}; Expires=${expires}; SameSite=${sameSite}; Secure; HttpOnly`
+				response.setHeader("set-cookie", cookie)
+
+				return response.redirect(302, state)
+			}
+
+			case "/logout":
+			{
+				const sameSite = devRequest ? "None" : "Strict"
+				const cookie   = `session=; Max-Age=0; SameSite=${sameSite}; Secure; HttpOnly`
+				response.setHeader("set-cookie", cookie)
+
+				return response.status(204).send(null)
+			}
+
+			case "/discussion":
+			{
+				const ctx = {
+					origin:   Validate(400, request.headers, "origin"),
+					owner:    Validate(400, request.query,   "owner"),
+					repo:     Validate(400, request.query,   "repo"),
+					category: Validate(400, request.query,   "category"),
+					page:     Validate(400, request.query,   "page"),
+				}
+
+				const session = DecryptSession(request.cookies.session)
+				if (session.userAuth)
+				{
+					const result = await GetUserDiscussion(session, ctx)
+					if (result && result.success)
+						return response.status(200).json(result.json)
+				}
+
+				const token      = await CreateJWT()
+				const appAuthUrl = await GetAppAuthUrl(token, ctx.owner, ctx.repo)
 				const appAuth    = await GetAppAuth(token, appAuthUrl)
-				const discussion = await GetDiscussion(appAuth, owner, repo, category, page, origin)
+				const discussion = await GetAppDiscussion(appAuth, ctx)
 
-				discussion.loggedIn = false
 				return response.status(200).json(discussion)
 			}
+
+			case "/react":
+			{
+				const session_enc = Validate(400, request.cookies, "session")
+				const subjectId   = Validate(400, request.query,   "subjectId")
+				const reaction    = Validate(400, request.query,   "reaction")
+				const add         = Validate(400, request.query,   "add")
+
+				// TODO: Refresh user auth
+				const session  = DecryptSession(session_enc)
+				const userAuth = Validate(400, session, "userAuth")
+				await SetReaction(userAuth, subjectId, reaction, add)
+
+				return response.status(204).send(null)
+			}
 		}
-		else if (url.pathname == "/react")
-		{
-			const session   = request.cookies.session as string
-			const subjectId = request.query.subjectId as string
-			const reaction  = request.query.reaction  as string
-			const add       = request.query.add       as string
-
-			if (!session)   throw { statusCode: 400, body: { error: "Session not specified"    } }
-			if (!subjectId) throw { statusCode: 400, body: { error: "Subject Id not specified" } }
-			if (!reaction)  throw { statusCode: 400, body: { error: "Reaction not specified"   } }
-			if (!add)       throw { statusCode: 400, body: { error: "Add not specified"        } }
-
-			const userAuth = Decrypt(session) as IUserAuth
-			await SetReaction(userAuth, subjectId, reaction, add)
-			return response.status(204).send(null)
-		}
-
-		throw "Failed to return a value"
 	}
 	catch (error: unknown)
 	{
@@ -156,6 +153,31 @@ export default async function handler(request: VercelRequest, response: VercelRe
 			return response.status(500).json({ error: "Application error" })
 		}
 	}
+	finally
+	{
+		console.timeEnd("Total")
+	}
+}
+
+// -------------------------------------------------------------------------------------------------
+// Session Management
+
+function EncryptSession(session: ISession): string
+{
+	return btoa(JSON.stringify(session.userAuth))
+}
+
+function DecryptSession(str: string): ISession
+{
+	try
+	{
+		const userAuth = JSON.parse(atob(str))
+		return { userAuth }
+	}
+	catch
+	{
+		return {}
+	}
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -167,7 +189,7 @@ interface IAuth
 	tokenExp: number
 }
 
-async function CreateJWT(clientId: string, privateKey: string): Promise<string>
+async function CreateJWT(): Promise<string>
 {
 	// NOTE: Should really cache this token, but since we run this as a serverless function we don't
 	// have a good way to do so. We could include it in the encrypted session data we store on the
@@ -180,40 +202,38 @@ async function CreateJWT(clientId: string, privateKey: string): Promise<string>
 	// can be in use at once.) Since comments lazily load it's somewhat hard for users to hammer
 	// them.
 
-	console.time(CreateJWT.name)
-	const key_b64 = b64tobytes(privateKey)
+	const key_b64 = b64tobytes(process.env.PRIVATE_KEY!)
 	const alg = { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256", }
 	const key = await crypto.subtle.importKey("pkcs8", key_b64, alg, false, ["sign"])
 
 	const now = Math.floor(Date.now() / 1000 - 60)
 	const header_b64 = objtob64({ alg: "RS256", typ: "JWT", })
-	const payload_b64 = objtob64({ iat: now, exp: now + 300, iss: clientId, })
+	const payload_b64 = objtob64({ iat: now, exp: now + 300, iss: process.env.CLIENT_ID!, })
 	const message_bytes = strtobytes(`${header_b64}.${payload_b64}`)
 
 	const signature_bytes = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", key, message_bytes)
 	const signature_b64 = bytestob64(signature_bytes)
 
 	const token = `${header_b64}.${payload_b64}.${signature_b64}`
-	console.timeEnd(CreateJWT.name)
 	return token
 }
 
 async function GetAppAuthUrl(token: string, owner: string, repo: string): Promise<string>
 {
-	console.time(GetAppAuthUrl.name)
-	const json = await RESTRequest(token, "GET", `https://api.github.com/repos/${owner}/${repo}/installation`)
-	console.timeEnd(GetAppAuthUrl.name)
-	return json.access_tokens_url
+	const result = await RESTRequest(GetAppAuthUrl.name, token, "GET", `https://api.github.com/repos/${owner}/${repo}/installation`)
+	if (!result.success) throw result.json
+
+	return result.json.access_tokens_url
 }
 
 async function GetAppAuth(token: string, appAuthUrl: string): Promise<IAuth>
 {
-	console.time(GetAppAuth.name)
-	const json = await RESTRequest(token, "POST", appAuthUrl)
-	console.timeEnd(GetAppAuth.name)
+	const result = await RESTRequest(GetAppAuth.name, token, "POST", appAuthUrl)
+	if (!result.success) throw result.json
+
 	return {
-		token:    json.token,
-		tokenExp: json.expires_at,
+		token:    result.json.token,
+		tokenExp: result.json.expires_at,
 	}
 }
 
@@ -226,27 +246,8 @@ interface IUserAuth extends IAuth
 	refreshExp: number
 }
 
-// TODO: Handle errors
-async function GetUserAuth(clientId: string, clientSecret: string, code: string): Promise<IUserAuth>
+function ParseUserAuth(json: any)
 {
-	console.time(GetUserAuth.name)
-	const url = new URL("https://github.com/login/oauth/access_token")
-	url.searchParams.append("client_id", clientId)
-	url.searchParams.append("client_secret", clientSecret)
-	url.searchParams.append("code", code)
-
-	const response = await fetch(url.toString(), {
-		method: "POST",
-		headers: {
-			"Accept": "application/vnd.github+json",
-			"Content-Type": "application/json",
-			"X-GitHub-Api-Version": "2022-11-28",
-		},
-	})
-
-	const json = await response.json()
-	if (!response.ok) throw json
-
 	const now = Math.floor(Date.now() / 1000 - 60)
 	const auth = {
 		token:      json.access_token,
@@ -256,9 +257,52 @@ async function GetUserAuth(clientId: string, clientSecret: string, code: string)
 	}
 	if (Number.isNaN(auth.tokenExp))   throw "Failed to parse user token expiration"
 	if (Number.isNaN(auth.refreshExp)) throw "Failed to parse user token refresh expiration"
-
-	console.timeEnd(GetUserAuth.name)
 	return auth
+}
+
+async function GetUserAuth(code: string): Promise<IUserAuth>
+{
+	const url = new URL("https://github.com/login/oauth/access_token")
+	url.searchParams.append("client_id", process.env.CLIENT_ID!)
+	url.searchParams.append("client_secret", process.env.CLIENT_SECRET!)
+	url.searchParams.append("code", code)
+
+	const result = await RESTRequest(GetUserAuth.name, "", "POST", url.toString())
+	if (!result.success) throw result.json
+
+	const auth = ParseUserAuth(result.json)
+	return auth
+}
+
+async function RefreshUserAuth(session: ISession, force: boolean = false): Promise<FetchResult>
+{
+	const padding     = 1 * 60 * 1000 // 1 minute
+	const now         = Date.now() + padding
+	const userAuth    = session.userAuth!
+	const userExpired = now >= userAuth.tokenExp
+
+	if (userExpired || force)
+	{
+		const url = new URL("https://github.com/login/oauth/access_token")
+		url.searchParams.append("client_id", process.env.CLIENT_ID!)
+		url.searchParams.append("client_secret", process.env.CLIENT_SECRET!)
+		url.searchParams.append("grant_type", "refresh_token")
+		url.searchParams.append("refresh_token", session.userAuth!.refresh)
+
+		session.userAuth = undefined
+		const result = await RESTRequest(RefreshUserAuth.name, "", "POST", url.toString())
+		if (!result.success && result.json.error == "bad_refresh_token") return result
+		if (!result.success) throw result.json
+
+		const auth = ParseUserAuth(result.json)
+		session.userAuth = auth
+	}
+
+	return {
+		success: true,
+		response: new Response(null, { status: 204 }),
+		json: {},
+	}
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -319,12 +363,37 @@ interface IDiscussion
 	loggedIn: boolean
 }
 
-async function GetDiscussion(auth: IAuth, owner: string, repo: string, category: string, page: string, originUrl: string): Promise<IDiscussion>
+async function GetAppDiscussion(auth: IAuth, ctx: IDiscussionContext): Promise<IDiscussion>
 {
-	console.time(GetDiscussion.name)
-	const title = page.replace(/^\/?|\/?$/g, "")
-	const searchQuery = `repo:${owner}/${repo} in:title ${title}`
-	const json = await GraphQLRequest(auth,
+	const result = await GetDiscussion(auth, ctx, false)
+	if (!result.success) throw result.json
+
+	const discussion = result.json
+	return discussion
+}
+
+async function GetUserDiscussion(session: ISession, ctx: IDiscussionContext): Promise<FetchResult<IDiscussion>>
+{
+	let result
+
+	result = await RefreshUserAuth(session, false)
+	if (!result.success) return result as FetchResult<IDiscussion>
+
+	result = await GetDiscussion(session.userAuth!, ctx, true)
+	if (result.success) return result
+
+	result = await RefreshUserAuth(session, true)
+	if (!result.success) return result as FetchResult<IDiscussion>
+
+	result = await GetDiscussion(session.userAuth!, ctx, true)
+	return result
+}
+
+async function GetDiscussion(auth: IAuth, ctx: IDiscussionContext, loggedIn: boolean): Promise<FetchResult<IDiscussion>>
+{
+	const title = ctx.page.replace(/^\/?|\/?$/g, "")
+	const searchQuery = `repo:${ctx.owner}/${ctx.repo} in:title ${title}`
+	const result = await GraphQLRequest(GetDiscussion.name, auth,
 		`query($query: String!) {
 			search(type: DISCUSSION, query: $query, first: 2) {
 				discussionCount
@@ -335,35 +404,38 @@ async function GetDiscussion(auth: IAuth, owner: string, repo: string, category:
 				}
 			}
 		}`, { query: searchQuery })
-	console.timeEnd(GetDiscussion.name)
 
-	let discussion = null
-	const discussions = json.data.search.nodes
+	if (!result.success) return result as FetchResult<IDiscussion>
+
+	let discussion = null as IDiscussion | null
+	const discussions = result.json.data.search.nodes
 	switch (discussions.length)
 	{
 		case 0:
 		{
-			const [repoId, categoryId] = await GetRepoAndCategoryIds(auth, owner, repo, category)
-			discussion = await CreateDiscussion(auth, repoId, categoryId, title, page, originUrl)
+			const [repoId, categoryId] = await GetRepoAndCategoryIds(auth, ctx.owner, ctx.repo, ctx.category)
+			discussion = await CreateDiscussion(auth, repoId, categoryId, title, ctx.page, ctx.origin)
+			discussion.loggedIn = loggedIn
+			result.json = discussion
 			break
 		}
 
 		case 1:
-			discussion = discussions[0]
+			discussion = discussions[0] as IDiscussion
+			discussion.loggedIn = loggedIn
+			result.json = discussion
 			break
 
 		default:
 			throw { statusCode: 500, body: { error: "Failed to find discussion" } }
 	}
 
-	discussion.loggedIn = false
-	return discussion
+	return result as FetchResult<IDiscussion>
 }
 
 async function GetRepoAndCategoryIds(auth: IAuth, owner: string, repo: string, category: string)
 {
-	console.time(GetRepoAndCategoryIds.name)
-	const json = await GraphQLRequest(auth,
+	const result = await GraphQLRequest(GetRepoAndCategoryIds.name, auth,
 		`query {
 			repository(owner: "${owner}", name: "${repo}") {
 				id
@@ -375,23 +447,21 @@ async function GetRepoAndCategoryIds(auth: IAuth, owner: string, repo: string, c
 				}
 			}
 		}`)
+	if (!result.success) throw result.json
 
-	const categories = json.data.repository.discussionCategories.nodes as { id: string, name: string }[]
+	const categories = result.json.data.repository.discussionCategories.nodes as { id: string, name: string }[]
 	const categoryNode = categories.find(c => c.name === category)
 	if (!categoryNode) throw { statusCode: 400, body: { error: "Category not found" } }
-
-	console.timeEnd(GetRepoAndCategoryIds.name)
-	return [json.data.repository.id, categoryNode.id]
+	return [result.json.data.repository.id, categoryNode.id]
 }
 
-async function CreateDiscussion(auth: IAuth, repoId: string, categoryId: string, title: string, page: string, originUrl: string)
+async function CreateDiscussion(auth: IAuth, repoId: string, categoryId: string, title: string, page: string, origin: string): Promise<IDiscussion>
 {
-	console.time("CreateDiscussion")
-	if (originUrl.includes("localhost"))
+	if (origin.includes("localhost"))
 		throw { statusCode: 400, body: { error: "Creating discussions from localhost is disabled" } }
 
-	const body = originUrl ? new URL(page, originUrl).toString() : ""
-	const json = await GraphQLRequest(auth,
+	const body = origin ? new URL(page, origin).toString() : ""
+	const result = await GraphQLRequest(CreateDiscussion.name, auth,
 		`mutation {
 			createDiscussion(input: {repositoryId: "${repoId}", categoryId: "${categoryId}", body: "${body}", title: "${title}"}) {
 				discussion {
@@ -400,11 +470,12 @@ async function CreateDiscussion(auth: IAuth, repoId: string, categoryId: string,
 			}
 		}`)
 
-	if (json.extensions && json.extensions.warnings)
-		console.log(json.extensions.warnings)
+	if (!result.success) throw result.json
 
-	console.timeEnd("CreateDiscussion")
-	return json.data.createDiscussion.discussion as IDiscussion
+	if (result.json.extensions && result.json.extensions.warnings)
+		console.log(result.json.extensions.warnings)
+
+	return result.json.data.createDiscussion.discussion as IDiscussion
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -412,8 +483,6 @@ async function CreateDiscussion(auth: IAuth, repoId: string, categoryId: string,
 
 async function SetReaction(auth: IAuth, subjectId: string, reaction: string, add: string)
 {
-	console.time(SetReaction.name)
-
 	const mutationId = crypto.randomUUID()
 	const op = add == "true" ? "addReaction" : "removeReaction"
 	const mutation =
@@ -423,63 +492,80 @@ async function SetReaction(auth: IAuth, subjectId: string, reaction: string, add
 			}
 		}`
 
-	const json = await GraphQLRequest(auth, mutation)
-	if (json.data[op].clientMutationId != mutationId) throw json
-
-	console.timeEnd(SetReaction.name)
+	const result = await GraphQLRequest(SetReaction.name, auth, mutation)
+	if (!result.success) throw result.json
+	if (result.json.data[op].clientMutationId != mutationId) throw result.json
 }
 
 // -------------------------------------------------------------------------------------------------
 // Utilities
 
-async function RESTRequest(token: string, method: string, url: string)
-{
-	const response = await fetch(url, {
-		method,
-		headers: {
-			"Accept": "application/vnd.github+json",
-			"Authorization": `Bearer ${token}`,
-			"Content-Type": "application/json",
-			"X-GitHub-Api-Version": "2022-11-28",
-		},
-	})
-
-	const json = await response.json()
-	if (!response.ok) throw json
-	return json
+type FetchResult<T = Record<string, any>> = {
+	success:  boolean,
+	response: Response,
+	json:     T
 }
 
-async function GraphQLRequest(auth: IAuth, query: string, variables?: {})
+async function RESTRequest(name: string, token: string, method: string, url: string): Promise<FetchResult>
 {
-	const response = await fetch("https://api.github.com/graphql", {
-		method: "POST",
-		headers: {
-			"Accept": "application/vnd.github+json",
-			"Authorization": `Bearer ${auth.token}`,
-			"Content-Type": "application/json",
-			"X-GitHub-Api-Version": "2022-11-28",
-			"X-Github-Next-Global-ID": "1",
-		},
-		body: JSON.stringify({
-			query,
-			variables,
-		}),
-	})
+	console.time(name)
+	try
+	{
+		const response = await fetch(url, {
+			method,
+			headers: {
+				"Accept": "application/vnd.github+json",
+				"Authorization": `Bearer ${token}`,
+				"Content-Type": "application/json",
+				"X-GitHub-Api-Version": "2022-11-28",
+			},
+		})
 
-	const json = await response.json()
-	if (!response.ok) throw json
-	if ("errors" in json) throw json
-	return json
+		const json = await response.json()
+		const success = response.ok && !json.errors && !json.error
+		return { success, response, json }
+	}
+	finally
+	{
+		console.timeEnd(name)
+	}
 }
 
-function Encrypt(obj: {}): string
+async function GraphQLRequest(name: string, auth: IAuth, query: string, variables?: {}): Promise<FetchResult>
 {
-	return btoa(JSON.stringify(obj))
+	console.time(name)
+	try
+	{
+		const response = await fetch("https://api.github.com/graphql", {
+			method: "POST",
+			headers: {
+				"Accept": "application/vnd.github+json",
+				"Authorization": `Bearer ${auth.token}`,
+				"Content-Type": "application/json",
+				"X-GitHub-Api-Version": "2022-11-28",
+				"X-Github-Next-Global-ID": "1",
+			},
+			body: JSON.stringify({
+				query,
+				variables,
+			}),
+		})
+
+		const json = await response.json()
+		const success = response.ok && !json.errors && !json.error
+		return { success, response, json }
+	}
+	finally
+	{
+		console.timeEnd(name)
+	}
 }
 
-function Decrypt(s: string): {}
+function Validate(statusCode: number, obj: any, key: string)
 {
-	return JSON.parse(atob(s))
+	if (!obj[key])
+		throw { statusCode, body: { error: `${key} not specified` } }
+	return obj[key]
 }
 
 function strtobytes(s: string): ArrayBuffer
