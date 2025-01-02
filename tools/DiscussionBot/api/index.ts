@@ -17,7 +17,15 @@ interface ISession
 	userAuth?: IUserAuth
 }
 
-interface IDiscussionContext
+interface IContext
+{
+	response:     VercelResponse
+	updateCookie: boolean
+	devRequest:   boolean
+	session:      ISession
+}
+
+interface IDiscussionParams
 {
 	owner:    string
 	repo:     string
@@ -31,6 +39,13 @@ export default async function handler(request: VercelRequest, response: VercelRe
 	// NOTE: Unhandled failure modes:
 	// * Large requests  - limited to 4.5 MB or 4 MB, depdending on runtime
 	// * Time outs       - limited to 10s or 25s, depending on runtime
+
+	const ctx = {
+		response,
+		updateCookie: false,
+		devRequest: false,
+		session: {},
+	} as IContext
 
 	try
 	{
@@ -47,6 +62,8 @@ export default async function handler(request: VercelRequest, response: VercelRe
 		const devRequest  = devOrigins.includes(request.headers.origin || "")
 		if (prodRequest || devRequest)
 		{
+			ctx.devRequest = devRequest
+
 			const devExtra = devRequest ? ", x-vercel-protection-bypass, x-vercel-set-bypass-cookie" : ""
 			response.setHeader("access-control-allow-credentials", "true")
 			response.setHeader("access-control-allow-headers",     `credentials${devExtra}`)
@@ -75,28 +92,25 @@ export default async function handler(request: VercelRequest, response: VercelRe
 				const code  = Validate(400, request.query, "code")
 				const state = Validate(400, request.query, "state")
 
-				const session     = await GetUserAuth(code)
-				const devRedirect = devOrigins.includes(new URL(state).origin)
-				const cookie      = CreateCookie(session, devRequest || devRedirect)
+				ctx.devRequest ||= devOrigins.includes(new URL(state).origin)
+				await GetUserAuth(ctx, code)
 
-				return response
-					.setHeader("set-cookie", cookie)
-					.redirect(302, state)
+				UpdateCookie(ctx)
+				return response.status(302).redirect(state)
 			}
 
 			case "/logout":
 			{
-				const cookie = CreateCookie({}, devRequest)
+				ctx.updateCookie = true
+				ctx.session.userAuth = undefined
 
-				return response
-					.setHeader("set-cookie", cookie)
-					.status(204)
-					.send(null)
+				UpdateCookie(ctx)
+				return response.status(204).send(null)
 			}
 
 			case "/discussion":
 			{
-				const ctx = {
+				const params = {
 					origin:   Validate(400, request.headers, "origin"),
 					owner:    Validate(400, request.query,   "owner"),
 					repo:     Validate(400, request.query,   "repo"),
@@ -104,30 +118,24 @@ export default async function handler(request: VercelRequest, response: VercelRe
 					page:     Validate(400, request.query,   "page"),
 				}
 
-				const session = DecryptSession(request.cookies.session)
-				if (session.userAuth)
+				ctx.session = DecryptSession(request.cookies.session)
+				if (ctx.session.userAuth)
 				{
-					const result = await GetUserDiscussion(session, ctx)
-					// TODO: Sketchy
-					const cookie = CreateCookie(session, devRequest)
-					response.setHeader("set-cookie", cookie)
-
+					const result = await GetUserDiscussion(ctx, params)
 					if (result.success)
 					{
-						return response
-							.status(200)
-							.json(result.json)
+						UpdateCookie(ctx)
+						return response.status(200).json(result.json)
 					}
 				}
 
 				const token      = await CreateJWT()
-				const appAuthUrl = await GetAppAuthUrl(token, ctx.owner, ctx.repo)
+				const appAuthUrl = await GetAppAuthUrl(token, params.owner, params.repo)
 				const appAuth    = await GetAppAuth(token, appAuthUrl)
-				const discussion = await GetAppDiscussion(appAuth, ctx)
+				const discussion = await GetAppDiscussion(appAuth, params)
 
-				return response
-					.status(200)
-					.json(discussion)
+				//UpdateCookie(ctx)
+				return response.status(200).json(discussion)
 			}
 
 			case "/react":
@@ -141,27 +149,27 @@ export default async function handler(request: VercelRequest, response: VercelRe
 				if (!session.userAuth) throw { statusCode: 401, body: { error: "Unrecognized session" } }
 
 				// TODO: Handle session refresh
-				// TODO: Would it be better to pass the reponse in so the cookie is updated when throwing?
-				const _      = await SetReaction(session, subjectId, reaction, add)
-				//const cookie = CreateCookie(session, devRequest)
+				await SetReaction(session, subjectId, reaction, add)
 
-				return response
-					//.setHeader("set-cookie", cookie)
-					.status(204)
-					.send(null)
+				UpdateCookie(ctx)
+				return response.status(204).send(null)
 			}
 		}
 	}
-	catch (error: unknown)
+	catch (error: any)
 	{
-		if (error instanceof Object && "body" in error && "statusCode" in error)
+		if (error instanceof Object && error.statusCode && error.body)
 		{
 			const status = error.statusCode as number
+
+			UpdateCookie(ctx)
 			return response.status(status).json(error.body)
 		}
 		else
 		{
 			console.dir(error, { depth: null })
+
+			UpdateCookie(ctx)
 			return response.status(500).json({ error: "Application error" })
 		}
 	}
@@ -171,14 +179,17 @@ export default async function handler(request: VercelRequest, response: VercelRe
 	}
 }
 
-function CreateCookie(session: ISession, devRequest: boolean)
+function UpdateCookie(ctx: IContext)
 {
-	const sessionStr = EncryptSession(session)
-	const expires    = session.userAuth ? session.userAuth.refreshExp * 1000 : 0
-	const expiresStr = new Date(expires).toUTCString()
-	const sameSite   = devRequest ? "None" : "Strict"
-	const cookie     = `session=${sessionStr}; Expires=${expiresStr}; SameSite=${sameSite}; Secure; HttpOnly`
-	return cookie
+	if (ctx.updateCookie)
+	{
+		const sessionStr = EncryptSession(ctx.session)
+		const expires    = ctx.session.userAuth ? ctx.session.userAuth.refreshExp * 1000 : 0
+		const expiresStr = new Date(expires).toUTCString()
+		const sameSite   = ctx.devRequest ? "None" : "Strict"
+		const cookie     = `session=${sessionStr}; Expires=${expiresStr}; SameSite=${sameSite}; Secure; HttpOnly`
+		ctx.response.setHeader("set-cookie", cookie)
+	}
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -288,24 +299,26 @@ function ParseUserAuth(json: any): IUserAuth
 	return auth
 }
 
-async function GetUserAuth(code: string): Promise<ISession>
+async function GetUserAuth(ctx: IContext, code: string)
 {
 	const url = new URL("https://github.com/login/oauth/access_token")
 	url.searchParams.append("client_id", process.env.CLIENT_ID!)
 	url.searchParams.append("client_secret", process.env.CLIENT_SECRET!)
 	url.searchParams.append("code", code)
 
+	ctx.updateCookie = true
+	ctx.session.userAuth = undefined
+
 	const result = await RESTRequest(GetUserAuth.name, "", "POST", url.toString())
 	if (!result.success) throw result.json
 
-	const userAuth = ParseUserAuth(result.json)
-	return { userAuth }
+	ctx.session.userAuth = ParseUserAuth(result.json)
 }
 
-async function RefreshUserAuth(session: ISession, force: boolean = false): Promise<FetchResult>
+async function RefreshUserAuth(ctx: IContext, force: boolean = false): Promise<FetchResult>
 {
 	const now     = Math.floor(Date.now() / 1000) + 60
-	const expired = now >= session.userAuth!.tokenExp
+	const expired = now >= ctx.session.userAuth!.tokenExp
 
 	if (expired || force)
 	{
@@ -313,13 +326,16 @@ async function RefreshUserAuth(session: ISession, force: boolean = false): Promi
 		url.searchParams.append("client_id", process.env.CLIENT_ID!)
 		url.searchParams.append("client_secret", process.env.CLIENT_SECRET!)
 		url.searchParams.append("grant_type", "refresh_token")
-		url.searchParams.append("refresh_token", session.userAuth!.refresh)
+		url.searchParams.append("refresh_token", ctx.session.userAuth!.refresh)
 
-		session.userAuth = undefined
+		ctx.updateCookie = true
+		ctx.session.userAuth = undefined
+
 		const result = await RESTRequest(RefreshUserAuth.name, "", "POST", url.toString())
 		if (!result.success && result.json.error == "bad_refresh_token") return result
 		if (!result.success) throw result.json
-		session.userAuth = ParseUserAuth(result.json)
+
+		ctx.session.userAuth = ParseUserAuth(result.json)
 	}
 
 	return {
@@ -387,7 +403,7 @@ interface IDiscussion
 	loggedIn: boolean
 }
 
-async function GetAppDiscussion(auth: IAuth, ctx: IDiscussionContext): Promise<IDiscussion>
+async function GetAppDiscussion(auth: IAuth, ctx: IDiscussionParams): Promise<IDiscussion>
 {
 	const result = await GetDiscussion(auth, ctx, false)
 	if (!result.success) throw result.json
@@ -396,27 +412,27 @@ async function GetAppDiscussion(auth: IAuth, ctx: IDiscussionContext): Promise<I
 	return discussion
 }
 
-async function GetUserDiscussion(session: ISession, ctx: IDiscussionContext): Promise<FetchResult<IDiscussion>>
+async function GetUserDiscussion(ctx: IContext, params: IDiscussionParams): Promise<FetchResult<IDiscussion>>
 {
 	let result
 
-	result = await RefreshUserAuth(session, false)
+	result = await RefreshUserAuth(ctx, false)
 	if (!result.success) return result as FetchResult<IDiscussion>
 
-	result = await GetDiscussion(session.userAuth!, ctx, true)
+	result = await GetDiscussion(ctx.session.userAuth!, params, true)
 	if (result.success) return result
 
-	result = await RefreshUserAuth(session, true)
+	result = await RefreshUserAuth(ctx, true)
 	if (!result.success) return result as FetchResult<IDiscussion>
 
-	result = await GetDiscussion(session.userAuth!, ctx, true)
+	result = await GetDiscussion(ctx.session.userAuth!, params, true)
 	return result
 }
 
-async function GetDiscussion(auth: IAuth, ctx: IDiscussionContext, loggedIn: boolean): Promise<FetchResult<IDiscussion>>
+async function GetDiscussion(auth: IAuth, params: IDiscussionParams, loggedIn: boolean): Promise<FetchResult<IDiscussion>>
 {
-	const title = ctx.page.replace(/^\/?|\/?$/g, "")
-	const searchQuery = `repo:${ctx.owner}/${ctx.repo} in:title ${title}`
+	const title = params.page.replace(/^\/?|\/?$/g, "")
+	const searchQuery = `repo:${params.owner}/${params.repo} in:title ${title}`
 	const result = await GraphQLRequest(GetDiscussion.name, auth,
 		`query($query: String!) {
 			search(type: DISCUSSION, query: $query, first: 2) {
@@ -437,8 +453,8 @@ async function GetDiscussion(auth: IAuth, ctx: IDiscussionContext, loggedIn: boo
 	{
 		case 0:
 		{
-			const [repoId, categoryId] = await GetRepoAndCategoryIds(auth, ctx.owner, ctx.repo, ctx.category)
-			discussion = await CreateDiscussion(auth, repoId, categoryId, title, ctx.page, ctx.origin)
+			const [repoId, categoryId] = await GetRepoAndCategoryIds(auth, params.owner, params.repo, params.category)
+			discussion = await CreateDiscussion(auth, repoId, categoryId, title, params.page, params.origin)
 			discussion.loggedIn = loggedIn
 			result.json = discussion
 			break
