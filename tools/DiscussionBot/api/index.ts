@@ -11,9 +11,9 @@ declare const process:
 	}
 }
 
+// TODO: Add app url (saves >300 ms)
 interface ISession
 {
-	appUrl?: string
 	userAuth?: IUserAuth
 }
 
@@ -26,14 +26,11 @@ interface IDiscussionContext
 	origin:   string
 }
 
-// TODO: This whole file needs to be rewritten. It's a mess.
 export default async function handler(request: VercelRequest, response: VercelResponse)
 {
-
 	// NOTE: Unhandled failure modes:
 	// * Large requests  - limited to 4.5 MB or 4 MB, depdending on runtime
 	// * Time outs       - limited to 10s or 25s, depending on runtime
-	// * Invalid session - TODO
 
 	try
 	{
@@ -78,24 +75,23 @@ export default async function handler(request: VercelRequest, response: VercelRe
 				const code  = Validate(400, request.query, "code")
 				const state = Validate(400, request.query, "state")
 
-				const userAuth    = await GetUserAuth(code)
-				const session     = EncryptSession({ userAuth })
-				const expires     = new Date(userAuth.refreshExp * 1000).toUTCString()
+				const session     = await GetUserAuth(code)
 				const devRedirect = devOrigins.includes(new URL(state).origin)
-				const sameSite    = devRequest || devRedirect ? "None" : "Strict"
-				const cookie      = `session=${session}; Expires=${expires}; SameSite=${sameSite}; Secure; HttpOnly`
-				response.setHeader("set-cookie", cookie)
+				const cookie      = CreateCookie(session, devRequest || devRedirect)
 
-				return response.redirect(302, state)
+				return response
+					.setHeader("set-cookie", cookie)
+					.redirect(302, state)
 			}
 
 			case "/logout":
 			{
-				const sameSite = devRequest ? "None" : "Strict"
-				const cookie   = `session=; Max-Age=0; SameSite=${sameSite}; Secure; HttpOnly`
-				response.setHeader("set-cookie", cookie)
+				const cookie = CreateCookie({}, devRequest)
 
-				return response.status(204).send(null)
+				return response
+					.setHeader("set-cookie", cookie)
+					.status(204)
+					.send(null)
 			}
 
 			case "/discussion":
@@ -112,8 +108,16 @@ export default async function handler(request: VercelRequest, response: VercelRe
 				if (session.userAuth)
 				{
 					const result = await GetUserDiscussion(session, ctx)
-					if (result && result.success)
-						return response.status(200).json(result.json)
+					// TODO: Sketchy
+					const cookie = CreateCookie(session, devRequest)
+					response.setHeader("set-cookie", cookie)
+
+					if (result.success)
+					{
+						return response
+							.status(200)
+							.json(result.json)
+					}
 				}
 
 				const token      = await CreateJWT()
@@ -121,22 +125,30 @@ export default async function handler(request: VercelRequest, response: VercelRe
 				const appAuth    = await GetAppAuth(token, appAuthUrl)
 				const discussion = await GetAppDiscussion(appAuth, ctx)
 
-				return response.status(200).json(discussion)
+				return response
+					.status(200)
+					.json(discussion)
 			}
 
 			case "/react":
 			{
-				const session_enc = Validate(400, request.cookies, "session")
-				const subjectId   = Validate(400, request.query,   "subjectId")
-				const reaction    = Validate(400, request.query,   "reaction")
-				const add         = Validate(400, request.query,   "add")
+				const sessionStr = Validate(400, request.cookies, "session")
+				const subjectId  = Validate(400, request.query,   "subjectId")
+				const reaction   = Validate(400, request.query,   "reaction")
+				const add        = Validate(400, request.query,   "add")
 
-				// TODO: Refresh user auth
-				const session  = DecryptSession(session_enc)
-				const userAuth = Validate(400, session, "userAuth")
-				await SetReaction(userAuth, subjectId, reaction, add)
+				const session = DecryptSession(sessionStr)
+				if (!session.userAuth) throw { statusCode: 401, body: { error: "Unrecognized session" } }
 
-				return response.status(204).send(null)
+				// TODO: Handle session refresh
+				// TODO: Would it be better to pass the reponse in so the cookie is updated when throwing?
+				const _      = await SetReaction(session, subjectId, reaction, add)
+				//const cookie = CreateCookie(session, devRequest)
+
+				return response
+					//.setHeader("set-cookie", cookie)
+					.status(204)
+					.send(null)
 			}
 		}
 	}
@@ -159,20 +171,36 @@ export default async function handler(request: VercelRequest, response: VercelRe
 	}
 }
 
+function CreateCookie(session: ISession, devRequest: boolean)
+{
+	const sessionStr = EncryptSession(session)
+	const expires    = session.userAuth ? session.userAuth.refreshExp * 1000 : 0
+	const expiresStr = new Date(expires).toUTCString()
+	const sameSite   = devRequest ? "None" : "Strict"
+	const cookie     = `session=${sessionStr}; Expires=${expiresStr}; SameSite=${sameSite}; Secure; HttpOnly`
+	return cookie
+}
+
 // -------------------------------------------------------------------------------------------------
 // Session Management
 
 function EncryptSession(session: ISession): string
 {
-	return btoa(JSON.stringify(session.userAuth))
+	const sessionStr = btoa(JSON.stringify(session))
+	return sessionStr
 }
 
-function DecryptSession(str: string): ISession
+function DecryptSession(sessionStr: string): ISession
 {
 	try
 	{
-		const userAuth = JSON.parse(atob(str))
-		return { userAuth }
+		const session = JSON.parse(atob(sessionStr))
+		if (!session.userAuth) return {}
+		if (!session.userAuth.token) return {}
+		if (!session.userAuth.tokenExp) return {}
+		if (!session.userAuth.refresh) return {}
+		if (!session.userAuth.refreshExp) return {}
+		return session
 	}
 	catch
 	{
@@ -206,7 +234,7 @@ async function CreateJWT(): Promise<string>
 	const alg = { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256", }
 	const key = await crypto.subtle.importKey("pkcs8", key_b64, alg, false, ["sign"])
 
-	const now = Math.floor(Date.now() / 1000 - 60)
+	const now = Math.floor(Date.now() / 1000) - 60
 	const header_b64 = objtob64({ alg: "RS256", typ: "JWT", })
 	const payload_b64 = objtob64({ iat: now, exp: now + 300, iss: process.env.CLIENT_ID!, })
 	const message_bytes = strtobytes(`${header_b64}.${payload_b64}`)
@@ -246,9 +274,9 @@ interface IUserAuth extends IAuth
 	refreshExp: number
 }
 
-function ParseUserAuth(json: any)
+function ParseUserAuth(json: any): IUserAuth
 {
-	const now = Math.floor(Date.now() / 1000 - 60)
+	const now = Math.floor(Date.now() / 1000)
 	const auth = {
 		token:      json.access_token,
 		tokenExp:   now + Number(json.expires_in),
@@ -260,7 +288,7 @@ function ParseUserAuth(json: any)
 	return auth
 }
 
-async function GetUserAuth(code: string): Promise<IUserAuth>
+async function GetUserAuth(code: string): Promise<ISession>
 {
 	const url = new URL("https://github.com/login/oauth/access_token")
 	url.searchParams.append("client_id", process.env.CLIENT_ID!)
@@ -270,18 +298,16 @@ async function GetUserAuth(code: string): Promise<IUserAuth>
 	const result = await RESTRequest(GetUserAuth.name, "", "POST", url.toString())
 	if (!result.success) throw result.json
 
-	const auth = ParseUserAuth(result.json)
-	return auth
+	const userAuth = ParseUserAuth(result.json)
+	return { userAuth }
 }
 
 async function RefreshUserAuth(session: ISession, force: boolean = false): Promise<FetchResult>
 {
-	const padding     = 1 * 60 * 1000 // 1 minute
-	const now         = Date.now() + padding
-	const userAuth    = session.userAuth!
-	const userExpired = now >= userAuth.tokenExp
+	const now     = Math.floor(Date.now() / 1000) + 60
+	const expired = now >= session.userAuth!.tokenExp
 
-	if (userExpired || force)
+	if (expired || force)
 	{
 		const url = new URL("https://github.com/login/oauth/access_token")
 		url.searchParams.append("client_id", process.env.CLIENT_ID!)
@@ -293,9 +319,7 @@ async function RefreshUserAuth(session: ISession, force: boolean = false): Promi
 		const result = await RESTRequest(RefreshUserAuth.name, "", "POST", url.toString())
 		if (!result.success && result.json.error == "bad_refresh_token") return result
 		if (!result.success) throw result.json
-
-		const auth = ParseUserAuth(result.json)
-		session.userAuth = auth
+		session.userAuth = ParseUserAuth(result.json)
 	}
 
 	return {
@@ -481,7 +505,7 @@ async function CreateDiscussion(auth: IAuth, repoId: string, categoryId: string,
 // -------------------------------------------------------------------------------------------------
 // Mutations
 
-async function SetReaction(auth: IAuth, subjectId: string, reaction: string, add: string)
+async function SetReaction(session: ISession, subjectId: string, reaction: string, add: string)
 {
 	const mutationId = crypto.randomUUID()
 	const op = add == "true" ? "addReaction" : "removeReaction"
@@ -492,7 +516,7 @@ async function SetReaction(auth: IAuth, subjectId: string, reaction: string, add
 			}
 		}`
 
-	const result = await GraphQLRequest(SetReaction.name, auth, mutation)
+	const result = await GraphQLRequest(SetReaction.name, session.userAuth!, mutation)
 	if (!result.success) throw result.json
 	if (result.json.data[op].clientMutationId != mutationId) throw result.json
 }
