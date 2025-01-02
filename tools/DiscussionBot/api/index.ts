@@ -11,10 +11,10 @@ declare const process:
 	}
 }
 
-// TODO: Add app url (saves >300 ms)
 interface ISession
 {
 	userAuth?: IUserAuth
+	appAuthUrl?: string
 }
 
 interface IContext
@@ -132,12 +132,10 @@ export default async function handler(request: VercelRequest, response: VercelRe
 					console.dir(result.json, { depth: null })
 				}
 
-				const token      = await CreateJWT()
-				const appAuthUrl = await GetAppAuthUrl(token, params.owner, params.repo)
-				const appAuth    = await GetAppAuth(token, appAuthUrl)
+				const appAuth    = await GetAppAuth(ctx, params.owner, params.repo)
 				const discussion = await GetAppDiscussion(appAuth, params)
 
-				//UpdateCookie(ctx)
+				UpdateCookie(ctx)
 				return response.status(200).json(discussion)
 			}
 
@@ -179,19 +177,6 @@ export default async function handler(request: VercelRequest, response: VercelRe
 	}
 }
 
-function UpdateCookie(ctx: IContext)
-{
-	if (ctx.updateCookie)
-	{
-		const sessionStr = EncryptSession(ctx.session)
-		const expires    = ctx.session.userAuth ? ctx.session.userAuth.refreshExp * 1000 : 0
-		const expiresStr = new Date(expires).toUTCString()
-		const sameSite   = ctx.devRequest ? "None" : "Strict"
-		const cookie     = `session=${sessionStr}; Expires=${expiresStr}; SameSite=${sameSite}; Secure; HttpOnly`
-		ctx.response.setHeader("set-cookie", cookie)
-	}
-}
-
 // -------------------------------------------------------------------------------------------------
 // Session Management
 
@@ -206,16 +191,25 @@ function DecryptSession(sessionStr: string): ISession
 	try
 	{
 		const session = JSON.parse(atob(sessionStr))
-		if (!session.userAuth) return {}
-		if (!session.userAuth.token) return {}
-		if (!session.userAuth.tokenExp) return {}
-		if (!session.userAuth.refresh) return {}
-		if (!session.userAuth.refreshExp) return {}
 		return session
 	}
 	catch
 	{
 		return {}
+	}
+}
+
+function UpdateCookie(ctx: IContext)
+{
+	if (ctx.updateCookie)
+	{
+		const sessionStr = EncryptSession(ctx.session)
+		const userExp    = ctx.session.userAuth ? ctx.session.userAuth.refreshExp * 1000 : 0
+		const appExp     = Date.now() + 6 * 30 * 24 * 60 * 60 * 1000
+		const expiresStr = new Date(Math.max(userExp, appExp)).toUTCString()
+		const sameSite   = ctx.devRequest ? "None" : "Strict"
+		const cookie     = `session=${sessionStr}; Expires=${expiresStr}; SameSite=${sameSite}; Secure; HttpOnly`
+		ctx.response.setHeader("set-cookie", cookie)
 	}
 }
 
@@ -265,10 +259,23 @@ async function GetAppAuthUrl(token: string, owner: string, repo: string): Promis
 	return result.json.access_tokens_url
 }
 
-async function GetAppAuth(token: string, appAuthUrl: string): Promise<IAuth>
+async function GetAppAuth(ctx: IContext, owner: string, repo: string): Promise<IAuth>
 {
-	const result = await RESTRequest(GetAppAuth.name, token, "POST", appAuthUrl)
-	if (!result.success) throw result.json
+	const token = await CreateJWT()
+
+	let result
+	if (ctx.session.appAuthUrl)
+		result = await RESTRequest(GetAppAuth.name, token, "POST", ctx.session.appAuthUrl)
+
+	if (!result || !result.success)
+	{
+		ctx.updateCookie = true
+		ctx.session.appAuthUrl = undefined
+		ctx.session.appAuthUrl = await GetAppAuthUrl(token, owner, repo)
+
+		result = await RESTRequest(GetAppAuth.name, token, "POST", ctx.session.appAuthUrl)
+		if (!result.success) throw result.json
+	}
 
 	return {
 		token:    result.json.token,
@@ -522,7 +529,6 @@ async function CreateDiscussion(auth: IAuth, repoId: string, categoryId: string,
 // -------------------------------------------------------------------------------------------------
 // Mutations
 
-// TODO: Test this with an expired user token (i.e. test the refresh flow)
 async function SetReaction(ctx: IContext, subjectId: string, reaction: string, add: string)
 {
 	const mutationId = crypto.randomUUID()

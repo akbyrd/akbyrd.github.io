@@ -1,11 +1,5 @@
 General
 TODO: Implement comments
-	Function seems to run for a long time in some cases
-	Clear cookie if auth fails
-	Update cookie if auth refreshes
-	Regenerate secrets
-	Store session for app access tokens?
-
 	Error Handling
 		User authentication
 			User doesn't authorize repo
@@ -16,6 +10,7 @@ TODO: Implement comments
 			Bad token
 	Login
 		Encrypt cookie
+		Regenerate secrets
 		Restore scroll position when logging in?
 	Messages
 		Hook up submit button (disable while pending)
