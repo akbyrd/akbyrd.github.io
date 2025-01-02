@@ -1360,6 +1360,7 @@ function UpdateInputHeight(input: IInputElements)
 async function LoginOrSubmit(e: Event, input: IInputElements)
 {
 	e.preventDefault()
+	input.submitButton.disabled = true
 
 	const loggedIn = localStorage.getItem("loggedIn")
 	if (loggedIn == null)
@@ -1378,6 +1379,7 @@ async function LoginOrSubmit(e: Event, input: IInputElements)
 async function Logout(e: Event, input: IInputElements)
 {
 	e.preventDefault()
+	input.logoutButton.disabled = true
 
 	let response
 	try
@@ -1389,17 +1391,20 @@ async function Logout(e: Event, input: IInputElements)
 	}
 	catch
 	{
+		input.logoutButton.disabled = false
 		input.logoutButton.style.border = "1px solid red"
 		return
 	}
 
 	if (!response.ok)
 	{
+		input.logoutButton.disabled = false
 		input.logoutButton.style.border = "1px solid red"
 		return
 	}
 
 	localStorage.removeItem("loggedIn")
+	input.logoutButton.disabled = false
 	input.logoutButton.style.border = ""
 	commentState.parent.classList.remove("comments-logged-in")
 	commentState.parent.classList.add("comments-logged-out")
