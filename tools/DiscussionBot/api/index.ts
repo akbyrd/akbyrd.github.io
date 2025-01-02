@@ -62,8 +62,6 @@ export default async function handler(request: VercelRequest, response: VercelRe
 		const devRequest  = devOrigins.includes(request.headers.origin || "")
 		if (prodRequest || devRequest)
 		{
-			ctx.devRequest = devRequest
-
 			const devExtra = devRequest ? ", x-vercel-protection-bypass, x-vercel-set-bypass-cookie" : ""
 			response.setHeader("access-control-allow-credentials", "true")
 			response.setHeader("access-control-allow-headers",     `credentials${devExtra}`)
@@ -73,6 +71,9 @@ export default async function handler(request: VercelRequest, response: VercelRe
 
 		if (request.method == "OPTIONS")
 			return response.status(204).send(null)
+
+		ctx.devRequest = devRequest
+		ctx.session = DecryptSession(request.cookies.session)
 
 		const url = new URL(request.url || "", `http://${request.headers.host}`);
 		switch (url.pathname)
@@ -118,7 +119,6 @@ export default async function handler(request: VercelRequest, response: VercelRe
 					page:     Validate(400, request.query,   "page"),
 				}
 
-				ctx.session = DecryptSession(request.cookies.session)
 				if (ctx.session.userAuth)
 				{
 					const result = await GetUserDiscussion(ctx, params)
@@ -127,6 +127,9 @@ export default async function handler(request: VercelRequest, response: VercelRe
 						UpdateCookie(ctx)
 						return response.status(200).json(result.json)
 					}
+
+					console.log("Failed to get user discussion")
+					console.dir(result.json, { depth: null })
 				}
 
 				const token      = await CreateJWT()
@@ -140,16 +143,13 @@ export default async function handler(request: VercelRequest, response: VercelRe
 
 			case "/react":
 			{
-				const sessionStr = Validate(400, request.cookies, "session")
-				const subjectId  = Validate(400, request.query,   "subjectId")
-				const reaction   = Validate(400, request.query,   "reaction")
-				const add        = Validate(400, request.query,   "add")
+				const subjectId = Validate(400, request.query,   "subjectId")
+				const reaction  = Validate(400, request.query,   "reaction")
+				const add       = Validate(400, request.query,   "add")
 
-				const session = DecryptSession(sessionStr)
-				if (!session.userAuth) throw { statusCode: 401, body: { error: "Unrecognized session" } }
+				if (!ctx.session.userAuth) throw { statusCode: 401, body: { error: "Invalid session" } }
 
-				// TODO: Handle session refresh
-				await SetReaction(session, subjectId, reaction, add)
+				await SetReaction(ctx, subjectId, reaction, add)
 
 				UpdateCookie(ctx)
 				return response.status(204).send(null)
@@ -422,6 +422,7 @@ async function GetUserDiscussion(ctx: IContext, params: IDiscussionParams): Prom
 	result = await GetDiscussion(ctx.session.userAuth!, params, true)
 	if (result.success) return result
 
+	// TODO: Should only return if the error is a token expiration error
 	result = await RefreshUserAuth(ctx, true)
 	if (!result.success) return result as FetchResult<IDiscussion>
 
@@ -521,7 +522,8 @@ async function CreateDiscussion(auth: IAuth, repoId: string, categoryId: string,
 // -------------------------------------------------------------------------------------------------
 // Mutations
 
-async function SetReaction(session: ISession, subjectId: string, reaction: string, add: string)
+// TODO: Test this with an expired user token (i.e. test the refresh flow)
+async function SetReaction(ctx: IContext, subjectId: string, reaction: string, add: string)
 {
 	const mutationId = crypto.randomUUID()
 	const op = add == "true" ? "addReaction" : "removeReaction"
@@ -532,7 +534,20 @@ async function SetReaction(session: ISession, subjectId: string, reaction: strin
 			}
 		}`
 
-	const result = await GraphQLRequest(SetReaction.name, session.userAuth!, mutation)
+	let result
+
+	result = await RefreshUserAuth(ctx, false)
+	if (!result.success) throw result.json
+
+	result = await GraphQLRequest(SetReaction.name, ctx.session.userAuth!, mutation)
+	if (result.success) return
+	if (result.json.data[op].clientMutationId != mutationId) throw result.json
+
+	// TODO: Should only return if the error is a token expiration error
+	result = await RefreshUserAuth(ctx, true)
+	if (!result.success) throw result.json
+
+	result = await GraphQLRequest(SetReaction.name, ctx.session.userAuth!, mutation)
 	if (!result.success) throw result.json
 	if (result.json.data[op].clientMutationId != mutationId) throw result.json
 }
