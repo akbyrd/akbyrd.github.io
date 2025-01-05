@@ -8,11 +8,9 @@ TODO: Implement comments
 		Test "submit" behavior on mobile
 		Entrance animation for comments
 		Use the Edge runtime
-		Check Chrome accessibility recommendations
 		Add new comments without reloading
 		Remove extra space on mobile
 		Error popup instead of red border
-
 
 TODO: Fix scrolling on math in comments (don't use <math> because it behaves poorly)
 TODO: Check for missing math glyphs (should be using a single font, not falling back)
@@ -92,6 +90,7 @@ TODO: Test double tap to zoom on text
 TODO: Add syntax highlighting samples test page
 TODO: 1 frame of missing text in firefox
 TODO: Run site audit as part of deployment
+TODO: Chrome Lighthouse report
 TODO: https://jigsaw.w3.org/css-validator/
 TODO: https://validator.w3.org/
 TODO: https://validator.w3.org/feed/
