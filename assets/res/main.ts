@@ -1114,46 +1114,14 @@ async function LoadComments()
 	url.searchParams.append("repo", "akbyrd.github.io")
 	url.searchParams.append("category", "Blog Post Comments")
 
-	const headers = {} as { [key: string]: string }
-	if (deploymentEnv == DeploymentEnv.Staging)
-		headers["x-vercel-protection-bypass"] = stagingKey
-
-	let response
-	let json
-	try
-	{
-		// NOTE: Including cookies is tricky
-		// * Must use credentials: include
-		// * Must use access-control-allow-credentials: true
-		// * Must use access-control-allow-origin: <domain> (not *)
-		// * Must use SameSite: None
-		// * Must use Secure
-		// * Must use HTTPS
-
-		response = await fetch(url, {
-			method: "GET",
-			credentials: "include",
-			headers,
-		})
-
-		json = await response.json()
-		if (!response.ok) throw false
-	}
-	catch
+	const result = await APIRequest("GET", url)
+	if (!result.success)
 	{
 		SetCommentsState(CommentsState.Error)
 		return
 	}
-	finally
-	{
-		if (response)
-		{
-			const loggedIn = response.headers.has("x-authenticated")
-			SetLoggedIn(loggedIn)
-		}
-	}
 
-	const discussion = json as IDiscussion
+	const discussion = result.json as IDiscussion
 	SetCommentsState(CommentsState.Success)
 	SetDiscussion(discussion)
 }
@@ -1336,32 +1304,11 @@ async function ToggleReaction(e: Event, comment: ICommentBase)
 	url.searchParams.append("reaction", reaction)
 	url.searchParams.append("add", add.toString())
 
-	const headers = {} as { [key: string]: string }
-	if (deploymentEnv == DeploymentEnv.Staging)
-		headers["x-vercel-protection-bypass"] = stagingKey
-
-	let response
-	try
-	{
-		response = await fetch(url, {
-			method: "GET",
-			credentials: "include",
-			headers,
-		})
-		if (!response.ok) throw false
-	}
-	catch
+	const result = await APIRequest("GET", url)
+	if (!result.success)
 	{
 		reactionButton.disabled = false
 		return
-	}
-	finally
-	{
-		if (response)
-		{
-			const loggedIn = response.headers.has("x-authenticated")
-			SetLoggedIn(loggedIn)
-		}
 	}
 
 	reactionButton.disabled = false
@@ -1453,56 +1400,31 @@ async function LoginOrSubmit(e: Event, elems: ICommentElements)
 		url.searchParams.append("commentId", elems.commentId)
 		url.searchParams.append("content", elems.textArea.value)
 
-		// TODO: Probably add a helper function
-		const headers = {} as { [key: string]: string }
-		if (deploymentEnv == DeploymentEnv.Staging)
-				headers["x-vercel-protection-bypass"] = stagingKey
-
-		let response
-		let json
-		try
-		{
-			response = await fetch(url, {
-				method: "GET",
-				credentials: "include",
-				headers,
-			})
-
-			json = await response.json()
-			if (!response.ok) throw false
-		}
-		catch
+		const result = await APIRequest("GET", url)
+		if (!result.success)
 		{
 			elems.submitButton.disabled = false
 			elems.submitButton.style.border = "2px solid var(--error)"
 			return
 		}
-		finally
-		{
-			if (response)
-			{
-				const loggedIn = response.headers.has("x-authenticated")
-				SetLoggedIn(loggedIn)
-			}
-		}
 
 		SetCommentText(elems, "")
 
-		if (json.comments)
+		if (result.json.comments)
 		{
-			const discussion = json as IDiscussion
+			const discussion = result.json as IDiscussion
 			SetDiscussion(discussion)
 		}
 		else
 		{
 			if (elems.commentId)
 			{
-				const reply = json as IReply
+				const reply = result.json as IReply
 				AddReply(reply, elems)
 			}
 			else
 			{
-				const elems = json as IComment
+				const elems = result.json as IComment
 				AddComment(elems)
 			}
 		}
@@ -1514,21 +1436,52 @@ async function Logout(e: Event, elems: ICommentElements)
 	e.preventDefault()
 	elems.logoutButton.disabled = true
 
-	let response
-	try
-	{
-		response = await fetch(`${commentState.apiUrl}/logout`, {
-			method: "POST",
-			credentials: "include",
-		})
-
-		if (!response.ok) throw false
-	}
-	catch
+	const url = `${commentState.apiUrl}/logout`
+	const result = await APIRequest("POST", url)
+	if (!result.success)
 	{
 		elems.logoutButton.disabled = false
 		elems.logoutButton.style.border = "1px solid red"
 		return
+	}
+
+	elems.logoutButton.disabled = false
+	elems.logoutButton.style.border = ""
+}
+
+type FetchResult<T = Record<string, any>> = {
+	success:   boolean,
+	response?: Response,
+	json:      T
+}
+
+async function APIRequest(method: string, url: URL | string, headers: { [key: string]: string } = {}): Promise<FetchResult>
+{
+	// NOTE: Including cookies is tricky
+	// * Must use credentials: include
+	// * Must use access-control-allow-credentials: true
+	// * Must use access-control-allow-origin: <domain> (not *)
+	// * Must use SameSite: None
+	// * Must use Secure
+	// * Must use HTTPS
+
+	let response
+	let json
+	try
+	{
+		if (deploymentEnv == DeploymentEnv.Staging)
+			headers["x-vercel-protection-bypass"] = stagingKey
+
+		response = await fetch(url, {
+			method,
+			credentials: "include",
+			headers,
+		})
+
+		json = await response.json()
+	}
+	catch
+	{
 	}
 	finally
 	{
@@ -1536,11 +1489,14 @@ async function Logout(e: Event, elems: ICommentElements)
 		{
 			const loggedIn = response.headers.has("x-authenticated")
 			SetLoggedIn(loggedIn)
+
+			return { success: response.ok, response, json }
+		}
+		else
+		{
+			return { success: false, response: undefined, json }
 		}
 	}
-
-	elems.logoutButton.disabled = false
-	elems.logoutButton.style.border = ""
 }
 
 // -------------------------------------------------------------------------------------------------

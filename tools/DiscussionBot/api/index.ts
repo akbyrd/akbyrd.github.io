@@ -58,7 +58,6 @@ export default async function handler(request: VercelRequest, response: VercelRe
 			response.setHeader("access-control-allow-credentials", "true")
 			response.setHeader("access-control-allow-headers",     `credentials${devExtra}`)
 			response.setHeader("access-control-allow-origin",      request.headers.origin!)
-			response.setHeader("access-control-expose-headers",    "x-authenticated")
 			response.setHeader("vary",                             "origin")
 		}
 
@@ -225,7 +224,10 @@ function DecryptSession(sessionStr: string): ISession
 function UpdateCookie(ctx: IContext)
 {
 	if (ctx.session.userAuth)
-		ctx.response.setHeader("x-authenticated", "")
+	{
+		ctx.response.setHeader("access-control-expose-headers", "x-authenticated")
+		ctx.response.setHeader("x-authenticated", "1")
+	}
 
 	if (ctx.updateCookie)
 	{
