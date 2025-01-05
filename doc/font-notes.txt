@@ -13,6 +13,7 @@ Emojis
 
 Nerd Font Characters
 --------------------
+ Planet   e22e  nf-fae-planet
  Copy     f4bb  nf-oct-copy
  Smile    f4a2  nf-oct-smiley
  Logout   f426  nf-oct-sign_out
@@ -24,3 +25,12 @@ Nerd Font Characters
 󰇮 Email    f01ee nf-md-email
  Smile    f0118 nf-fa-face_smile
 󰑐 Refresh  f0450 nf-md-refresh
+
+
+
+References
+---------------
+Unicode Character Categories
+https://www.fileformat.info/info/unicode/category/index.htm
+https://www.regular-expressions.info/unicode.html#category
+https://en.wikipedia.org/wiki/Unicode_block

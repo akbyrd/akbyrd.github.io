@@ -4,6 +4,7 @@
 		{ "source": "/login", "destination": "/api" },
 		{ "source": "/logout", "destination": "/api" },
 		{ "source": "/discussion", "destination": "/api" },
+		{ "source": "/comment", "destination": "/api" },
 		{ "source": "/react", "destination": "/api" }
 	]
 }

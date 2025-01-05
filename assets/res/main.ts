@@ -815,14 +815,22 @@ declare const deploymentEnv: DeploymentEnv;
 declare const stagingKey: string;
 
 let commentState: {
-	apiUrl: string
-	parent: HTMLElement
-	templatesContainer: HTMLElement
+	apiUrl:           string
+	parent:           HTMLElement
+	templates: {
+		comment:       HTMLTemplateElement,
+		reply:         HTMLTemplateElement,
+		header:        HTMLTemplateElement,
+		codeBlock:     HTMLTemplateElement,
+		mathInline:    HTMLTemplateElement,
+		mathBlock:     HTMLTemplateElement,
+		footer:        HTMLTemplateElement,
+	}
 	loadingContainer: HTMLElement
-	errorContainer: HTMLElement
+	errorContainer:   HTMLElement
 	successContainer: HTMLElement
-	syntheticClick?: HTMLButtonElement
-	inputs: IInputElements[]
+	comments:         ICommentElements[]
+	syntheticClick?:  HTMLButtonElement
 }
 
 enum CommentsState
@@ -833,12 +841,16 @@ enum CommentsState
 	Success,
 }
 
-interface IInputElements
+interface ICommentElements
 {
-	root: HTMLElement
-	textArea: HTMLTextAreaElement
-	submitButton: HTMLButtonElement
-	logoutButton: HTMLButtonElement
+	discussionId:   string
+	commentId:      string
+	root:           HTMLElement
+	form:           HTMLFormElement
+	repliesParent?: HTMLElement
+	textArea:       HTMLTextAreaElement
+	submitButton:   HTMLButtonElement
+	logoutButton:   HTMLButtonElement
 }
 
 interface CommentTemplates
@@ -853,9 +865,8 @@ interface CommentTemplates
 interface IDiscussion
 {
 	loggedIn: boolean
-	bodyHTML: string
+	id: string
 	comments: { nodes: IComment[] }
-	reactionGroups: IReactionGroup[]
 }
 
 interface ICommentBase
@@ -905,7 +916,7 @@ enum Reaction
 	EYES,
 }
 
-async function InitComments()
+function InitComments()
 {
 	const parent = document.getElementById("comments")
 	if (!parent)
@@ -919,27 +930,55 @@ async function InitComments()
 		case DeploymentEnv.Production:  apiUrl = "https://comments.akbyrd.dev"; break
 	}
 
+	const comment0Root = parent.querySelector(".comment") as HTMLElement
 	commentState = {
 		apiUrl,
 		parent,
-		templatesContainer: parent.querySelector(".comments-state-templates") as HTMLElement,
+		templates: {
+			comment: document.getElementById("comment-template") as HTMLTemplateElement,
+			reply: document.getElementById("reply-template") as HTMLTemplateElement,
+			header: document.getElementById("comment-header-template") as HTMLTemplateElement,
+			codeBlock: document.getElementById("comment-code-block-template") as HTMLTemplateElement,
+			mathInline: document.getElementById("comment-math-inline-template") as HTMLTemplateElement,
+			mathBlock: document.getElementById("comment-math-block-template") as HTMLTemplateElement,
+			footer: document.getElementById("comment-footer-template") as HTMLTemplateElement,
+		},
 		loadingContainer: parent.querySelector(".comments-state-loading") as HTMLElement,
 		errorContainer: parent.querySelector(".comments-state-error") as HTMLElement,
 		successContainer: parent.querySelector(".comments-state-success") as HTMLElement,
-		inputs: [{
-			root: parent.querySelector("#comment-new") as HTMLElement,
-			textArea: parent.querySelector("#comment-new textarea") as HTMLTextAreaElement,
-			submitButton: parent.querySelector("#comment-new .comment-submit") as HTMLButtonElement,
-			logoutButton: parent.querySelector("#comment-new .comment-logout") as HTMLButtonElement,
+		comments: [{
+			discussionId: "",
+			commentId: "",
+			root: comment0Root,
+			form: comment0Root.querySelector("form")!,
+			textArea: comment0Root.querySelector("textarea")!,
+			submitButton: comment0Root.querySelector(".comment-submit") as HTMLButtonElement,
+			logoutButton: comment0Root.querySelector(".comment-logout") as HTMLButtonElement,
 		}],
 	}
 
 	const reloadButton = commentState.errorContainer.querySelector("button")!
 	reloadButton.addEventListener("click", ReloadComments, { passive: true })
 
-	SetCommentsState(CommentsState.Disabled)
+	// TODO: Dislike this duplication
+	const comment0 = commentState.comments[0]
+	comment0.textArea.addEventListener("input", () => UpdateInputHeight(comment0), { passive: true })
+	comment0.submitButton.addEventListener("click", (e) => LoginOrSubmit(e, comment0), { passive: false })
+	comment0.logoutButton.addEventListener("click", (e) => Logout(e, comment0), { passive: false })
 
-	const observer = new IntersectionObserver(OnCommentsVisible, { threshold: 1.0, });
+	SetCommentsState(CommentsState.Disabled)
+	SetDiscussion(undefined)
+
+	const observer = new IntersectionObserver((entries, observer) => {
+		for (const entry of entries)
+		{
+			if (entry.isIntersecting)
+			{
+				LoadComments()
+				observer.unobserve(entry.target)
+			}
+		}
+	}, { threshold: 1.0, });
 	observer.observe(commentState.parent)
 }
 
@@ -950,29 +989,108 @@ function SetCommentsState(state: CommentsState)
 	commentState.successContainer.toggleAttribute("data-disabled", state != CommentsState.Success)
 }
 
-async function OnCommentsVisible(entries: IntersectionObserverEntry[], observer: IntersectionObserver)
+function SetLoggedIn(loggedIn: boolean)
 {
-	for (const entry of entries)
+	const wasLoggedIn = localStorage.getItem("loggedIn") != null
+	if (wasLoggedIn == loggedIn) return
+
+	if (loggedIn)
 	{
-		if (entry.isIntersecting)
+		localStorage.setItem("loggedIn", "")
+		commentState.parent.classList.remove("comments-logged-out")
+		commentState.parent.classList.add("comments-logged-in")
+
+		for (const comment of commentState.comments)
 		{
-			LoadComments()
-			observer.unobserve(entry.target)
+			comment.textArea.readOnly = false
+			comment.submitButton.disabled = true
 		}
 	}
+	else
+	{
+		localStorage.removeItem("loggedIn")
+		commentState.parent.classList.remove("comments-logged-in")
+		commentState.parent.classList.add("comments-logged-out")
+
+		for (const comment of commentState.comments)
+		{
+			comment.textArea.readOnly = true
+			comment.submitButton.disabled = false
+		}
+
+		const reactions = commentState.parent.querySelectorAll(".comment-reaction")
+		for (const reaction of reactions)
+			reaction.removeAttribute("data-pressed")
+	}
+}
+
+function SetDiscussion(discussion?: IDiscussion)
+{
+	if (discussion)
+	{
+		SetLoggedIn(discussion.loggedIn)
+
+		commentState.comments[0].discussionId = discussion.id
+
+		for (const comment of discussion.comments.nodes)
+			AddComment(comment)
+	}
+	else
+	{
+		SetLoggedIn(false)
+
+		for (let i = commentState.comments.length - 1; i > 0; --i)
+			commentState.comments[i].root.remove()
+
+		commentState.comments.length = 1
+		commentState.comments[0].discussionId = ""
+	}
+}
+
+function AddComment(comment: IComment)
+{
+	const commentElems = CreateComment(commentState.templates, commentState.templates.comment, comment)
+	commentState.successContainer.insertBefore(commentElems.fragment, commentState.comments[0].root)
+
+	const elems = {
+		discussionId: commentState.comments[0].discussionId,
+		commentId:    comment.id,
+		root:         commentElems.root,
+		form:         commentElems.form,
+		textArea:     commentElems.form.querySelector("textarea")!,
+		submitButton: commentElems.form.querySelector(".comment-submit") as HTMLButtonElement,
+		logoutButton: commentElems.form.querySelector(".comment-logout") as HTMLButtonElement,
+	}
+	commentState.comments.push(elems)
+
+	elems.textArea.addEventListener("input", () => UpdateInputHeight(elems), { passive: true })
+	elems.submitButton.addEventListener("click", (e) => LoginOrSubmit(e, elems), { passive: false })
+	elems.logoutButton.addEventListener("click", (e) => Logout(e, elems), { passive: false })
+
+	for (const reply of comment.replies.nodes)
+		AddReply(reply, elems)
+}
+
+function AddReply(reply: IReply, comment: ICommentElements)
+{
+	if (!comment.repliesParent)
+	{
+		comment.repliesParent = document.createElement("section")
+		comment.repliesParent.classList.add("comment-replies")
+		comment.root.insertBefore(comment.repliesParent, comment.form)
+
+		const repliesLine = document.createElement("div")
+		repliesLine.classList.add("reply-line")
+		comment.repliesParent.prepend(repliesLine)
+	}
+
+	const replyElems = CreateComment(commentState.templates, commentState.templates.reply, reply)
+	comment.repliesParent.append(replyElems.fragment)
 }
 
 async function ReloadComments()
 {
-	commentState.inputs = [commentState.inputs[0]]
-
-	const comments = commentState.parent.querySelectorAll(".comment:not(:last-child")
-	for (const comment of comments)
-		comment.remove()
-
-	commentState.parent.classList.remove("comments-logged-in")
-	commentState.parent.classList.remove("comments-logged-out")
-
+	SetDiscussion(undefined)
 	await LoadComments()
 }
 
@@ -981,16 +1099,17 @@ async function LoadComments()
 	SetCommentsState(CommentsState.Loading)
 
 	const url = new URL(`${commentState.apiUrl}/discussion`)
+	url.searchParams.append("page", location.pathname)
 	url.searchParams.append("owner", "akbyrd")
 	url.searchParams.append("repo", "akbyrd.github.io")
 	url.searchParams.append("category", "Blog Post Comments")
-	url.searchParams.append("page", location.pathname)
 
 	const headers = {} as { [key: string]: string }
 	if (deploymentEnv == DeploymentEnv.Staging)
-			headers["x-vercel-protection-bypass"] = stagingKey
+		headers["x-vercel-protection-bypass"] = stagingKey
 
 	let response
+	let json
 	try
 	{
 		// NOTE: Including cookies is tricky
@@ -1006,6 +1125,9 @@ async function LoadComments()
 			credentials: "include",
 			headers,
 		})
+
+		json = await response.json()
+		if (!response.ok) throw false
 	}
 	catch
 	{
@@ -1013,101 +1135,25 @@ async function LoadComments()
 		return
 	}
 
-	const json = await response.json()
-	if (!response.ok)
-	{
-		SetCommentsState(CommentsState.Error)
-		return
-	}
-
 	const discussion = json as IDiscussion
-	const commentTemplate = document.getElementById("comment-template") as HTMLTemplateElement
-	const replyTemplate = document.getElementById("reply-template") as HTMLTemplateElement
-
-	const templates = {
-		header: document.getElementById("comment-header-template") as HTMLTemplateElement,
-		codeBlock: document.getElementById("comment-code-block-template") as HTMLTemplateElement,
-		mathInline: document.getElementById("comment-math-inline-template") as HTMLTemplateElement,
-		mathBlock: document.getElementById("comment-math-block-template") as HTMLTemplateElement,
-		footer: document.getElementById("comment-footer-template") as HTMLTemplateElement,
-	}
-
-	for (const comment of discussion.comments.nodes)
-	{
-		const commentElems = CreateComment(templates, commentTemplate, comment)
-		commentState.successContainer.insertBefore(commentElems.fragment, commentState.inputs[0].root)
-
-		// Input
-		{
-			const input = {
-				root:         commentElems.input,
-				textArea:     commentElems.input.querySelector("textarea") as HTMLTextAreaElement,
-				submitButton: commentElems.input.querySelector(".comment-submit") as HTMLButtonElement,
-				logoutButton: commentElems.input.querySelector(".comment-logout") as HTMLButtonElement,
-			}
-			input.textArea.addEventListener("input", () => UpdateInputHeight(input), { passive: true })
-			commentState.inputs.push(input)
-		}
-
-		// Replies
-		if (comment.replies.nodes.length)
-		{
-			const repliesParent = document.createElement("section")
-			repliesParent.classList.add("comment-replies")
-			commentElems.root.insertBefore(repliesParent, commentElems.input)
-
-			const repliesLine = document.createElement("div")
-			repliesLine.classList.add("reply-line")
-			repliesParent.prepend(repliesLine)
-
-			for (const reply of comment.replies.nodes)
-			{
-				const replyElems = CreateComment(templates, replyTemplate, reply)
-				repliesParent.append(replyElems.fragment)
-			}
-		}
-	}
-
 	SetCommentsState(CommentsState.Success)
-
-	if (discussion.loggedIn)
-	{
-		localStorage.setItem("loggedIn", "")
-		commentState.parent.classList.add("comments-logged-in")
-	}
-	else
-	{
-		localStorage.removeItem("loggedIn")
-		commentState.parent.classList.add("comments-logged-out")
-	}
-
-	const input = commentState.inputs[0]
-	input.textArea.required = discussion.loggedIn
-	input.textArea.addEventListener("input", () => UpdateInputHeight(input), { passive: true })
-
-	for (const input of commentState.inputs)
-	{
-		input.textArea.readOnly = !discussion.loggedIn
-		input.submitButton.disabled = discussion.loggedIn
-		input.submitButton.addEventListener("click", (e) => LoginOrSubmit(e, input), { passive: false })
-		input.logoutButton.addEventListener("click", (e) => Logout(e, input), { passive: false })
-	}
+	SetDiscussion(discussion)
 }
 
-interface ICommentElements
+interface ICreateComment
 {
 	fragment: DocumentFragment
 	root: HTMLElement
-	input: HTMLElement
+	form: HTMLFormElement
 }
 
-function CreateComment(templates: CommentTemplates, commentTemplate: HTMLTemplateElement, comment: ICommentBase): ICommentElements
+function CreateComment(templates: CommentTemplates, commentTemplate: HTMLTemplateElement, comment: ICommentBase): ICreateComment
 {
-	const commentFragment = commentTemplate.content.cloneNode(true) as DocumentFragment
-	const commentRoot = commentFragment.querySelector("section")!
-	const replyInput = commentFragment.querySelector(".reply-input") as HTMLElement
-	const commentContent = commentFragment.querySelector(".comment-content") as HTMLElement
-	commentContent.innerHTML = comment.bodyHTML
+	const fragment = commentTemplate.content.cloneNode(true) as DocumentFragment
+	const root = fragment.querySelector("section")!
+	const form = fragment.querySelector("form")!
+	const content = fragment.querySelector(".comment-content") as HTMLElement
+	content.innerHTML = comment.bodyHTML
 
 	// Header
 	{
@@ -1132,7 +1178,7 @@ function CreateComment(templates: CommentTemplates, commentTemplate: HTMLTemplat
 		const formatter = new Intl.DateTimeFormat(undefined, { year: "numeric", month: "short", day: "2-digit" })
 		time.innerText = formatter.format(date)
 
-		commentRoot.prepend(headerFragment)
+		root.prepend(headerFragment)
 	}
 
 	// Code
@@ -1149,11 +1195,11 @@ function CreateComment(templates: CommentTemplates, commentTemplate: HTMLTemplat
 			root.parentElement!.replaceChild(codeBlockFragment, root)
 		}
 
-		const blockCodes = commentContent.querySelectorAll("div.highlight")
+		const blockCodes = content.querySelectorAll("div.highlight")
 		for (const codeDiv of blockCodes)
 			ConstructCodeBlock(codeDiv, codeDiv)
 
-		const blockCodesNoLang = commentContent.querySelectorAll("div.snippet-clipboard-content")
+		const blockCodesNoLang = content.querySelectorAll("div.snippet-clipboard-content")
 		for (const codeDiv of blockCodesNoLang)
 		{
 			const code = codeDiv.querySelector("pre > code")
@@ -1164,7 +1210,7 @@ function CreateComment(templates: CommentTemplates, commentTemplate: HTMLTemplat
 
 	// Math
 	{
-		const inlineMaths = commentContent.querySelectorAll(".js-inline-math") as NodeListOf<HTMLElement>
+		const inlineMaths = content.querySelectorAll(".js-inline-math") as NodeListOf<HTMLElement>
 		for (const ghMath of inlineMaths)
 		{
 			const mathFragment = templates.mathInline.content.cloneNode(true) as DocumentFragment
@@ -1178,7 +1224,7 @@ function CreateComment(templates: CommentTemplates, commentTemplate: HTMLTemplat
 			ghMath.parentElement!.replaceChild(mathFragment, ghMath)
 		}
 
-		const displayMaths = commentContent.querySelectorAll(".js-display-math") as NodeListOf<HTMLElement>
+		const displayMaths = content.querySelectorAll(".js-display-math") as NodeListOf<HTMLElement>
 		for (const ghMath of displayMaths)
 		{
 			const mathFragment = templates.mathBlock.content.cloneNode(true) as DocumentFragment
@@ -1214,14 +1260,10 @@ function CreateComment(templates: CommentTemplates, commentTemplate: HTMLTemplat
 			reaction.addEventListener("click", (e) => ToggleReaction(e, comment), { passive: true })
 		}
 
-		commentRoot.insertBefore(footerFragment, replyInput)
+		root.insertBefore(footerFragment, form)
 	}
 
-	return {
-		fragment: commentFragment,
-		root: commentRoot,
-		input: replyInput,
-	}
+	return { fragment, root, form }
 }
 
 function ToggleReactions(e: Event)
@@ -1278,7 +1320,7 @@ async function ToggleReaction(e: Event, comment: ICommentBase)
 
 	const headers = {} as { [key: string]: string }
 	if (deploymentEnv == DeploymentEnv.Staging)
-			headers["x-vercel-protection-bypass"] = stagingKey
+		headers["x-vercel-protection-bypass"] = stagingKey
 
 	let response
 	try
@@ -1325,45 +1367,45 @@ function UpdateReactionVisibility(reaction: HTMLButtonElement, showReactions: bo
 	}
 }
 
-function UpdateInputHeight(input: IInputElements)
+function UpdateInputHeight(comment: ICommentElements)
 {
-	const loggedIn = localStorage.getItem("loggedIn")
-	if (loggedIn != null)
-		input.submitButton.disabled = input.textArea.textLength == 0
+	const loggedIn = localStorage.getItem("loggedIn") != null
+	comment.submitButton.disabled = loggedIn && !comment.textArea.textLength
 
-	const oldHeight = input.textArea.getClientRects()[0].height
-	input.textArea.style.height = "auto"
+	const oldHeight = comment.textArea.getClientRects()[0].height
+	comment.textArea.style.height = "auto"
 
-	const newHeightRect = input.textArea.getClientRects()[0].height
-	const newHeightScroll = input.textArea.scrollHeight
+	const newHeightRect = comment.textArea.getClientRects()[0].height
+	const newHeightScroll = comment.textArea.scrollHeight
 	const newHeight = Math.abs(newHeightRect - newHeightScroll) < 1 ? newHeightRect : newHeightScroll
-	input.textArea.style.height = `${oldHeight}px`
+	comment.textArea.style.height = `${oldHeight}px`
 
-	const reflow = input.textArea.scrollHeight
-	input.textArea.style.height = `${newHeight}px`
+	const reflow = comment.textArea.scrollHeight
+	comment.textArea.style.height = `${newHeight}px`
 
-	requestAnimationFrame(() => input.textArea.scrollTop = 0)
+	requestAnimationFrame(() => comment.textArea.scrollTop = 0)
 
-	if (input.textArea.selectionEnd
-		&& input.textArea.selectionEnd == input.textArea.selectionStart
-		&& input.textArea.selectionEnd == input.textArea.textLength)
+	if (comment.textArea.selectionEnd
+		&& comment.textArea.selectionEnd == comment.textArea.selectionStart
+		&& comment.textArea.selectionEnd == comment.textArea.textLength)
 	{
 		const threshold = 0.15
 		const height    = document.documentElement.clientHeight
-		const y         = input.textArea.getBoundingClientRect().bottom
+		const y         = comment.textArea.getBoundingClientRect().bottom
 		const target    = (1 - threshold) * height
 		if (y > target)
 			window.scrollBy({ top: y - target, behavior: "instant" })
 	}
 }
 
-async function LoginOrSubmit(e: Event, input: IInputElements)
+async function LoginOrSubmit(e: Event, comment: ICommentElements)
 {
 	e.preventDefault()
-	input.submitButton.disabled = true
+	comment.submitButton.disabled = true
+	comment.submitButton.style.border = ""
 
-	const loggedIn = localStorage.getItem("loggedIn")
-	if (loggedIn == null)
+	const loggedIn = localStorage.getItem("loggedIn") != null
+	if (!loggedIn)
 	{
 		const url = new URL("https://github.com/login/oauth/authorize")
 		url.searchParams.append("client_id", "Iv23liF0BbZzzsm6OCu8")
@@ -1373,13 +1415,66 @@ async function LoginOrSubmit(e: Event, input: IInputElements)
 	}
 	else
 	{
+		const url = new URL(`${commentState.apiUrl}/comment`)
+		url.searchParams.append("page", location.pathname)
+		url.searchParams.append("owner", "akbyrd")
+		url.searchParams.append("repo", "akbyrd.github.io")
+		url.searchParams.append("category", "Blog Post Comments")
+		url.searchParams.append("discussionId", comment.discussionId)
+		url.searchParams.append("commentId", comment.commentId)
+		url.searchParams.append("content", comment.textArea.value)
+
+		// TODO: Probably add a helper function
+		const headers = {} as { [key: string]: string }
+		if (deploymentEnv == DeploymentEnv.Staging)
+				headers["x-vercel-protection-bypass"] = stagingKey
+
+		let response
+		let json
+		try
+		{
+			response = await fetch(url, {
+				method: "GET",
+				credentials: "include",
+				headers,
+			})
+
+			json = await response.json()
+			if (!response.ok) throw false
+		}
+		catch
+		{
+			comment.submitButton.disabled = false
+			comment.submitButton.style.border = "2px solid var(--error)"
+			return
+		}
+
+		comment.textArea.value = ""
+		if (json.comments)
+		{
+			const discussion = json as IDiscussion
+			SetDiscussion(discussion)
+		}
+		else
+		{
+			if (comment.commentId)
+			{
+				const reply = json as IReply
+				AddReply(reply, comment)
+			}
+			else
+			{
+				const comment = json as IComment
+				AddComment(comment)
+			}
+		}
 	}
 }
 
-async function Logout(e: Event, input: IInputElements)
+async function Logout(e: Event, comment: ICommentElements)
 {
 	e.preventDefault()
-	input.logoutButton.disabled = true
+	comment.logoutButton.disabled = true
 
 	let response
 	try
@@ -1391,33 +1486,21 @@ async function Logout(e: Event, input: IInputElements)
 	}
 	catch
 	{
-		input.logoutButton.disabled = false
-		input.logoutButton.style.border = "1px solid red"
+		comment.logoutButton.disabled = false
+		comment.logoutButton.style.border = "1px solid red"
 		return
 	}
 
 	if (!response.ok)
 	{
-		input.logoutButton.disabled = false
-		input.logoutButton.style.border = "1px solid red"
+		comment.logoutButton.disabled = false
+		comment.logoutButton.style.border = "1px solid red"
 		return
 	}
 
-	localStorage.removeItem("loggedIn")
-	input.logoutButton.disabled = false
-	input.logoutButton.style.border = ""
-	commentState.parent.classList.remove("comments-logged-in")
-	commentState.parent.classList.add("comments-logged-out")
-
-	for (const commentInput of commentState.inputs)
-	{
-		commentInput.textArea.readOnly = true
-		commentInput.submitButton.disabled = false
-	}
-
-	const reactions = commentState.parent.querySelectorAll(".comment-reaction") as NodeListOf<HTMLButtonElement>
-	for (const reaction of reactions)
-		reaction.removeAttribute("data-pressed")
+	SetLoggedIn(false)
+	comment.logoutButton.disabled = false
+	comment.logoutButton.style.border = ""
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -1429,7 +1512,7 @@ async function Initialize()
 	InitTheme()
 	InitImages()
 	InitCode()
-	await InitComments()
+	InitComments()
 }
 
 document.readyState !== "complete"

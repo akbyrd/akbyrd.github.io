@@ -25,15 +25,6 @@ interface IContext
 	session:      ISession
 }
 
-interface IDiscussionParams
-{
-	owner:    string
-	repo:     string
-	category: string
-	page:     string
-	origin:   string
-}
-
 export default async function handler(request: VercelRequest, response: VercelResponse)
 {
 	// NOTE: Unhandled failure modes:
@@ -112,11 +103,10 @@ export default async function handler(request: VercelRequest, response: VercelRe
 			case "/discussion":
 			{
 				const params = {
-					origin:   Validate(400, request.headers, "origin"),
-					owner:    Validate(400, request.query,   "owner"),
-					repo:     Validate(400, request.query,   "repo"),
-					category: Validate(400, request.query,   "category"),
-					page:     Validate(400, request.query,   "page"),
+					owner:    Validate(400, request.query, "owner"),
+					repo:     Validate(400, request.query, "repo"),
+					category: Validate(400, request.query, "category").replace(/\+/g, " "),
+					page:     Validate(400, request.query, "page"),
 				}
 
 				if (ctx.session.userAuth)
@@ -137,6 +127,41 @@ export default async function handler(request: VercelRequest, response: VercelRe
 
 				UpdateCookie(ctx)
 				return response.status(200).json(discussion)
+			}
+
+			case "/comment":
+			{
+				const params = {
+					_:            Validate(401, ctx.session,     "userAuth"),
+					origin:       Validate(400, request.headers, "origin"),
+					page:         Validate(400, request.query,   "page"),
+					owner:        Validate(400, request.query,   "owner"),
+					repo:         Validate(400, request.query,   "repo"),
+					category:     Validate(400, request.query,   "category").replace(/\+/g, " "),
+					content:      Validate(400, request.query,   "content"),
+					discussionId: request.query.discussionId,
+					commentId:    request.query.commentId,
+				} as ICommentParams
+
+				if (!params.discussionId)
+				{
+					const appAuth    = await GetAppAuth(ctx, params.owner, params.repo)
+					const discussion = await CreateDiscussion(ctx, appAuth, params)
+					params.discussionId = discussion.id
+
+					const comment = await AddComment(ctx, params)
+					discussion.comments.nodes.push(comment)
+
+					UpdateCookie(ctx)
+					return response.status(200).json(discussion)
+				}
+				else
+				{
+					const comment = await AddComment(ctx, params)
+
+					UpdateCookie(ctx)
+					return response.status(200).json(comment)
+				}
 			}
 
 			case "/react":
@@ -168,7 +193,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
 			console.dir(error, { depth: null })
 
 			UpdateCookie(ctx)
-			return response.status(500).json({ error: "Application error" })
+			return response.status(500).send(null)
 		}
 	}
 	finally
@@ -205,7 +230,7 @@ function UpdateCookie(ctx: IContext)
 	{
 		const sessionStr = EncryptSession(ctx.session)
 		const userExp    = ctx.session.userAuth ? ctx.session.userAuth.refreshExp * 1000 : 0
-		const appExp     = Date.now() + 6 * 30 * 24 * 60 * 60 * 1000
+		const appExp     = Date.now() + 6 * 30 * 24 * 60 * 60 * 1000 // 6 months
 		const expiresStr = new Date(Math.max(userExp, appExp)).toUTCString()
 		const sameSite   = ctx.devRequest ? "None" : "Strict"
 		const cookie     = `session=${sessionStr}; Expires=${expiresStr}; SameSite=${sameSite}; Secure; HttpOnly`
@@ -355,17 +380,32 @@ async function RefreshUserAuth(ctx: IContext, force: boolean = false): Promise<F
 // -------------------------------------------------------------------------------------------------
 // Discussion Query
 
-const discussionQueryData =
-	`bodyHTML
-	comments(first: 100) {
+const commentQueryData =
+	`id
+	bodyHTML
+	createdAt
+	url
+	author {
+		login
+		avatarUrl
+		url
+	}
+	reactionGroups {
+		content
+		viewerHasReacted
+		users {
+			totalCount
+		}
+	}
+	replies(first: 100) {
 		nodes {
 			id
 			bodyHTML
 			createdAt
 			url
 			author {
-				login
 				avatarUrl
+				login
 				url
 			}
 			reactionGroups {
@@ -375,39 +415,23 @@ const discussionQueryData =
 					totalCount
 				}
 			}
-			replies(first: 100) {
-				nodes {
-					id
-					bodyHTML
-					createdAt
-					url
-					author {
-						avatarUrl
-						login
-						url
-					}
-					reactionGroups {
-						content
-						viewerHasReacted
-						users {
-							totalCount
-						}
-					}
-				}
-			}
-		}
-	}
-	reactionGroups {
-		content
-		viewerHasReacted
-		users {
-			totalCount
 		}
 	}`
 
 interface IDiscussion
 {
 	loggedIn: boolean
+	id: string
+	createdAt: string
+	comments: { nodes: IComment[] }
+}
+
+interface IDiscussionParams
+{
+	owner:    string
+	repo:     string
+	category: string
+	page:     string
 }
 
 async function GetAppDiscussion(auth: IAuth, ctx: IDiscussionParams): Promise<IDiscussion>
@@ -440,50 +464,63 @@ async function GetUserDiscussion(ctx: IContext, params: IDiscussionParams): Prom
 async function GetDiscussion(auth: IAuth, params: IDiscussionParams, loggedIn: boolean): Promise<FetchResult<IDiscussion>>
 {
 	const title = params.page.replace(/^\/?|\/?$/g, "")
-	const searchQuery = `repo:${params.owner}/${params.repo} in:title ${title}`
 	const result = await GraphQLRequest(GetDiscussion.name, auth,
-		`query($query: String!) {
-			search(type: DISCUSSION, query: $query, first: 2) {
+		`query {
+			search(type: DISCUSSION, query: "repo:${params.owner}/${params.repo} in:title ${title}", first: 2) {
 				discussionCount
 				nodes {
 					... on Discussion {
-						${discussionQueryData}
+						id
+						createdAt
+						comments(first: 100) {
+							nodes {
+								${commentQueryData}
+							}
+						}
 					}
 				}
 			}
-		}`, { query: searchQuery })
+		}`)
 
 	if (!result.success) return result as FetchResult<IDiscussion>
 
 	let discussion = null as IDiscussion | null
-	const discussions = result.json.data.search.nodes
-	switch (discussions.length)
+	const discussions = result.json.data.search.nodes as IDiscussion[]
+	if (discussions.length)
 	{
-		case 0:
-		{
-			const [repoId, categoryId] = await GetRepoAndCategoryIds(auth, params.owner, params.repo, params.category)
-			discussion = await CreateDiscussion(auth, repoId, categoryId, title, params.page, params.origin)
-			discussion.loggedIn = loggedIn
-			result.json = discussion
-			break
+		// Might have multiple
+		const created = discussions.map(d => new Date(d.createdAt))
+		const iOldest = created.reduce<number>((p, c, i) => created[i] < created[p] ? i : p, 0)
+
+		discussion = discussions[iOldest]
+		discussion.loggedIn = loggedIn
+		result.json = discussion
+	}
+	else
+	{
+		result.json = {
+			loggedIn: loggedIn,
+			id: "",
+			comments: { nodes: [] }
 		}
-
-		case 1:
-			discussion = discussions[0] as IDiscussion
-			discussion.loggedIn = loggedIn
-			result.json = discussion
-			break
-
-		default:
-			throw { statusCode: 500, body: { error: "Failed to find discussion" } }
 	}
 
 	return result as FetchResult<IDiscussion>
 }
 
-async function GetRepoAndCategoryIds(auth: IAuth, owner: string, repo: string, category: string)
+// -------------------------------------------------------------------------------------------------
+// Mutations
+
+// TODO: Should I hard-code these?
+interface IDiscussionIds
 {
-	const result = await GraphQLRequest(GetRepoAndCategoryIds.name, auth,
+	repo: string
+	category: string
+}
+
+async function GetDiscussionIds(auth: IAuth, owner: string, repo: string, category: string): Promise<IDiscussionIds>
+{
+	const result = await GraphQLRequest(GetDiscussionIds.name, auth,
 		`query {
 			repository(owner: "${owner}", name: "${repo}") {
 				id
@@ -500,36 +537,118 @@ async function GetRepoAndCategoryIds(auth: IAuth, owner: string, repo: string, c
 	const categories = result.json.data.repository.discussionCategories.nodes as { id: string, name: string }[]
 	const categoryNode = categories.find(c => c.name === category)
 	if (!categoryNode) throw { statusCode: 400, body: { error: "Category not found" } }
-	return [result.json.data.repository.id, categoryNode.id]
+
+	return {
+		repo: result.json.data.repository.id,
+		category: categoryNode.id,
+	}
 }
 
-async function CreateDiscussion(auth: IAuth, repoId: string, categoryId: string, title: string, page: string, origin: string): Promise<IDiscussion>
+interface ICommentParams
 {
-	if (origin.includes("localhost"))
+	origin:       string
+	page:         string
+	owner:        string
+	repo:         string
+	category:     string
+	discussionId: string
+	commentId:    string
+	content:      string
+}
+
+async function CreateDiscussion(ctx: IContext, auth: IAuth, params: ICommentParams): Promise<IDiscussion>
+{
+	// NOTE: Creating discussions is a race condition. Two people can post a comment at the same
+	// time. Both instances of this API will see that no discussion exists and create a new one.
+	// Github does not have a way to prevent duplicates or perform an atomic get-or-create operation.
+	// The workaround here is not to return the created discussion, but to perform a search afterward
+	// and take the oldest dicussion. This ensures both people will still see the same discussion,
+	// and the duplicate will be ignored. If it ends up happening in practice this can be updated to
+	// delete the duplicate.
+	//
+	// It's likely that Vercel would serialize multiple requests to the same running instance and
+	// mostly avoid this issue, but it's not guaranteed and probably less likely when using the Edge
+	// runtime.
+	//
+	// Additionally, we use app auth to create the discussion but we want to use user auth when
+	// reading the data. Technically it doesn't matter because there won't be any content in a
+	// freshly created discussion that the current user has reacted to (which is the only thing
+	// that's different about being logged in). We don't set loggedIn on the discussion but it's
+	// ignored for this request.
+
+	if (params.origin.startsWith("localhost"))
 		throw { statusCode: 400, body: { error: "Creating discussions from localhost is disabled" } }
 
-	const body = origin ? new URL(page, origin).toString() : ""
-	const result = await GraphQLRequest(CreateDiscussion.name, auth,
+	const ids = await GetDiscussionIds(auth, params.owner, params.repo, params.category)
+	const body = new URL(params.page, params.origin).toString()
+	const title = params.page.replace(/^\/?|\/?$/g, "")
+	let result = await GraphQLRequest(CreateDiscussion.name, auth,
 		`mutation {
-			createDiscussion(input: {repositoryId: "${repoId}", categoryId: "${categoryId}", body: "${body}", title: "${title}"}) {
+			createDiscussion(input: {repositoryId: "${ids.repo}", categoryId: "${ids.category}", body: "${body}", title: "${title}"}) {
 				discussion {
-					${discussionQueryData}
+					id
 				}
 			}
 		}`)
-
 	if (!result.success) throw result.json
 
 	if (result.json.extensions && result.json.extensions.warnings)
 		console.log(result.json.extensions.warnings)
 
-	return result.json.data.createDiscussion.discussion as IDiscussion
+	// NOTE: It takes a while for the new discussion to show up in a query
+	for (let i = 0; i < 10; i++)
+	{
+		const throttle = new Promise(r => setTimeout(r, 500))
+
+		result = await GetUserDiscussion(ctx, params)
+		if (!result.success) throw result.json
+
+		if (result.json.id)
+			break
+
+		await throttle
+	}
+	if (!result!.json.id) throw result!.json
+
+	const discussion = result!.json as IDiscussion
+	return discussion
 }
 
-// -------------------------------------------------------------------------------------------------
-// Mutations
+interface IComment {}
 
-async function SetReaction(ctx: IContext, subjectId: string, reaction: string, add: string)
+async function AddComment(ctx: IContext, params: ICommentParams): Promise<IComment>
+{
+	const replyTo = params.commentId ? `, replyToId: "${params.commentId}"` : ""
+	const mutationId = crypto.randomUUID()
+	const mutation =
+		`mutation {
+			addDiscussionComment(input: {clientMutationId: "${mutationId}", body: "${params.content}", discussionId: "${params.discussionId}"${replyTo}}) {
+				clientMutationId
+				comment {
+					${commentQueryData}
+				}
+			}
+		}`
+
+	let result
+
+	result = await RefreshUserAuth(ctx, false)
+	if (!result.success) throw result.json
+
+	result = await GraphQLRequest(AddComment.name, ctx.session.userAuth!, mutation)
+	if (result.success && result.json.data.addDiscussionComment.clientMutationId != mutationId) throw result.json
+	if (result.success) return result.json.data.addDiscussionComment.comment as IComment
+
+	result = await RefreshUserAuth(ctx, true)
+	if (!result.success) throw result.json
+
+	result = await GraphQLRequest(AddComment.name, ctx.session.userAuth!, mutation)
+	if (result.success && result.json.data.addDiscussionComment.clientMutationId != mutationId) throw result.json
+	if (!result.success) throw result.json
+	return result.json.data.addDiscussionComment.comment as IComment
+}
+
+async function SetReaction(ctx: IContext, subjectId: string, reaction: string, add: string): Promise<void>
 {
 	const mutationId = crypto.randomUUID()
 	const op = add == "true" ? "addReaction" : "removeReaction"
@@ -546,16 +665,15 @@ async function SetReaction(ctx: IContext, subjectId: string, reaction: string, a
 	if (!result.success) throw result.json
 
 	result = await GraphQLRequest(SetReaction.name, ctx.session.userAuth!, mutation)
+	if (result.success && result.json.data[op].clientMutationId != mutationId) throw result.json
 	if (result.success) return
-	if (result.json.data[op].clientMutationId != mutationId) throw result.json
 
-	// TODO: Should only return if the error is a token expiration error
 	result = await RefreshUserAuth(ctx, true)
 	if (!result.success) throw result.json
 
 	result = await GraphQLRequest(SetReaction.name, ctx.session.userAuth!, mutation)
+	if (result.success && result.json.data[op].clientMutationId != mutationId) throw result.json
 	if (!result.success) throw result.json
-	if (result.json.data[op].clientMutationId != mutationId) throw result.json
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -622,7 +740,7 @@ async function GraphQLRequest(name: string, auth: IAuth, query: string, variable
 	}
 }
 
-function Validate(statusCode: number, obj: any, key: string)
+function Validate(statusCode: number, obj: any, key: string): string
 {
 	if (!obj[key])
 		throw { statusCode, body: { error: `${key} not specified` } }

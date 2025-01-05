@@ -29,10 +29,11 @@
 
 	{{- $woff2 := partial "resource" "res/code.woff2" }}
 	{{- $woff := partial "resource" "res/code.woff" }}
-	{{- $hasSymbols := strings.FindRE "\\p{Co}" (.Page.Content | htmlUnescape) 1 }}
+	{{- $hasSymbols := strings.FindRE `\p{Co}` (.Page.Content | htmlUnescape) 1 }}
+	{{- $hasSymbols := gt 0 (len $hasSymbols) }}
+	{{- $hasSymbols := or $hasSymbols .Page.Params.comments }}
 	{{- $hasCode := strings.Contains .Page.Content "<code>" }}
 	{{- if or $hasSymbols $hasCode }}
-
 	<link rel="preload" as="font" href="{{ $woff2.RelPermalink }}" type="font/woff2"{{ $woff2.Integrity }}>
 	<link href="{{ $woff.RelPermalink }}" type="font/woff"{{ $woff.Integrity }}>
 	<style>
@@ -104,7 +105,7 @@
 	<main>
 		{{- block "main" . }}{{ end }}
 
-		{{- if and .Page.Params.comments (not .Page.Draft) }}
+		{{- if .Page.Params.comments }}
 		<div class="end-mark symbol">&#xe22e;</div>
 		<section id="comments" class="require-js no-mathml">
 			<div class="comments-templates" style="display: none;">
@@ -202,7 +203,7 @@
 			</div>
 
 			<div class="comments-state comments-state-success" data-disabled>
-				<section class="comment" id="comment-new">
+				<section class="comment">
 					<form class="comment-input">
 						<textarea aria-label="Enter Comment Text" placeholder="Write a comment" required rows="1"></textarea>
 						<div>

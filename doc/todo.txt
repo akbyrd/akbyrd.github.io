@@ -12,15 +12,17 @@ TODO: Implement comments
 		Encrypt cookie
 		Regenerate secrets
 		Restore scroll position when logging in?
-	Messages
-		Hook up submit button (add without reloading)
 	Polish
-		Check Chrome accessibility recommendations
-		Consider showing emoji for post
-		Only create discussion when posting
-		Save draft when typing
+		Entrance animation for comments
+		Add ctrl+enter keybinding for comments
+		Use the Edge runtime
 		Set textarea maxlength from Github limit
-		Look into a way to refresh without reloading
+		Save draft when typing
+		Check Chrome accessibility recommendations
+		Add new comments without reloading
+		Remove extra space on mobile
+		Error popup instead of red border
+
 
 TODO: Fix scrolling on math in comments (don't use <math> because it behaves poorly)
 TODO: Check for missing math glyphs (should be using a single font, not falling back)

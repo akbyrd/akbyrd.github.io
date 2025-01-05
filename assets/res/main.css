@@ -755,10 +755,11 @@ code, annotation {
 	border-radius: 50%;
 	color: var(--text-detail);
 	font-size: 38px;
-	line-height: 26px;
-	text-align: center;
 	height: 26px;
 	width: 26px;
+	line-height: 26px;
+	margin-left: -3px;
+	text-align: center;
 }
 
 .comment-toggle-reactions:hover {
@@ -899,6 +900,11 @@ code, annotation {
 	width: 100%;
 }
 
+.comment-input textarea:read-only,
+.reply-input textarea:read-only {
+	cursor: not-allowed;
+}
+
 .comment-input > div,
 .reply-input > div {
 	border-color: var(--outline);
@@ -941,8 +947,9 @@ code, annotation {
 
 .comment-submit {
 	background-color: #347d39;
+	box-sizing: border-box;
 	margin-left: auto;
-	min-width: 100px;
+	min-width: 116px;
 	text-align: center;
 }
 
