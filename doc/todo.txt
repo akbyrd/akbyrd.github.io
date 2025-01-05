@@ -5,11 +5,9 @@ TODO: Implement comments
 		Regenerate secrets
 		Restore scroll position when logging in?
 	Polish
+		Test "submit" behavior on mobile
 		Entrance animation for comments
-		Add ctrl+enter keybinding for comments
 		Use the Edge runtime
-		Set textarea maxlength from Github limit
-		Save draft when typing
 		Check Chrome accessibility recommendations
 		Add new comments without reloading
 		Remove extra space on mobile

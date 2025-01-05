@@ -830,7 +830,7 @@ let commentState: {
 	loadingContainer: HTMLElement
 	errorContainer:   HTMLElement
 	successContainer: HTMLElement
-	comments:         ICommentElements[]
+	commentElems:     ICommentElements[]
 	syntheticClick?:  HTMLButtonElement
 }
 
@@ -846,6 +846,7 @@ interface ICommentElements
 {
 	discussionId:   string
 	commentId:      string
+	key:            string
 	root:           HTMLElement
 	form:           HTMLFormElement
 	repliesParent?: HTMLElement
@@ -932,6 +933,7 @@ function InitComments()
 
 	const comment0Root = parent.querySelector(".comment") as HTMLElement
 	commentState = {
+		loggedIn: false,
 		apiUrl,
 		parent,
 		templates: {
@@ -946,9 +948,10 @@ function InitComments()
 		loadingContainer: parent.querySelector(".comments-state-loading") as HTMLElement,
 		errorContainer: parent.querySelector(".comments-state-error") as HTMLElement,
 		successContainer: parent.querySelector(".comments-state-success") as HTMLElement,
-		comments: [{
+		commentElems: [{
 			discussionId: "",
 			commentId: "",
+			key: location.pathname,
 			root: comment0Root,
 			form: comment0Root.querySelector("form")!,
 			textArea: comment0Root.querySelector("textarea")!,
@@ -961,10 +964,12 @@ function InitComments()
 	reloadButton.addEventListener("click", ReloadComments, { passive: true })
 
 	// TODO: Dislike this duplication
-	const comment0 = commentState.comments[0]
-	comment0.textArea.addEventListener("input", () => UpdateInputHeight(comment0), { passive: true })
-	comment0.submitButton.addEventListener("click", (e) => LoginOrSubmit(e, comment0), { passive: false })
-	comment0.logoutButton.addEventListener("click", (e) => Logout(e, comment0), { passive: false })
+	const elems0 = commentState.commentElems[0]
+	SetCommentText(elems0, localStorage.getItem(elems0.key) || "")
+	elems0.textArea.addEventListener("keydown", (e) => SubmitForm(e, elems0), { passive: true })
+	elems0.textArea.addEventListener("input", () => UpdateInputHeight(elems0), { passive: true })
+	elems0.submitButton.addEventListener("click", (e) => LoginOrSubmit(e, elems0), { passive: false })
+	elems0.logoutButton.addEventListener("click", (e) => Logout(e, elems0), { passive: false })
 
 	SetCommentsState(CommentsState.Disabled)
 	SetLoggedIn(false)
@@ -998,10 +1003,10 @@ function SetLoggedIn(loggedIn: boolean)
 		commentState.parent.classList.remove("comments-logged-out")
 		commentState.parent.classList.add("comments-logged-in")
 
-		for (const comment of commentState.comments)
+		for (const elems of commentState.commentElems)
 		{
-			comment.textArea.readOnly = false
-			comment.submitButton.disabled = true
+			elems.textArea.readOnly = false
+			elems.submitButton.disabled = !elems.textArea.textLength
 		}
 	}
 	else
@@ -1009,10 +1014,10 @@ function SetLoggedIn(loggedIn: boolean)
 		commentState.parent.classList.remove("comments-logged-in")
 		commentState.parent.classList.add("comments-logged-out")
 
-		for (const comment of commentState.comments)
+		for (const elems of commentState.commentElems)
 		{
-			comment.textArea.readOnly = true
-			comment.submitButton.disabled = false
+			elems.textArea.readOnly = true
+			elems.submitButton.disabled = false
 		}
 
 		const reactions = commentState.parent.querySelectorAll(".comment-reaction")
@@ -1025,37 +1030,46 @@ function SetDiscussion(discussion?: IDiscussion)
 {
 	if (discussion)
 	{
-		commentState.comments[0].discussionId = discussion.id
+		commentState.commentElems[0].discussionId = discussion.id
 
 		for (const comment of discussion.comments.nodes)
 			AddComment(comment)
 	}
 	else
 	{
-		for (let i = commentState.comments.length - 1; i > 0; --i)
-			commentState.comments[i].root.remove()
+		for (let i = commentState.commentElems.length - 1; i > 0; --i)
+			commentState.commentElems[i].root.remove()
 
-		commentState.comments.length = 1
-		commentState.comments[0].discussionId = ""
+		commentState.commentElems.length = 1
+		commentState.commentElems[0].discussionId = ""
 	}
+}
+
+function SetCommentText(elems: ICommentElements, text: string)
+{
+	elems.textArea.value = text
+	UpdateInputHeight(elems)
 }
 
 function AddComment(comment: IComment)
 {
-	const commentElems = CreateComment(commentState.templates, commentState.templates.comment, comment)
-	commentState.successContainer.insertBefore(commentElems.fragment, commentState.comments[0].root)
+	const { fragment, root, form } = CreateComment(commentState.templates, commentState.templates.comment, comment)
+	commentState.successContainer.insertBefore(fragment, commentState.commentElems[0].root)
 
 	const elems = {
-		discussionId: commentState.comments[0].discussionId,
+		discussionId: commentState.commentElems[0].discussionId,
 		commentId:    comment.id,
-		root:         commentElems.root,
-		form:         commentElems.form,
-		textArea:     commentElems.form.querySelector("textarea")!,
-		submitButton: commentElems.form.querySelector(".comment-submit") as HTMLButtonElement,
-		logoutButton: commentElems.form.querySelector(".comment-logout") as HTMLButtonElement,
+		key:          `${location.pathname}${comment.id}`,
+		root:         root,
+		form:         form,
+		textArea:     form.querySelector("textarea")!,
+		submitButton: form.querySelector(".comment-submit") as HTMLButtonElement,
+		logoutButton: form.querySelector(".comment-logout") as HTMLButtonElement,
 	}
-	commentState.comments.push(elems)
+	commentState.commentElems.push(elems)
 
+	SetCommentText(elems, localStorage.getItem(elems.key) || "")
+	elems.textArea.addEventListener("keydown", (e) => SubmitForm(e, elems), { passive: true })
 	elems.textArea.addEventListener("input", () => UpdateInputHeight(elems), { passive: true })
 	elems.submitButton.addEventListener("click", (e) => LoginOrSubmit(e, elems), { passive: false })
 	elems.logoutButton.addEventListener("click", (e) => Logout(e, elems), { passive: false })
@@ -1064,21 +1078,23 @@ function AddComment(comment: IComment)
 		AddReply(reply, elems)
 }
 
-function AddReply(reply: IReply, comment: ICommentElements)
+function AddReply(reply: IReply, elems: ICommentElements)
 {
-	if (!comment.repliesParent)
+	if (!elems.repliesParent)
 	{
-		comment.repliesParent = document.createElement("section")
-		comment.repliesParent.classList.add("comment-replies")
-		comment.root.insertBefore(comment.repliesParent, comment.form)
+		elems.repliesParent = document.createElement("section")
+		elems.repliesParent.classList.add("comment-replies")
+		elems.root.insertBefore(elems.repliesParent, elems.form)
 
 		const repliesLine = document.createElement("div")
 		repliesLine.classList.add("reply-line")
-		comment.repliesParent.prepend(repliesLine)
+		elems.repliesParent.prepend(repliesLine)
 	}
 
-	const replyElems = CreateComment(commentState.templates, commentState.templates.reply, reply)
-	comment.repliesParent.append(replyElems.fragment)
+	const { fragment, root, form } = CreateComment(commentState.templates, commentState.templates.reply, reply)
+	elems.repliesParent.append(fragment)
+
+	SetCommentText(elems, localStorage.getItem(elems.key) || "")
 }
 
 async function ReloadComments()
@@ -1149,34 +1165,34 @@ interface ICreateComment
 	form: HTMLFormElement
 }
 
-function CreateComment(templates: CommentTemplates, commentTemplate: HTMLTemplateElement, comment: ICommentBase): ICreateComment
+function CreateComment(templates: CommentTemplates, commentTemplate: HTMLTemplateElement, elems: ICommentBase): ICreateComment
 {
 	const fragment = commentTemplate.content.cloneNode(true) as DocumentFragment
 	const root = fragment.querySelector("section")!
 	const form = fragment.querySelector("form")!
 	const content = fragment.querySelector(".comment-content") as HTMLElement
-	content.innerHTML = comment.bodyHTML
+	content.innerHTML = elems.bodyHTML
 
 	// Header
 	{
 		const headerFragment = templates.header.content.cloneNode(true) as DocumentFragment
 
 		const aAvatar = headerFragment.querySelector(".comment-avatar") as HTMLAnchorElement
-		aAvatar.href = comment.author.url
-		aAvatar.append(comment.author.login)
+		aAvatar.href = elems.author.url
+		aAvatar.append(elems.author.login)
 
 		const img = aAvatar.querySelector("img")!
-		const url = new URL(comment.author.avatarUrl)
+		const url = new URL(elems.author.avatarUrl)
 		url.searchParams.append("size", (2 * img.width).toString())
 		img.src = url.toString()
 		img.style.display = "inline"
 
 		const aTime = headerFragment.querySelector(".comment-time") as HTMLAnchorElement
-		aTime.href = comment.url
+		aTime.href = elems.url
 
 		const time = aTime.querySelector("time")!
-		time.dateTime = comment.createdAt
-		const date = new Date(comment.createdAt)
+		time.dateTime = elems.createdAt
+		const date = new Date(elems.createdAt)
 		const formatter = new Intl.DateTimeFormat(undefined, { year: "numeric", month: "short", day: "2-digit" })
 		time.innerText = formatter.format(date)
 
@@ -1254,12 +1270,12 @@ function CreateComment(templates: CommentTemplates, commentTemplate: HTMLTemplat
 		for (const reaction of reactions)
 		{
 			const key = reaction.name as keyof Reaction
-			const data = comment.reactionGroups.find(r => r.content == key)!
+			const data = elems.reactionGroups.find(r => r.content == key)!
 			if (data.viewerHasReacted)
 				reaction.toggleAttribute("data-pressed")
 			UpdateReactionVisibility(reaction, false, data.users.totalCount)
 
-			reaction.addEventListener("click", (e) => ToggleReaction(e, comment), { passive: true })
+			reaction.addEventListener("click", (e) => ToggleReaction(e, elems), { passive: true })
 		}
 
 		root.insertBefore(footerFragment, form)
@@ -1372,41 +1388,51 @@ function UpdateReactionVisibility(reaction: HTMLButtonElement, showReactions: bo
 	}
 }
 
-function UpdateInputHeight(comment: ICommentElements)
+function SubmitForm(e: KeyboardEvent, elems: ICommentElements)
 {
-	comment.submitButton.disabled = commentState.loggedIn && !comment.textArea.textLength
+	if (e.ctrlKey && e.key == "Enter")
+		elems.submitButton.click()
+}
 
-	const oldHeight = comment.textArea.getClientRects()[0].height
-	comment.textArea.style.height = "auto"
+function UpdateInputHeight(elems: ICommentElements)
+{
+	elems.textArea.value
+		? localStorage.setItem(elems.key, elems.textArea.value)
+		: localStorage.removeItem(elems.key)
 
-	const newHeightRect = comment.textArea.getClientRects()[0].height
-	const newHeightScroll = comment.textArea.scrollHeight
+	elems.submitButton.disabled = commentState.loggedIn && !elems.textArea.textLength
+
+	const oldHeight = elems.textArea.getClientRects()[0].height
+	elems.textArea.style.height = "auto"
+
+	const newHeightRect = elems.textArea.getClientRects()[0].height
+	const newHeightScroll = elems.textArea.scrollHeight
 	const newHeight = Math.abs(newHeightRect - newHeightScroll) < 1 ? newHeightRect : newHeightScroll
-	comment.textArea.style.height = `${oldHeight}px`
+	elems.textArea.style.height = `${oldHeight}px`
 
-	const reflow = comment.textArea.scrollHeight
-	comment.textArea.style.height = `${newHeight}px`
+	const reflow = elems.textArea.scrollHeight
+	elems.textArea.style.height = `${newHeight}px`
 
-	requestAnimationFrame(() => comment.textArea.scrollTop = 0)
+	requestAnimationFrame(() => elems.textArea.scrollTop = 0)
 
-	if (comment.textArea.selectionEnd
-		&& comment.textArea.selectionEnd == comment.textArea.selectionStart
-		&& comment.textArea.selectionEnd == comment.textArea.textLength)
+	if (elems.textArea.selectionEnd
+		&& elems.textArea.selectionEnd == elems.textArea.selectionStart
+		&& elems.textArea.selectionEnd == elems.textArea.textLength)
 	{
 		const threshold = 0.15
 		const height    = document.documentElement.clientHeight
-		const y         = comment.textArea.getBoundingClientRect().bottom
+		const y         = elems.textArea.getBoundingClientRect().bottom
 		const target    = (1 - threshold) * height
 		if (y > target)
 			window.scrollBy({ top: y - target, behavior: "instant" })
 	}
 }
 
-async function LoginOrSubmit(e: Event, comment: ICommentElements)
+async function LoginOrSubmit(e: Event, elems: ICommentElements)
 {
 	e.preventDefault()
-	comment.submitButton.disabled = true
-	comment.submitButton.style.border = ""
+	elems.submitButton.disabled = true
+	elems.submitButton.style.border = ""
 
 	if (!commentState.loggedIn)
 	{
@@ -1423,9 +1449,9 @@ async function LoginOrSubmit(e: Event, comment: ICommentElements)
 		url.searchParams.append("owner", "akbyrd")
 		url.searchParams.append("repo", "akbyrd.github.io")
 		url.searchParams.append("category", "Blog Post Comments")
-		url.searchParams.append("discussionId", comment.discussionId)
-		url.searchParams.append("commentId", comment.commentId)
-		url.searchParams.append("content", comment.textArea.value)
+		url.searchParams.append("discussionId", elems.discussionId)
+		url.searchParams.append("commentId", elems.commentId)
+		url.searchParams.append("content", elems.textArea.value)
 
 		// TODO: Probably add a helper function
 		const headers = {} as { [key: string]: string }
@@ -1447,8 +1473,8 @@ async function LoginOrSubmit(e: Event, comment: ICommentElements)
 		}
 		catch
 		{
-			comment.submitButton.disabled = false
-			comment.submitButton.style.border = "2px solid var(--error)"
+			elems.submitButton.disabled = false
+			elems.submitButton.style.border = "2px solid var(--error)"
 			return
 		}
 		finally
@@ -1460,7 +1486,8 @@ async function LoginOrSubmit(e: Event, comment: ICommentElements)
 			}
 		}
 
-		comment.textArea.value = ""
+		SetCommentText(elems, "")
+
 		if (json.comments)
 		{
 			const discussion = json as IDiscussion
@@ -1468,24 +1495,24 @@ async function LoginOrSubmit(e: Event, comment: ICommentElements)
 		}
 		else
 		{
-			if (comment.commentId)
+			if (elems.commentId)
 			{
 				const reply = json as IReply
-				AddReply(reply, comment)
+				AddReply(reply, elems)
 			}
 			else
 			{
-				const comment = json as IComment
-				AddComment(comment)
+				const elems = json as IComment
+				AddComment(elems)
 			}
 		}
 	}
 }
 
-async function Logout(e: Event, comment: ICommentElements)
+async function Logout(e: Event, elems: ICommentElements)
 {
 	e.preventDefault()
-	comment.logoutButton.disabled = true
+	elems.logoutButton.disabled = true
 
 	let response
 	try
@@ -1499,8 +1526,8 @@ async function Logout(e: Event, comment: ICommentElements)
 	}
 	catch
 	{
-		comment.logoutButton.disabled = false
-		comment.logoutButton.style.border = "1px solid red"
+		elems.logoutButton.disabled = false
+		elems.logoutButton.style.border = "1px solid red"
 		return
 	}
 	finally
@@ -1512,8 +1539,8 @@ async function Logout(e: Event, comment: ICommentElements)
 		}
 	}
 
-	comment.logoutButton.disabled = false
-	comment.logoutButton.style.border = ""
+	elems.logoutButton.disabled = false
+	elems.logoutButton.style.border = ""
 }
 
 // -------------------------------------------------------------------------------------------------

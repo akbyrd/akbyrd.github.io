@@ -905,6 +905,11 @@ code, annotation {
 	cursor: not-allowed;
 }
 
+.comment-input textarea:read-only:not(:placeholder-shown),
+.reply-input textarea:read-only:not(:placeholder-shown) {
+	opacity: 50%;
+}
+
 .comment-input > div,
 .reply-input > div {
 	border-color: var(--outline);
