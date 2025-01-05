@@ -815,16 +815,17 @@ declare const deploymentEnv: DeploymentEnv;
 declare const stagingKey: string;
 
 let commentState: {
+	loggedIn:         boolean
 	apiUrl:           string
 	parent:           HTMLElement
 	templates: {
-		comment:       HTMLTemplateElement,
-		reply:         HTMLTemplateElement,
-		header:        HTMLTemplateElement,
-		codeBlock:     HTMLTemplateElement,
-		mathInline:    HTMLTemplateElement,
-		mathBlock:     HTMLTemplateElement,
-		footer:        HTMLTemplateElement,
+		comment:       HTMLTemplateElement
+		reply:         HTMLTemplateElement
+		header:        HTMLTemplateElement
+		codeBlock:     HTMLTemplateElement
+		mathInline:    HTMLTemplateElement
+		mathBlock:     HTMLTemplateElement
+		footer:        HTMLTemplateElement
 	}
 	loadingContainer: HTMLElement
 	errorContainer:   HTMLElement
@@ -864,7 +865,6 @@ interface CommentTemplates
 
 interface IDiscussion
 {
-	loggedIn: boolean
 	id: string
 	comments: { nodes: IComment[] }
 }
@@ -967,6 +967,7 @@ function InitComments()
 	comment0.logoutButton.addEventListener("click", (e) => Logout(e, comment0), { passive: false })
 
 	SetCommentsState(CommentsState.Disabled)
+	SetLoggedIn(false)
 	SetDiscussion(undefined)
 
 	const observer = new IntersectionObserver((entries, observer) => {
@@ -991,12 +992,9 @@ function SetCommentsState(state: CommentsState)
 
 function SetLoggedIn(loggedIn: boolean)
 {
-	const wasLoggedIn = localStorage.getItem("loggedIn") != null
-	if (wasLoggedIn == loggedIn) return
-
+	commentState.loggedIn = loggedIn
 	if (loggedIn)
 	{
-		localStorage.setItem("loggedIn", "")
 		commentState.parent.classList.remove("comments-logged-out")
 		commentState.parent.classList.add("comments-logged-in")
 
@@ -1008,7 +1006,6 @@ function SetLoggedIn(loggedIn: boolean)
 	}
 	else
 	{
-		localStorage.removeItem("loggedIn")
 		commentState.parent.classList.remove("comments-logged-in")
 		commentState.parent.classList.add("comments-logged-out")
 
@@ -1028,8 +1025,6 @@ function SetDiscussion(discussion?: IDiscussion)
 {
 	if (discussion)
 	{
-		SetLoggedIn(discussion.loggedIn)
-
 		commentState.comments[0].discussionId = discussion.id
 
 		for (const comment of discussion.comments.nodes)
@@ -1037,8 +1032,6 @@ function SetDiscussion(discussion?: IDiscussion)
 	}
 	else
 	{
-		SetLoggedIn(false)
-
 		for (let i = commentState.comments.length - 1; i > 0; --i)
 			commentState.comments[i].root.remove()
 
@@ -1090,6 +1083,7 @@ function AddReply(reply: IReply, comment: ICommentElements)
 
 async function ReloadComments()
 {
+	SetLoggedIn(false)
 	SetDiscussion(undefined)
 	await LoadComments()
 }
@@ -1133,6 +1127,14 @@ async function LoadComments()
 	{
 		SetCommentsState(CommentsState.Error)
 		return
+	}
+	finally
+	{
+		if (response)
+		{
+			const loggedIn = response.headers.has("x-authenticated")
+			SetLoggedIn(loggedIn)
+		}
 	}
 
 	const discussion = json as IDiscussion
@@ -1330,17 +1332,20 @@ async function ToggleReaction(e: Event, comment: ICommentBase)
 			credentials: "include",
 			headers,
 		})
+		if (!response.ok) throw false
 	}
 	catch
 	{
 		reactionButton.disabled = false
 		return
 	}
-
-	if (!response.ok)
+	finally
 	{
-		reactionButton.disabled = false
-		return
+		if (response)
+		{
+			const loggedIn = response.headers.has("x-authenticated")
+			SetLoggedIn(loggedIn)
+		}
 	}
 
 	reactionButton.disabled = false
@@ -1369,8 +1374,7 @@ function UpdateReactionVisibility(reaction: HTMLButtonElement, showReactions: bo
 
 function UpdateInputHeight(comment: ICommentElements)
 {
-	const loggedIn = localStorage.getItem("loggedIn") != null
-	comment.submitButton.disabled = loggedIn && !comment.textArea.textLength
+	comment.submitButton.disabled = commentState.loggedIn && !comment.textArea.textLength
 
 	const oldHeight = comment.textArea.getClientRects()[0].height
 	comment.textArea.style.height = "auto"
@@ -1404,8 +1408,7 @@ async function LoginOrSubmit(e: Event, comment: ICommentElements)
 	comment.submitButton.disabled = true
 	comment.submitButton.style.border = ""
 
-	const loggedIn = localStorage.getItem("loggedIn") != null
-	if (!loggedIn)
+	if (!commentState.loggedIn)
 	{
 		const url = new URL("https://github.com/login/oauth/authorize")
 		url.searchParams.append("client_id", "Iv23liF0BbZzzsm6OCu8")
@@ -1448,6 +1451,14 @@ async function LoginOrSubmit(e: Event, comment: ICommentElements)
 			comment.submitButton.style.border = "2px solid var(--error)"
 			return
 		}
+		finally
+		{
+			if (response)
+			{
+				const loggedIn = response.headers.has("x-authenticated")
+				SetLoggedIn(loggedIn)
+			}
+		}
 
 		comment.textArea.value = ""
 		if (json.comments)
@@ -1483,6 +1494,8 @@ async function Logout(e: Event, comment: ICommentElements)
 			method: "POST",
 			credentials: "include",
 		})
+
+		if (!response.ok) throw false
 	}
 	catch
 	{
@@ -1490,15 +1503,15 @@ async function Logout(e: Event, comment: ICommentElements)
 		comment.logoutButton.style.border = "1px solid red"
 		return
 	}
-
-	if (!response.ok)
+	finally
 	{
-		comment.logoutButton.disabled = false
-		comment.logoutButton.style.border = "1px solid red"
-		return
+		if (response)
+		{
+			const loggedIn = response.headers.has("x-authenticated")
+			SetLoggedIn(loggedIn)
+		}
 	}
 
-	SetLoggedIn(false)
 	comment.logoutButton.disabled = false
 	comment.logoutButton.style.border = ""
 }

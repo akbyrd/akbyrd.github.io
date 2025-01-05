@@ -1,13 +1,5 @@
 General
 TODO: Implement comments
-	Error Handling
-		User authentication
-			User doesn't authorize repo
-			User doesn't have access to repo
-			User revokes auth (401 bad credentials)
-			Rate limit
-			Token expired
-			Bad token
 	Login
 		Encrypt cookie
 		Regenerate secrets

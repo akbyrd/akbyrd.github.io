@@ -25,6 +25,7 @@ interface IContext
 	session:      ISession
 }
 
+// TODO: Atone for my sins and rewrite this entire file
 export default async function handler(request: VercelRequest, response: VercelResponse)
 {
 	// NOTE: Unhandled failure modes:
@@ -57,6 +58,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
 			response.setHeader("access-control-allow-credentials", "true")
 			response.setHeader("access-control-allow-headers",     `credentials${devExtra}`)
 			response.setHeader("access-control-allow-origin",      request.headers.origin!)
+			response.setHeader("access-control-expose-headers",    "x-authenticated")
 			response.setHeader("vary",                             "origin")
 		}
 
@@ -117,9 +119,6 @@ export default async function handler(request: VercelRequest, response: VercelRe
 						UpdateCookie(ctx)
 						return response.status(200).json(result.json)
 					}
-
-					console.log("Failed to get user discussion")
-					console.dir(result.json, { depth: null })
 				}
 
 				const appAuth    = await GetAppAuth(ctx, params.owner, params.repo)
@@ -166,11 +165,10 @@ export default async function handler(request: VercelRequest, response: VercelRe
 
 			case "/react":
 			{
-				const subjectId = Validate(400, request.query,   "subjectId")
-				const reaction  = Validate(400, request.query,   "reaction")
-				const add       = Validate(400, request.query,   "add")
-
-				if (!ctx.session.userAuth) throw { statusCode: 401, body: { error: "Invalid session" } }
+				const _         = Validate(401, ctx.session,   "userAuth")
+				const subjectId = Validate(400, request.query, "subjectId")
+				const reaction  = Validate(400, request.query, "reaction")
+				const add       = Validate(400, request.query, "add")
 
 				await SetReaction(ctx, subjectId, reaction, add)
 
@@ -181,12 +179,12 @@ export default async function handler(request: VercelRequest, response: VercelRe
 	}
 	catch (error: any)
 	{
-		if (error instanceof Object && error.statusCode && error.body)
+		if (error instanceof Object && error.statusCode)
 		{
 			const status = error.statusCode as number
 
 			UpdateCookie(ctx)
-			return response.status(status).json(error.body)
+			return response.status(status).json(error.body || {})
 		}
 		else
 		{
@@ -226,6 +224,9 @@ function DecryptSession(sessionStr: string): ISession
 
 function UpdateCookie(ctx: IContext)
 {
+	if (ctx.session.userAuth)
+		ctx.response.setHeader("x-authenticated", "")
+
 	if (ctx.updateCookie)
 	{
 		const sessionStr = EncryptSession(ctx.session)
@@ -364,6 +365,11 @@ async function RefreshUserAuth(ctx: IContext, force: boolean = false): Promise<F
 		ctx.session.userAuth = undefined
 
 		const result = await RESTRequest(RefreshUserAuth.name, "", "POST", url.toString())
+
+		// TODO: Remove this once tested
+		console.log(`refreshing - ${result.response.ok}, ${result.response.status}, ${result.response.statusText}`)
+		console.dir(result.json, { depth: null })
+
 		if (!result.success && result.json.error == "bad_refresh_token") return result
 		if (!result.success) throw result.json
 
@@ -420,7 +426,6 @@ const commentQueryData =
 
 interface IDiscussion
 {
-	loggedIn: boolean
 	id: string
 	createdAt: string
 	comments: { nodes: IComment[] }
@@ -436,7 +441,7 @@ interface IDiscussionParams
 
 async function GetAppDiscussion(auth: IAuth, ctx: IDiscussionParams): Promise<IDiscussion>
 {
-	const result = await GetDiscussion(auth, ctx, false)
+	const result = await GetDiscussion(auth, ctx)
 	if (!result.success) throw result.json
 
 	const discussion = result.json
@@ -450,18 +455,20 @@ async function GetUserDiscussion(ctx: IContext, params: IDiscussionParams): Prom
 	result = await RefreshUserAuth(ctx, false)
 	if (!result.success) return result as FetchResult<IDiscussion>
 
-	result = await GetDiscussion(ctx.session.userAuth!, params, true)
+	result = await GetDiscussion(ctx.session.userAuth!, params)
+	if (!ValidateUserAuth(ctx, result.response, false)) return result
 	if (result.success) return result
 
 	// TODO: Should only return if the error is a token expiration error
 	result = await RefreshUserAuth(ctx, true)
 	if (!result.success) return result as FetchResult<IDiscussion>
 
-	result = await GetDiscussion(ctx.session.userAuth!, params, true)
+	result = await GetDiscussion(ctx.session.userAuth!, params)
+	if (!ValidateUserAuth(ctx, result.response, false)) return result
 	return result
 }
 
-async function GetDiscussion(auth: IAuth, params: IDiscussionParams, loggedIn: boolean): Promise<FetchResult<IDiscussion>>
+async function GetDiscussion(auth: IAuth, params: IDiscussionParams): Promise<FetchResult<IDiscussion>>
 {
 	const title = params.page.replace(/^\/?|\/?$/g, "")
 	const result = await GraphQLRequest(GetDiscussion.name, auth,
@@ -488,18 +495,15 @@ async function GetDiscussion(auth: IAuth, params: IDiscussionParams, loggedIn: b
 	const discussions = result.json.data.search.nodes as IDiscussion[]
 	if (discussions.length)
 	{
-		// Might have multiple
 		const created = discussions.map(d => new Date(d.createdAt))
 		const iOldest = created.reduce<number>((p, c, i) => created[i] < created[p] ? i : p, 0)
 
 		discussion = discussions[iOldest]
-		discussion.loggedIn = loggedIn
 		result.json = discussion
 	}
 	else
 	{
 		result.json = {
-			loggedIn: loggedIn,
 			id: "",
 			comments: { nodes: [] }
 		}
@@ -573,8 +577,7 @@ async function CreateDiscussion(ctx: IContext, auth: IAuth, params: ICommentPara
 	// Additionally, we use app auth to create the discussion but we want to use user auth when
 	// reading the data. Technically it doesn't matter because there won't be any content in a
 	// freshly created discussion that the current user has reacted to (which is the only thing
-	// that's different about being logged in). We don't set loggedIn on the discussion but it's
-	// ignored for this request.
+	// that's different about being logged in).
 
 	if (params.origin.startsWith("localhost"))
 		throw { statusCode: 400, body: { error: "Creating discussions from localhost is disabled" } }
@@ -601,10 +604,9 @@ async function CreateDiscussion(ctx: IContext, auth: IAuth, params: ICommentPara
 		const throttle = new Promise(r => setTimeout(r, 500))
 
 		result = await GetUserDiscussion(ctx, params)
+		ValidateUserAuth(ctx, result.response, true)
 		if (!result.success) throw result.json
-
-		if (result.json.id)
-			break
+		if (result.json.id) break
 
 		await throttle
 	}
@@ -637,6 +639,7 @@ async function AddComment(ctx: IContext, params: ICommentParams): Promise<IComme
 
 	result = await GraphQLRequest(AddComment.name, ctx.session.userAuth!, mutation)
 	if (result.success && result.json.data.addDiscussionComment.clientMutationId != mutationId) throw result.json
+	ValidateUserAuth(ctx, result.response, true)
 	if (result.success) return result.json.data.addDiscussionComment.comment as IComment
 
 	result = await RefreshUserAuth(ctx, true)
@@ -644,6 +647,7 @@ async function AddComment(ctx: IContext, params: ICommentParams): Promise<IComme
 
 	result = await GraphQLRequest(AddComment.name, ctx.session.userAuth!, mutation)
 	if (result.success && result.json.data.addDiscussionComment.clientMutationId != mutationId) throw result.json
+	ValidateUserAuth(ctx, result.response, true)
 	if (!result.success) throw result.json
 	return result.json.data.addDiscussionComment.comment as IComment
 }
@@ -666,6 +670,7 @@ async function SetReaction(ctx: IContext, subjectId: string, reaction: string, a
 
 	result = await GraphQLRequest(SetReaction.name, ctx.session.userAuth!, mutation)
 	if (result.success && result.json.data[op].clientMutationId != mutationId) throw result.json
+	ValidateUserAuth(ctx, result.response, true)
 	if (result.success) return
 
 	result = await RefreshUserAuth(ctx, true)
@@ -673,11 +678,24 @@ async function SetReaction(ctx: IContext, subjectId: string, reaction: string, a
 
 	result = await GraphQLRequest(SetReaction.name, ctx.session.userAuth!, mutation)
 	if (result.success && result.json.data[op].clientMutationId != mutationId) throw result.json
+	ValidateUserAuth(ctx, result.response, true)
 	if (!result.success) throw result.json
 }
 
 // -------------------------------------------------------------------------------------------------
 // Utilities
+
+function ValidateUserAuth(ctx: IContext, response: Response, fatal: boolean)
+{
+	if (response.status == 401)
+	{
+		ctx.updateCookie = true
+		ctx.session.userAuth = undefined
+		if (fatal) throw { statusCode: 401 }
+		return false
+	}
+	return true
+}
 
 type FetchResult<T = Record<string, any>> = {
 	success:  boolean,
