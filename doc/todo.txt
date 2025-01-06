@@ -1,6 +1,5 @@
 General
 TODO: Implement comments
-	Keep textarea visible when buttons have focus
 	Restore scroll position when refreshing
 	---
 	Error popup instead of red border

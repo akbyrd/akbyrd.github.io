@@ -994,31 +994,21 @@ function InitComments()
 		if (Date.now() - loginState.time < 60 * 1000) // 1 minute
 		{
 			setTimeout(async () => {
-				try
+				BeginAutoScroll(loginState.scrollPos)
+
+				await LoadComments()
+				let element = undefined
+				for (const elems of commentState.commentElems)
 				{
-					BeginAutoScroll(loginState.scrollPos)
-
-					await LoadComments()
-
-					let element = undefined
-					for (const elems of commentState.commentElems)
+					if (elems.commentId == loginState.commentId)
 					{
-						if (elems.commentId == loginState.commentId)
-						{
-							element = elems.textArea
-							break
-						}
+						element = elems.textArea
+						break
 					}
+				}
 
-					CancelAutoScroll()
-					BeginAutoScroll(loginState.scrollPos, loginState.clientPos, element)
-				}
-				catch (e: any)
-				{
-					// TODO: Transient error? Remove this if it doesn't re-occur
-					console.error(e)
-					console.trace()
-				}
+				CancelAutoScroll()
+				BeginAutoScroll(loginState.scrollPos, loginState.clientPos, element)
 			}, 1)
 			return
 		}
@@ -1435,6 +1425,8 @@ interface ILoginState
 async function LoginOrSubmit(e: Event, elems: ICommentElements)
 {
 	e.preventDefault()
+
+	elems.submitButton.parentElement!.focus()
 	elems.submitButton.disabled = true
 	elems.submitButton.style.border = ""
 
@@ -1475,11 +1467,13 @@ async function LoginOrSubmit(e: Event, elems: ICommentElements)
 		const result = await APIRequest("GET", url)
 		if (!result.success)
 		{
+			elems.submitButton.focus()
 			elems.submitButton.disabled = false
 			elems.submitButton.style.border = "2px solid var(--error)"
 			return
 		}
 
+		elems.submitButton.focus()
 		SetCommentText(elems, "")
 
 		if (result.json.comments)
@@ -1506,6 +1500,8 @@ async function LoginOrSubmit(e: Event, elems: ICommentElements)
 async function Logout(e: Event, elems: ICommentElements)
 {
 	e.preventDefault()
+
+	elems.logoutButton.parentElement!.focus()
 	elems.logoutButton.disabled = true
 
 	const url = `${commentState.apiUrl}/logout`
@@ -1514,6 +1510,7 @@ async function Logout(e: Event, elems: ICommentElements)
 	{
 		elems.logoutButton.disabled = false
 		elems.logoutButton.style.border = "1px solid red"
+		elems.logoutButton.focus()
 		return
 	}
 
@@ -1589,7 +1586,6 @@ function BeginAutoScroll(scroll: v2, client: v2 = {x: 0, y: 0}, element?: HTMLEl
 
 function UpdateAutoScroll(scroll: v2, client: v2 = {x: 0, y: 0}, element?: HTMLElement)
 {
-	console.log("update")
 	assert(commentState.autoScroll)
 
 	const dst = scroll
@@ -1615,10 +1611,9 @@ function UpdateAutoScroll(scroll: v2, client: v2 = {x: 0, y: 0}, element?: HTMLE
 	}
 }
 
-function CancelAutoScroll(e?: Event)
+function CancelAutoScroll()
 {
-	console.log("cancel")
-	assert(commentState.autoScroll)
+	if (!commentState.autoScroll) return
 
 	clearInterval(commentState.autoScroll.interval)
 	commentState.autoScroll = undefined
