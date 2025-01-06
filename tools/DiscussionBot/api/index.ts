@@ -22,6 +22,7 @@ interface IContext
 	response:     VercelResponse
 	updateCookie: boolean
 	devRequest:   boolean
+	redirect?:    string
 	session:      ISession
 }
 
@@ -72,7 +73,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
 		{
 			default:
 			{
-				throw { statusCode: 404, body: {} }
+				throw { statusCode: 404 }
 			}
 
 			case "/":
@@ -82,14 +83,14 @@ export default async function handler(request: VercelRequest, response: VercelRe
 
 			case "/login":
 			{
-				const code  = Validate(400, request.query, "code")
-				const state = Validate(400, request.query, "state")
+				ctx.redirect = Validate(400, request.query, "state")
+				const code   = Validate(400, request.query, "code")
 
-				ctx.devRequest ||= devOrigins.includes(new URL(state).origin)
+				ctx.devRequest ||= devOrigins.includes(new URL(ctx.redirect).origin)
 				await GetUserAuth(ctx, code)
 
 				UpdateCookie(ctx)
-				return response.status(302).redirect(state)
+				return response.status(302).redirect(ctx.redirect)
 			}
 
 			case "/logout":
@@ -182,7 +183,10 @@ export default async function handler(request: VercelRequest, response: VercelRe
 		{
 			const status = error.statusCode as number
 
+			// TODO: Does this actually return the status?
 			UpdateCookie(ctx)
+			if (ctx.redirect)
+				return response.status(status).redirect(ctx.redirect)
 			return response.status(status).json(error.body || {})
 		}
 		else
@@ -190,6 +194,8 @@ export default async function handler(request: VercelRequest, response: VercelRe
 			console.dir(error, { depth: null })
 
 			UpdateCookie(ctx)
+			if (ctx.redirect)
+				return response.status(500).redirect(ctx.redirect)
 			return response.status(500).send(null)
 		}
 	}

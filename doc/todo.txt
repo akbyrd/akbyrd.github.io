@@ -1,18 +1,19 @@
 General
 TODO: Implement comments
-	Login
-		Encrypt cookie
-		Regenerate secrets
-		Restore scroll position when logging in?
-	Polish
-		Test "submit" behavior on mobile
-		Entrance animation for comments
-		Use the Edge runtime
-		Add new comments without reloading
-		Remove extra space on mobile
-		Error popup instead of red border
+	Keep textarea visible when buttons have focus
+	Restore scroll position when refreshing
+	---
+	Error popup instead of red border
+	Add new comments without reloading
+	---
+	Encrypt cookie
+	Regenerate secrets
+	Use the Edge runtime
+	---
+	Entrance animation for comments
 
 TODO: Fix scrolling on math in comments (don't use <math> because it behaves poorly)
+TODO: Fix bottom margin on Chrome
 TODO: Check for missing math glyphs (should be using a single font, not falling back)
 TODO: Fix initial math style (incorrect until code runs)
 TODO: Add "fix typo" button (https://www.ii.com/vscode-uri-scheme-and-hugo/)
@@ -24,7 +25,6 @@ TODO: Implement zoom for images (current page? new page?)
 TODO: Add search support
 TODO: Show copy buttons when hovering entire area
 TODO: Make copy buttons sticky
-TODO: Show end-of-content icon?
 
 Atom / RSS
 TODO: Add an XML stylesheet (.xsl) to Atom feed
@@ -99,3 +99,5 @@ TODO: https://www.feedvalidator.org/
 
 Workflow
 TODO: Run github workflow locally to reduce deployment testing iteration time
+TODO: Firefox doesn't send correct cookie after logging in when running {staging, prod} locally
+TODO: Github always redirects to the first callback URL if the user cancels

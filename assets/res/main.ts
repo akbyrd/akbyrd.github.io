@@ -811,12 +811,17 @@ enum DeploymentEnv
 	Production  = "production",
 }
 
-declare const deploymentEnv: DeploymentEnv;
-declare const stagingKey: string;
+declare const deploymentEnv: DeploymentEnv
+declare const stagingKey: string
 
 let commentState: {
 	loggedIn:         boolean
 	apiUrl:           string
+	autoScroll?: {
+		interval:      number
+		lastPos:       v2
+		lastChange:    number
+	}
 	parent:           HTMLElement
 	templates: {
 		comment:       HTMLTemplateElement
@@ -917,6 +922,12 @@ enum Reaction
 	EYES,
 }
 
+interface v2
+{
+	x: number
+	y: number
+}
+
 function InitComments()
 {
 	const parent = document.getElementById("comments")
@@ -975,6 +986,44 @@ function InitComments()
 	SetLoggedIn(false)
 	SetDiscussion(undefined)
 
+	const loginStateStr = localStorage.getItem("loginState")
+	if (loginStateStr)
+	{
+		localStorage.removeItem("loginState")
+		const loginState = JSON.parse(loginStateStr) as ILoginState
+		if (Date.now() - loginState.time < 60 * 1000) // 1 minute
+		{
+			setTimeout(async () => {
+				try
+				{
+					BeginAutoScroll(loginState.scrollPos)
+
+					await LoadComments()
+
+					let element = undefined
+					for (const elems of commentState.commentElems)
+					{
+						if (elems.commentId == loginState.commentId)
+						{
+							element = elems.textArea
+							break
+						}
+					}
+
+					CancelAutoScroll()
+					BeginAutoScroll(loginState.scrollPos, loginState.clientPos, element)
+				}
+				catch (e: any)
+				{
+					// TODO: Transient error? Remove this if it doesn't re-occur
+					console.error(e)
+					console.trace()
+				}
+			}, 1)
+			return
+		}
+	}
+
 	const observer = new IntersectionObserver((entries, observer) => {
 		for (const entry of entries)
 		{
@@ -984,7 +1033,7 @@ function InitComments()
 				observer.unobserve(entry.target)
 			}
 		}
-	}, { threshold: 1.0, });
+	}, { threshold: 1.0, })
 	observer.observe(commentState.parent)
 }
 
@@ -1375,6 +1424,14 @@ function UpdateInputHeight(elems: ICommentElements)
 	}
 }
 
+interface ILoginState
+{
+	time: number
+	commentId: string
+	scrollPos: { x: number, y: number }
+	clientPos: { x: number, y: number }
+}
+
 async function LoginOrSubmit(e: Event, elems: ICommentElements)
 {
 	e.preventDefault()
@@ -1383,6 +1440,21 @@ async function LoginOrSubmit(e: Event, elems: ICommentElements)
 
 	if (!commentState.loggedIn)
 	{
+		const rect = elems.textArea.getClientRects()[0]
+		const state: ILoginState = {
+			time: Date.now(),
+			commentId: elems.commentId,
+			scrollPos: {
+				x: window.scrollX,
+				y: window.scrollY,
+			},
+			clientPos: {
+				x: rect.x,
+				y: rect.y,
+			}
+		}
+		localStorage.setItem("loginState", JSON.stringify(state))
+
 		const url = new URL("https://github.com/login/oauth/authorize")
 		url.searchParams.append("client_id", "Iv23liF0BbZzzsm6OCu8")
 		url.searchParams.append("redirect_uri", `${commentState.apiUrl}/login`)
@@ -1497,6 +1569,64 @@ async function APIRequest(method: string, url: URL | string, headers: { [key: st
 			return { success: false, response: undefined, json }
 		}
 	}
+}
+
+function BeginAutoScroll(scroll: v2, client: v2 = {x: 0, y: 0}, element?: HTMLElement)
+{
+	assert(!commentState.autoScroll)
+
+	commentState.autoScroll = {
+		interval: setInterval(() => UpdateAutoScroll(scroll, client, element), 200),
+		lastPos: { x: window.scrollX, y: window.scrollY },
+		lastChange: performance.now(),
+	}
+
+	document.addEventListener("wheel",       CancelAutoScroll, { passive: true })
+	document.addEventListener("touchstart",  CancelAutoScroll, { passive: true })
+	document.addEventListener("keydown",     CancelAutoScroll, { passive: true })
+	document.addEventListener("pointerdown", CancelAutoScroll, { passive: true })
+}
+
+function UpdateAutoScroll(scroll: v2, client: v2 = {x: 0, y: 0}, element?: HTMLElement)
+{
+	console.log("update")
+	assert(commentState.autoScroll)
+
+	const dst = scroll
+	if (element)
+	{
+		const newScroll = { x: window.scrollX, y: window.scrollY }
+		const newClient = element.getClientRects()[0]
+		dst.x += (newScroll.x + newClient.x) - (scroll.x + client.x)
+		dst.y += (newScroll.y + newClient.y) - (scroll.y + client.y)
+	}
+
+	if (commentState.autoScroll.lastPos.x != dst.x ||
+		commentState.autoScroll.lastPos.y != dst.y)
+	{
+		commentState.autoScroll.lastPos = dst
+		commentState.autoScroll.lastChange = performance.now()
+		window.scrollTo({ top: dst.y, left: dst.x, behavior: "smooth", })
+	}
+	else
+	{
+		if (performance.now() - commentState.autoScroll.lastChange >= 2000)
+			CancelAutoScroll()
+	}
+}
+
+function CancelAutoScroll(e?: Event)
+{
+	console.log("cancel")
+	assert(commentState.autoScroll)
+
+	clearInterval(commentState.autoScroll.interval)
+	commentState.autoScroll = undefined
+
+	document.removeEventListener("wheel",       CancelAutoScroll)
+	document.removeEventListener("touchstart",  CancelAutoScroll)
+	document.removeEventListener("keydown",     CancelAutoScroll)
+	document.removeEventListener("pointerdown", CancelAutoScroll)
 }
 
 // -------------------------------------------------------------------------------------------------

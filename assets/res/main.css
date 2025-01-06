@@ -677,10 +677,6 @@ code, annotation {
 	width: 1em;
 }
 
-.comments-state-success {
-	margin-bottom: 80px;
-}
-
 .comment {
 	background-color: var(--background-2);
 	border-color: var(--outline);
