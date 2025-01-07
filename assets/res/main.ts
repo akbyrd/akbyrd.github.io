@@ -785,7 +785,9 @@ function SelectionFromHash()
 				SetScrollTargetId()
 				if (!history.state?.previouslyVisited)
 				{
-					history.replaceState({ previouslyVisited: true }, "")
+					const state = history.state || {}
+					state.previouslyVisited = true
+					history.replaceState(state, "")
 					setTimeout(() => code.scrollTarget!.scrollIntoView(), 1)
 				}
 				return
@@ -815,28 +817,29 @@ declare const deploymentEnv: DeploymentEnv
 declare const stagingKey: string
 
 let commentState: {
-	loggedIn:         boolean
-	apiUrl:           string
+	loggedIn:          boolean
+	apiUrl:            string
 	autoScroll?: {
-		interval:      number
-		lastPos:       v2
-		lastChange:    number
+		interval:       number
+		lastPos:        v2
+		lastChange:     number
 	}
-	parent:           HTMLElement
+	lastSaveScrollPos: number
+	parent:            HTMLElement
 	templates: {
-		comment:       HTMLTemplateElement
-		reply:         HTMLTemplateElement
-		header:        HTMLTemplateElement
-		codeBlock:     HTMLTemplateElement
-		mathInline:    HTMLTemplateElement
-		mathBlock:     HTMLTemplateElement
-		footer:        HTMLTemplateElement
+		comment:        HTMLTemplateElement
+		reply:          HTMLTemplateElement
+		header:         HTMLTemplateElement
+		codeBlock:      HTMLTemplateElement
+		mathInline:     HTMLTemplateElement
+		mathBlock:      HTMLTemplateElement
+		footer:         HTMLTemplateElement
 	}
-	loadingContainer: HTMLElement
-	errorContainer:   HTMLElement
-	successContainer: HTMLElement
-	commentElems:     ICommentElements[]
-	syntheticClick?:  HTMLButtonElement
+	loadingContainer:  HTMLElement
+	errorContainer:    HTMLElement
+	successContainer:  HTMLElement
+	commentElems:      ICommentElements[]
+	syntheticClick?:   HTMLButtonElement
 }
 
 enum CommentsState
@@ -851,7 +854,7 @@ interface ICommentElements
 {
 	discussionId:   string
 	commentId:      string
-	key:            string
+	draftKey:       string
 	root:           HTMLElement
 	form:           HTMLFormElement
 	repliesParent?: HTMLElement
@@ -937,15 +940,16 @@ function InitComments()
 	let apiUrl = ""
 	switch (deploymentEnv)
 	{
-		case DeploymentEnv.Development: apiUrl = "http://localhost:3000"; break
+		case DeploymentEnv.Development: apiUrl = "http://localhost:3000";               break
 		case DeploymentEnv.Staging:     apiUrl = "https://staging.comments.akbyrd.dev"; break
-		case DeploymentEnv.Production:  apiUrl = "https://comments.akbyrd.dev"; break
+		case DeploymentEnv.Production:  apiUrl = "https://comments.akbyrd.dev";         break
 	}
 
 	const comment0Root = parent.querySelector(".comment") as HTMLElement
 	commentState = {
 		loggedIn: false,
 		apiUrl,
+		lastSaveScrollPos: 0,
 		parent,
 		templates: {
 			comment: document.getElementById("comment-template") as HTMLTemplateElement,
@@ -962,7 +966,7 @@ function InitComments()
 		commentElems: [{
 			discussionId: "",
 			commentId: "",
-			key: location.pathname,
+			draftKey: location.pathname,
 			root: comment0Root,
 			form: comment0Root.querySelector("form")!,
 			textArea: comment0Root.querySelector("textarea")!,
@@ -976,7 +980,7 @@ function InitComments()
 
 	// TODO: Dislike this duplication
 	const elems0 = commentState.commentElems[0]
-	SetCommentText(elems0, localStorage.getItem(elems0.key) || "")
+	SetCommentText(elems0, localStorage.getItem(elems0.draftKey) || "")
 	elems0.textArea.addEventListener("keydown", (e) => SubmitForm(e, elems0), { passive: true })
 	elems0.textArea.addEventListener("input", () => UpdateInputHeight(elems0), { passive: true })
 	elems0.submitButton.addEventListener("click", (e) => LoginOrSubmit(e, elems0), { passive: false })
@@ -986,33 +990,11 @@ function InitComments()
 	SetLoggedIn(false)
 	SetDiscussion(undefined)
 
-	const loginStateStr = localStorage.getItem("loginState")
-	if (loginStateStr)
-	{
-		localStorage.removeItem("loginState")
-		const loginState = JSON.parse(loginStateStr) as ILoginState
-		if (Date.now() - loginState.time < 60 * 1000) // 1 minute
-		{
-			setTimeout(async () => {
-				BeginAutoScroll(loginState.scrollPos)
+	window.addEventListener("scrollend", SaveScrollPos, { passive: true })
+	window.addEventListener("resizeend", SaveScrollPos, { passive: true })
 
-				await LoadComments()
-				let element = undefined
-				for (const elems of commentState.commentElems)
-				{
-					if (elems.commentId == loginState.commentId)
-					{
-						element = elems.textArea
-						break
-					}
-				}
-
-				CancelAutoScroll()
-				BeginAutoScroll(loginState.scrollPos, loginState.clientPos, element)
-			}, 1)
-			return
-		}
-	}
+	if (RestoreScrollPos())
+		return
 
 	const observer = new IntersectionObserver((entries, observer) => {
 		for (const entry of entries)
@@ -1098,7 +1080,7 @@ function AddComment(comment: IComment)
 	const elems = {
 		discussionId: commentState.commentElems[0].discussionId,
 		commentId:    comment.id,
-		key:          `${location.pathname}${comment.id}`,
+		draftKey:     `${location.pathname}${comment.id}`,
 		root:         root,
 		form:         form,
 		textArea:     form.querySelector("textarea")!,
@@ -1107,7 +1089,7 @@ function AddComment(comment: IComment)
 	}
 	commentState.commentElems.push(elems)
 
-	SetCommentText(elems, localStorage.getItem(elems.key) || "")
+	SetCommentText(elems, localStorage.getItem(elems.draftKey) || "")
 	elems.textArea.addEventListener("keydown", (e) => SubmitForm(e, elems), { passive: true })
 	elems.textArea.addEventListener("input", () => UpdateInputHeight(elems), { passive: true })
 	elems.submitButton.addEventListener("click", (e) => LoginOrSubmit(e, elems), { passive: false })
@@ -1133,7 +1115,7 @@ function AddReply(reply: IReply, elems: ICommentElements)
 	const { fragment, root, form } = CreateComment(commentState.templates, commentState.templates.reply, reply)
 	elems.repliesParent.append(fragment)
 
-	SetCommentText(elems, localStorage.getItem(elems.key) || "")
+	SetCommentText(elems, localStorage.getItem(elems.draftKey) || "")
 }
 
 async function ReloadComments()
@@ -1383,8 +1365,8 @@ function SubmitForm(e: KeyboardEvent, elems: ICommentElements)
 function UpdateInputHeight(elems: ICommentElements)
 {
 	elems.textArea.value
-		? localStorage.setItem(elems.key, elems.textArea.value)
-		: localStorage.removeItem(elems.key)
+		? localStorage.setItem(elems.draftKey, elems.textArea.value)
+		: localStorage.removeItem(elems.draftKey)
 
 	elems.submitButton.disabled = commentState.loggedIn && !elems.textArea.textLength
 
@@ -1414,7 +1396,7 @@ function UpdateInputHeight(elems: ICommentElements)
 	}
 }
 
-interface ILoginState
+interface IAutoScroll
 {
 	time: number
 	commentId: string
@@ -1432,20 +1414,8 @@ async function LoginOrSubmit(e: Event, elems: ICommentElements)
 
 	if (!commentState.loggedIn)
 	{
-		const rect = elems.textArea.getClientRects()[0]
-		const state: ILoginState = {
-			time: Date.now(),
-			commentId: elems.commentId,
-			scrollPos: {
-				x: window.scrollX,
-				y: window.scrollY,
-			},
-			clientPos: {
-				x: rect.x,
-				y: rect.y,
-			}
-		}
-		localStorage.setItem("loginState", JSON.stringify(state))
+		const state = PrepareAutoScroll(elems.textArea, elems.commentId)
+		sessionStorage.setItem("loginAutoScroll", JSON.stringify(state))
 
 		const url = new URL("https://github.com/login/oauth/authorize")
 		url.searchParams.append("client_id", "Iv23liF0BbZzzsm6OCu8")
@@ -1568,6 +1538,98 @@ async function APIRequest(method: string, url: URL | string, headers: { [key: st
 	}
 }
 
+function SaveScrollPos()
+{
+	const now = performance.now()
+	const elapsed = now - commentState.lastSaveScrollPos
+	if (elapsed < 0) return
+
+	const throttle = 200 - elapsed
+	if (throttle > 0)
+	{
+		commentState.lastSaveScrollPos = now + throttle
+		setTimeout(() => SaveScrollPos(), throttle)
+		return
+	}
+
+	for (const elems of commentState.commentElems)
+	{
+		const rect = elems.root.getClientRects()[0]
+		if (rect.y < window.innerHeight)
+		{
+			const autoScroll = PrepareAutoScroll(elems.textArea, elems.commentId)
+
+			const state = history.state || {}
+			state.autoScroll = autoScroll
+			history.replaceState(state, "")
+			return
+		}
+	}
+}
+
+function RestoreScrollPos()
+{
+	let autoScroll = null
+
+	const autoScrollStr = sessionStorage.getItem("loginAutoScroll")
+	if (autoScrollStr)
+	{
+		sessionStorage.removeItem("loginAutoScroll")
+		autoScroll = JSON.parse(autoScrollStr) as IAutoScroll
+		if (Date.now() - autoScroll.time > 60 * 1000) // 1 minute
+			autoScroll = null
+	}
+	else
+	{
+		if (history.state)
+			autoScroll = history.state.autoScroll
+	}
+
+	if (autoScroll)
+	{
+		setTimeout(async () => {
+			BeginAutoScroll(autoScroll.scrollPos)
+
+			await LoadComments()
+			if (!commentState.autoScroll) return
+
+			let element = undefined
+			for (const elems of commentState.commentElems)
+			{
+				if (elems.commentId == autoScroll.commentId)
+				{
+					element = elems.textArea
+					break
+				}
+			}
+
+			CancelAutoScroll()
+			BeginAutoScroll(autoScroll.scrollPos, autoScroll.clientPos, element)
+		}, 0)
+		return true
+	}
+
+	return false
+}
+
+function PrepareAutoScroll(elem: HTMLElement, commentId: string): IAutoScroll
+{
+	const rect = elem.getClientRects()[0]
+	const autoScroll: IAutoScroll = {
+		time: Date.now(),
+		commentId,
+		scrollPos: {
+			x: window.scrollX,
+			y: window.scrollY,
+		},
+		clientPos: {
+			x: rect.x,
+			y: rect.y,
+		}
+	}
+	return autoScroll
+}
+
 function BeginAutoScroll(scroll: v2, client: v2 = {x: 0, y: 0}, element?: HTMLElement)
 {
 	assert(!commentState.autoScroll)
@@ -1629,6 +1691,7 @@ function CancelAutoScroll()
 
 async function Initialize()
 {
+	console.log(performance.now() % 1_000_000, "Initialize")
 	InitFeatures()
 	InitTheme()
 	InitImages()

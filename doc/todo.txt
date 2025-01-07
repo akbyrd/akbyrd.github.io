@@ -1,13 +1,16 @@
 General
 TODO: Implement comments
-	Restore scroll position when refreshing
+	Investiage bfcache
+		https://web.dev/articles/bfcache
+		https://developer.chrome.com/docs/web-platform/page-lifecycle-api
+	Consider impact of multiple tabs when dealing with localStorage (auto-scroll)
 	---
 	Error popup instead of red border
 	Add new comments without reloading
+	Use the Edge runtime
 	---
 	Encrypt cookie
 	Regenerate secrets
-	Use the Edge runtime
 	---
 	Entrance animation for comments
 
