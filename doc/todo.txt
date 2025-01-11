@@ -7,7 +7,6 @@ TODO: Implement comments
 	---
 	Error popup instead of red border
 	Add new comments without reloading
-	Use the Edge runtime
 	---
 	Encrypt cookie
 	Regenerate secrets
@@ -27,6 +26,7 @@ TODO: Implement zoom for images (current page? new page?)
 TODO: Add search support
 TODO: Show copy buttons when hovering entire area
 TODO: Make copy buttons sticky
+TODO: Use Vercel storage to cache app token locally
 
 Atom / RSS
 TODO: Add an XML stylesheet (.xsl) to Atom feed

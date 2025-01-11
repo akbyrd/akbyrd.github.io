@@ -1,6 +1,3 @@
-import { VercelRequest } from "@vercel/node"
-import { VercelResponse } from "@vercel/node"
-
 declare const process:
 {
 	env:
@@ -19,26 +16,89 @@ interface ISession
 
 interface IContext
 {
-	response:     VercelResponse
 	updateCookie: boolean
 	devRequest:   boolean
 	redirect?:    string
 	session:      ISession
 }
 
+type RequestEx = Request &
+{
+	urlEx:     URL
+	cookies:   Record<string, string>
+	headersEx: Record<string, string>
+	params:    Record<string, string>
+}
+
+class ResponseEx
+{
+	headers = new Headers()
+
+	send(ctx: IContext, status: number, body?: {}): Response
+	{
+		this.updateCookie(ctx)
+		this.headers.set("content-type", "application/json")
+		return new Response(JSON.stringify(body), {
+			status,
+			headers: this.headers,
+		})
+	}
+
+	redirect(ctx: IContext, status: number, url: string | URL): Response
+	{
+		this.updateCookie(ctx)
+		this.headers.set("location", url.toString())
+		return new Response(null, {
+			status,
+			headers: this.headers,
+		})
+	}
+
+	updateCookie(ctx: IContext): void
+	{
+		if (ctx.session.userAuth)
+		{
+			this.headers.set("access-control-expose-headers", "x-authenticated")
+			this.headers.set("x-authenticated", "1")
+		}
+
+		if (ctx.updateCookie)
+		{
+			const sessionStr = EncryptSession(ctx.session)
+			const userExp    = ctx.session.userAuth ? ctx.session.userAuth.refreshExp * 1000 : 0
+			const appExp     = Date.now() + 6 * 30 * 24 * 60 * 60 * 1000 // 6 months
+			const expiresStr = new Date(Math.max(userExp, appExp)).toUTCString()
+			const sameSite   = ctx.devRequest ? "None" : "Strict"
+			const cookie     = `session=${sessionStr}; Expires=${expiresStr}; SameSite=${sameSite}; Secure; HttpOnly`
+			this.headers.set("set-cookie", cookie)
+		}
+	}
+}
+
+export const config = {
+	runtime: "edge",
+}
+
 // TODO: Atone for my sins and rewrite this entire file
-export default async function handler(request: VercelRequest, response: VercelResponse)
+export default async function handler(_request: Request): Promise<Response>
 {
 	// NOTE: Unhandled failure modes:
-	// * Large requests  - limited to 4.5 MB or 4 MB, depdending on runtime
-	// * Time outs       - limited to 10s or 25s, depending on runtime
+	// * Large requests - limited to 4.5 MB or 4 MB, depdending on runtime
+	// * Time outs      - limited to 10s or 25s, depending on /*r*/untime
 
-	const ctx = {
-		response,
+	const url = new URL(_request.url)
+	const request: RequestEx = Object.assign(_request, {
+		urlEx:     url,
+		params:    Object.fromEntries(url.searchParams.entries()),
+		cookies:   Object.fromEntries((_request.headers.get("cookie") || "").split(";").map(c => c.split("="))),
+		headersEx: Object.fromEntries(_request.headers.entries()),
+	})
+	const response = new ResponseEx()
+	const ctx: IContext = {
 		updateCookie: false,
-		devRequest: false,
-		session: {},
-	} as IContext
+		devRequest:   false,
+		session:      {},
+	}
 
 	try
 	{
@@ -50,26 +110,25 @@ export default async function handler(request: VercelRequest, response: VercelRe
 		if (!process.env.PRIVATE_KEY)   throw "Private Key not set"
 
 		const prodOrigin  = "https://akbyrd.dev"
-		const devOrigins  = ["https://localhost:1313", "https://192.168.0.106:1313" ]
-		const prodRequest = request.headers.origin == prodOrigin
-		const devRequest  = devOrigins.includes(request.headers.origin || "")
+		const devOrigins  = ["https://localhost:1313", "https://192.168.0.106:1313"]
+		const prodRequest = request.headersEx.origin == prodOrigin
+		const devRequest  = devOrigins.includes(request.headersEx.origin || "")
 		if (prodRequest || devRequest)
 		{
 			const devExtra = devRequest ? ", x-vercel-protection-bypass, x-vercel-set-bypass-cookie" : ""
-			response.setHeader("access-control-allow-credentials", "true")
-			response.setHeader("access-control-allow-headers",     `credentials${devExtra}`)
-			response.setHeader("access-control-allow-origin",      request.headers.origin!)
-			response.setHeader("vary",                             "origin")
+			response.headers.set("access-control-allow-credentials", "true")
+			response.headers.set("access-control-allow-headers",     `credentials${devExtra}`)
+			response.headers.set("access-control-allow-origin",      request.headersEx.origin)
+			response.headers.set("vary",                             "origin")
 		}
 
 		if (request.method == "OPTIONS")
-			return response.status(204).send(null)
+			return response.send(ctx, 204)
 
 		ctx.devRequest = devRequest
 		ctx.session = DecryptSession(request.cookies.session)
 
-		const url = new URL(request.url || "", `http://${request.headers.host}`);
-		switch (url.pathname)
+		switch (request.urlEx.pathname)
 		{
 			default:
 			{
@@ -78,19 +137,18 @@ export default async function handler(request: VercelRequest, response: VercelRe
 
 			case "/":
 			{
-				return response.status(200).json({ message: "hello" })
+				return response.send(ctx, 200, { message: "hello" })
 			}
 
 			case "/login":
 			{
-				ctx.redirect = Validate(400, request.query, "state")
-				const code   = Validate(400, request.query, "code")
+				ctx.redirect = Validate(400, request.params, "state")
+				const code   = Validate(400, request.params, "code")
 
-				ctx.devRequest ||= devOrigins.includes(new URL(ctx.redirect).origin)
+				ctx.devRequest ||= devOrigins.includes(new URL(ctx.redirect!).origin)
 				await GetUserAuth(ctx, code)
 
-				UpdateCookie(ctx)
-				return response.status(302).redirect(ctx.redirect)
+				return response.redirect(ctx, 302, ctx.redirect!)
 			}
 
 			case "/logout":
@@ -98,48 +156,43 @@ export default async function handler(request: VercelRequest, response: VercelRe
 				ctx.updateCookie = true
 				ctx.session.userAuth = undefined
 
-				UpdateCookie(ctx)
-				return response.status(204).send(null)
+				return response.send(ctx, 204)
 			}
 
 			case "/discussion":
 			{
 				const params = {
-					owner:    Validate(400, request.query, "owner"),
-					repo:     Validate(400, request.query, "repo"),
-					category: Validate(400, request.query, "category").replace(/\+/g, " "),
-					page:     Validate(400, request.query, "page"),
+					owner:    Validate(400, request.params, "owner"),
+					repo:     Validate(400, request.params, "repo"),
+					category: Validate(400, request.params, "category").replace(/\+/g, " "),
+					page:     Validate(400, request.params, "page"),
 				}
 
 				if (ctx.session.userAuth)
 				{
 					const result = await GetUserDiscussion(ctx, params)
 					if (result.success)
-					{
-						UpdateCookie(ctx)
-						return response.status(200).json(result.json)
-					}
+						return response.send(ctx, 200, result.json)
 				}
 
 				const appAuth    = await GetAppAuth(ctx, params.owner, params.repo)
 				const discussion = await GetAppDiscussion(appAuth, params)
 
-				UpdateCookie(ctx)
-				return response.status(200).json(discussion)
+				return response.send(ctx, 200, discussion)
 			}
 
 			case "/comment":
 			{
 				const params = {
-					_:            Validate(401, ctx.session,     "userAuth"),
-					origin:       Validate(400, request.headers, "origin"),
-					page:         Validate(400, request.query,   "page"),
-					owner:        Validate(400, request.query,   "owner"),
-					repo:         Validate(400, request.query,   "repo"),
-					category:     Validate(400, request.query,   "category").replace(/\+/g, " "),
-					content:      Validate(400, request.query,   "content"),
-					discussionId: request.query.discussionId,
-					commentId:    request.query.commentId,
+					_:            Validate(401, ctx.session,       "userAuth"),
+					origin:       Validate(400, request.headersEx, "origin"),
+					page:         Validate(400, request.params,    "page"),
+					owner:        Validate(400, request.params,    "owner"),
+					repo:         Validate(400, request.params,    "repo"),
+					category:     Validate(400, request.params,    "category").replace(/\+/g, " "),
+					content:      Validate(400, request.params,    "content"),
+					discussionId: request.params.discussionId,
+					commentId:    request.params.commentId,
 				} as ICommentParams
 
 				if (!params.discussionId)
@@ -151,29 +204,26 @@ export default async function handler(request: VercelRequest, response: VercelRe
 					const comment = await AddComment(ctx, params)
 					discussion.comments.nodes.push(comment)
 
-					UpdateCookie(ctx)
-					return response.status(200).json(discussion)
+					return response.send(ctx, 200, discussion)
 				}
 				else
 				{
 					const comment = await AddComment(ctx, params)
 
-					UpdateCookie(ctx)
-					return response.status(200).json(comment)
+					return response.send(ctx, 200, comment)
 				}
 			}
 
 			case "/react":
 			{
-				const _         = Validate(401, ctx.session,   "userAuth")
-				const subjectId = Validate(400, request.query, "subjectId")
-				const reaction  = Validate(400, request.query, "reaction")
-				const add       = Validate(400, request.query, "add")
+				const _         = Validate(401, ctx.session,    "userAuth")
+				const subjectId = Validate(400, request.params, "subjectId")
+				const reaction  = Validate(400, request.params, "reaction")
+				const add       = Validate(400, request.params, "add")
 
 				await SetReaction(ctx, subjectId, reaction, add)
 
-				UpdateCookie(ctx)
-				return response.status(204).send(null)
+				return response.send(ctx, 204)
 			}
 		}
 	}
@@ -183,20 +233,17 @@ export default async function handler(request: VercelRequest, response: VercelRe
 		{
 			const status = error.statusCode as number
 
-			// TODO: Does this actually return the status?
-			UpdateCookie(ctx)
 			if (ctx.redirect)
-				return response.status(status).redirect(ctx.redirect)
-			return response.status(status).json(error.body || {})
+				return response.redirect(ctx, 302, ctx.redirect)
+			return response.send(ctx, status, error.body)
 		}
 		else
 		{
 			console.dir(error, { depth: null })
 
-			UpdateCookie(ctx)
 			if (ctx.redirect)
-				return response.status(500).redirect(ctx.redirect)
-			return response.status(500).send(null)
+				return response.redirect(ctx, 302, ctx.redirect)
+			return response.send(ctx, 500)
 		}
 	}
 	finally
@@ -227,26 +274,6 @@ function DecryptSession(sessionStr: string): ISession
 	}
 }
 
-function UpdateCookie(ctx: IContext)
-{
-	if (ctx.session.userAuth)
-	{
-		ctx.response.setHeader("access-control-expose-headers", "x-authenticated")
-		ctx.response.setHeader("x-authenticated", "1")
-	}
-
-	if (ctx.updateCookie)
-	{
-		const sessionStr = EncryptSession(ctx.session)
-		const userExp    = ctx.session.userAuth ? ctx.session.userAuth.refreshExp * 1000 : 0
-		const appExp     = Date.now() + 6 * 30 * 24 * 60 * 60 * 1000 // 6 months
-		const expiresStr = new Date(Math.max(userExp, appExp)).toUTCString()
-		const sameSite   = ctx.devRequest ? "None" : "Strict"
-		const cookie     = `session=${sessionStr}; Expires=${expiresStr}; SameSite=${sameSite}; Secure; HttpOnly`
-		ctx.response.setHeader("set-cookie", cookie)
-	}
-}
-
 // -------------------------------------------------------------------------------------------------
 // App Authorization
 
@@ -271,14 +298,14 @@ async function CreateJWT(): Promise<string>
 
 	const key_b64 = b64tobytes(process.env.PRIVATE_KEY!)
 	const alg = { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256", }
-	const key = await crypto.subtle.importKey("pkcs8", key_b64, alg, false, ["sign"])
+	const key = await crypto.subtle.importKey("pkcs8", new DataView(key_b64), alg, false, ["sign"])
 
 	const now = Math.floor(Date.now() / 1000) - 60
 	const header_b64 = objtob64({ alg: "RS256", typ: "JWT", })
 	const payload_b64 = objtob64({ iat: now, exp: now + 300, iss: process.env.CLIENT_ID!, })
 	const message_bytes = strtobytes(`${header_b64}.${payload_b64}`)
 
-	const signature_bytes = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", key, message_bytes)
+	const signature_bytes = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", key, new DataView(message_bytes))
 	const signature_b64 = bytestob64(signature_bytes)
 
 	const token = `${header_b64}.${payload_b64}.${signature_b64}`
@@ -287,7 +314,7 @@ async function CreateJWT(): Promise<string>
 
 async function GetAppAuthUrl(token: string, owner: string, repo: string): Promise<string>
 {
-	const result = await RESTRequest(GetAppAuthUrl.name, token, "GET", `https://api.github.com/repos/${owner}/${repo}/installation`)
+	const result = await RESTRequest("GetAppAuthUrl", token, "GET", `https://api.github.com/repos/${owner}/${repo}/installation`)
 	if (!result.success) throw result.json
 
 	return result.json.access_tokens_url
@@ -299,7 +326,7 @@ async function GetAppAuth(ctx: IContext, owner: string, repo: string): Promise<I
 
 	let result
 	if (ctx.session.appAuthUrl)
-		result = await RESTRequest(GetAppAuth.name, token, "POST", ctx.session.appAuthUrl)
+		result = await RESTRequest("GetAppAuth", token, "POST", ctx.session.appAuthUrl)
 
 	if (!result || !result.success)
 	{
@@ -307,7 +334,7 @@ async function GetAppAuth(ctx: IContext, owner: string, repo: string): Promise<I
 		ctx.session.appAuthUrl = undefined
 		ctx.session.appAuthUrl = await GetAppAuthUrl(token, owner, repo)
 
-		result = await RESTRequest(GetAppAuth.name, token, "POST", ctx.session.appAuthUrl)
+		result = await RESTRequest("GetAppAuth", token, "POST", ctx.session.appAuthUrl)
 		if (!result.success) throw result.json
 	}
 
@@ -350,7 +377,7 @@ async function GetUserAuth(ctx: IContext, code: string)
 	ctx.updateCookie = true
 	ctx.session.userAuth = undefined
 
-	const result = await RESTRequest(GetUserAuth.name, "", "POST", url.toString())
+	const result = await RESTRequest("GetUserAuth", "", "POST", url.toString())
 	if (!result.success) throw result.json
 
 	ctx.session.userAuth = ParseUserAuth(result.json)
@@ -372,7 +399,7 @@ async function RefreshUserAuth(ctx: IContext, force: boolean = false): Promise<F
 		ctx.updateCookie = true
 		ctx.session.userAuth = undefined
 
-		const result = await RESTRequest(RefreshUserAuth.name, "", "POST", url.toString())
+		const result = await RESTRequest("RefreshUserAuth", "", "POST", url.toString())
 
 		// TODO: Remove this once tested
 		console.log(`refreshing - ${result.response.ok}, ${result.response.status}, ${result.response.statusText}`)
@@ -479,7 +506,7 @@ async function GetUserDiscussion(ctx: IContext, params: IDiscussionParams): Prom
 async function GetDiscussion(auth: IAuth, params: IDiscussionParams): Promise<FetchResult<IDiscussion>>
 {
 	const title = params.page.replace(/^\/?|\/?$/g, "")
-	const result = await GraphQLRequest(GetDiscussion.name, auth,
+	const result = await GraphQLRequest("GetDiscussion", auth,
 		`query {
 			search(type: DISCUSSION, query: "repo:${params.owner}/${params.repo} in:title ${title}", first: 2) {
 				discussionCount
@@ -532,7 +559,7 @@ interface IDiscussionIds
 
 async function GetDiscussionIds(auth: IAuth, owner: string, repo: string, category: string): Promise<IDiscussionIds>
 {
-	const result = await GraphQLRequest(GetDiscussionIds.name, auth,
+	const result = await GraphQLRequest("GetDiscussionIds", auth,
 		`query {
 			repository(owner: "${owner}", name: "${repo}") {
 				id
@@ -593,7 +620,7 @@ async function CreateDiscussion(ctx: IContext, auth: IAuth, params: ICommentPara
 	const ids = await GetDiscussionIds(auth, params.owner, params.repo, params.category)
 	const body = new URL(params.page, params.origin).toString()
 	const title = params.page.replace(/^\/?|\/?$/g, "")
-	let result = await GraphQLRequest(CreateDiscussion.name, auth,
+	let result = await GraphQLRequest("CreateDiscussion", auth,
 		`mutation {
 			createDiscussion(input: {repositoryId: "${ids.repo}", categoryId: "${ids.category}", body: "${body}", title: "${title}"}) {
 				discussion {
@@ -645,7 +672,7 @@ async function AddComment(ctx: IContext, params: ICommentParams): Promise<IComme
 	result = await RefreshUserAuth(ctx, false)
 	if (!result.success) throw result.json
 
-	result = await GraphQLRequest(AddComment.name, ctx.session.userAuth!, mutation)
+	result = await GraphQLRequest("AddComment", ctx.session.userAuth!, mutation)
 	if (result.success && result.json.data.addDiscussionComment.clientMutationId != mutationId) throw result.json
 	ValidateUserAuth(ctx, result.response, true)
 	if (result.success) return result.json.data.addDiscussionComment.comment as IComment
@@ -653,7 +680,7 @@ async function AddComment(ctx: IContext, params: ICommentParams): Promise<IComme
 	result = await RefreshUserAuth(ctx, true)
 	if (!result.success) throw result.json
 
-	result = await GraphQLRequest(AddComment.name, ctx.session.userAuth!, mutation)
+	result = await GraphQLRequest("AddComment", ctx.session.userAuth!, mutation)
 	if (result.success && result.json.data.addDiscussionComment.clientMutationId != mutationId) throw result.json
 	ValidateUserAuth(ctx, result.response, true)
 	if (!result.success) throw result.json
@@ -676,7 +703,7 @@ async function SetReaction(ctx: IContext, subjectId: string, reaction: string, a
 	result = await RefreshUserAuth(ctx, false)
 	if (!result.success) throw result.json
 
-	result = await GraphQLRequest(SetReaction.name, ctx.session.userAuth!, mutation)
+	result = await GraphQLRequest("SetReaction", ctx.session.userAuth!, mutation)
 	if (result.success && result.json.data[op].clientMutationId != mutationId) throw result.json
 	ValidateUserAuth(ctx, result.response, true)
 	if (result.success) return
@@ -684,7 +711,7 @@ async function SetReaction(ctx: IContext, subjectId: string, reaction: string, a
 	result = await RefreshUserAuth(ctx, true)
 	if (!result.success) throw result.json
 
-	result = await GraphQLRequest(SetReaction.name, ctx.session.userAuth!, mutation)
+	result = await GraphQLRequest("SetReaction", ctx.session.userAuth!, mutation)
 	if (result.success && result.json.data[op].clientMutationId != mutationId) throw result.json
 	ValidateUserAuth(ctx, result.response, true)
 	if (!result.success) throw result.json

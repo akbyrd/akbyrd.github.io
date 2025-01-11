@@ -154,6 +154,8 @@ Vercel
 ------
 QUESTION: Is there a way to debug locally?
 QUESTION: Alerts for failed web calls
+BUG: Automatically deployed to production the first time
+BUG: Stack traces are incorrect
 Has a CLI
 Dynamic hosting server location
 Requires a phone number for signup
@@ -161,15 +163,19 @@ Avoid the need for github access by using CLI
 npm + 243 dependencies for the CLI
 Can't save over existing env vars
 Has logging for web calls
-BUG: Automatically deployed to production the first time
+Logs only last 1 hour (1 day on Pro)
+Log drains require Pro
 Unfiltered input
 Can't do HTTPS locally
 Can use custom URL
 Local dev is slow. 800 ms to recompile on every request
 https://vercel.com/templates/other/nodejs-serverless-function-express
-TODO: Try out the Edge runtime ("lightweight JS runtime that exposes a set of Web Standard APIs")
 Doesn't look like there's a way to test from the web ui
-BUG: Stack traces are incorrect
+The edge runtime workflow isn't great
+	Lots of methods are missing or broken. No way to know until it crashes.
+	Error messages aren't always helpful/correct.
+	Function names aren't available
+https://vercel.com/docs/pricing/edge-functions
 
 vercel dev
 vercel env pull

@@ -2,8 +2,8 @@
 	"repository": "https://github.com/akbyrd/akbyrd.github.io",
 	"type": "module",
 	"devDependencies": {
-		"@types/node": "^22.10.2",
-		"@vercel/node": "latest",
+		"@edge-runtime/primitives": "latest",
+		"@edge-runtime/types": "latest",
 		"typescript": "latest"
 	}
 }
