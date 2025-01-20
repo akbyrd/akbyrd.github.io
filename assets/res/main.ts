@@ -838,6 +838,7 @@ let commentState: {
 	loadingContainer:  HTMLElement
 	errorContainer:    HTMLElement
 	successContainer:  HTMLElement
+	currentError?:     HTMLElement
 	commentElems:      ICommentElements[]
 	syntheticClick?:   HTMLButtonElement
 }
@@ -860,7 +861,11 @@ interface ICommentElements
 	repliesParent?: HTMLElement
 	textArea:       HTMLTextAreaElement
 	submitButton:   HTMLButtonElement
+	submitError:    HTMLElement
+	submitStatus:   HTMLElement
 	logoutButton:   HTMLButtonElement
+	logoutError:    HTMLElement
+	logoutStatus:   HTMLElement
 }
 
 interface CommentTemplates
@@ -952,26 +957,30 @@ function InitComments()
 		lastSaveScrollPos: 0,
 		parent,
 		templates: {
-			comment: document.getElementById("comment-template") as HTMLTemplateElement,
-			reply: document.getElementById("reply-template") as HTMLTemplateElement,
-			header: document.getElementById("comment-header-template") as HTMLTemplateElement,
-			codeBlock: document.getElementById("comment-code-block-template") as HTMLTemplateElement,
+			comment:    document.getElementById("comment-template") as HTMLTemplateElement,
+			reply:      document.getElementById("reply-template") as HTMLTemplateElement,
+			header:     document.getElementById("comment-header-template") as HTMLTemplateElement,
+			codeBlock:  document.getElementById("comment-code-block-template") as HTMLTemplateElement,
 			mathInline: document.getElementById("comment-math-inline-template") as HTMLTemplateElement,
-			mathBlock: document.getElementById("comment-math-block-template") as HTMLTemplateElement,
-			footer: document.getElementById("comment-footer-template") as HTMLTemplateElement,
+			mathBlock:  document.getElementById("comment-math-block-template") as HTMLTemplateElement,
+			footer:     document.getElementById("comment-footer-template") as HTMLTemplateElement,
 		},
 		loadingContainer: parent.querySelector(".comments-state-loading") as HTMLElement,
-		errorContainer: parent.querySelector(".comments-state-error") as HTMLElement,
+		errorContainer:   parent.querySelector(".comments-state-error") as HTMLElement,
 		successContainer: parent.querySelector(".comments-state-success") as HTMLElement,
 		commentElems: [{
 			discussionId: "",
-			commentId: "",
-			draftKey: location.pathname,
-			root: comment0Root,
-			form: comment0Root.querySelector("form")!,
-			textArea: comment0Root.querySelector("textarea")!,
-			submitButton: comment0Root.querySelector(".comment-submit") as HTMLButtonElement,
-			logoutButton: comment0Root.querySelector(".comment-logout") as HTMLButtonElement,
+			commentId:    "",
+			draftKey:     location.pathname,
+			root:         comment0Root,
+			form:         comment0Root.querySelector("form")!,
+			textArea:     comment0Root.querySelector("textarea")!,
+			submitButton: comment0Root.querySelector(".comment-submit button") as HTMLButtonElement,
+			submitError:  comment0Root.querySelector(".comment-submit .comment-button-error") as HTMLElement,
+			submitStatus: comment0Root.querySelector(".comment-submit .error-status") as HTMLElement,
+			logoutButton: comment0Root.querySelector(".comment-logout button") as HTMLButtonElement,
+			logoutError:  comment0Root.querySelector(".comment-logout .comment-button-error") as HTMLElement,
+			logoutStatus: comment0Root.querySelector(".comment-logout .error-status") as HTMLElement,
 		}],
 	}
 
@@ -1084,8 +1093,12 @@ function AddComment(comment: IComment)
 		root:         root,
 		form:         form,
 		textArea:     form.querySelector("textarea")!,
-		submitButton: form.querySelector(".comment-submit") as HTMLButtonElement,
-		logoutButton: form.querySelector(".comment-logout") as HTMLButtonElement,
+		submitButton: form.querySelector(".comment-submit button") as HTMLButtonElement,
+		submitError:  form.querySelector(".comment-submit .comment-button-error") as HTMLElement,
+		submitStatus: form.querySelector(".comment-submit .error-status") as HTMLElement,
+		logoutButton: form.querySelector(".comment-logout button") as HTMLButtonElement,
+		logoutError:  form.querySelector(".comment-logout .comment-button-error") as HTMLElement,
+		logoutStatus: form.querySelector(".comment-logout .error-status") as HTMLElement,
 	}
 	commentState.commentElems.push(elems)
 
@@ -1183,7 +1196,7 @@ function CreateComment(templates: CommentTemplates, commentTemplate: HTMLTemplat
 		time.dateTime = elems.createdAt
 		const date = new Date(elems.createdAt)
 		const formatter = new Intl.DateTimeFormat(undefined, { year: "numeric", month: "short", day: "2-digit" })
-		time.innerText = formatter.format(date)
+		time.textContent = formatter.format(date)
 
 		root.prepend(headerFragment)
 	}
@@ -1345,8 +1358,8 @@ async function ToggleReaction(e: Event, comment: ICommentBase)
 function UpdateReactionVisibility(reaction: HTMLButtonElement, showReactions: boolean, countOffset: number)
 {
 	const countSpan = reaction.querySelector(".comment-reaction-count") as HTMLSpanElement
-	const count = parseInt(countSpan.innerText) + countOffset
-	countSpan.innerText = count.toString()
+	const count = parseInt(countSpan.textContent!) + countOffset
+	countSpan.textContent = count.toString()
 
 	const visible = showReactions || count != 0
 	if (reaction.hasAttribute("data-visible") != visible)
@@ -1404,13 +1417,28 @@ interface IAutoScroll
 	clientPos: { x: number, y: number }
 }
 
+function SetCurrentError(errorElem: HTMLElement, statusElem: HTMLElement, status?: number)
+{
+	console.assert(!commentState.currentError)
+	commentState.currentError = errorElem
+
+	statusElem.textContent = status ? status.toString() : "Error"
+	errorElem.style.display = ""
+}
+
+function ClearCurrentError(errorElem?: HTMLElement)
+{
+	if (!commentState.currentError) return
+	commentState.currentError.style.display = "none"
+}
+
 async function LoginOrSubmit(e: Event, elems: ICommentElements)
 {
 	e.preventDefault()
 
 	elems.submitButton.parentElement!.focus()
 	elems.submitButton.disabled = true
-	elems.submitButton.style.border = ""
+	ClearCurrentError()
 
 	if (!commentState.loggedIn)
 	{
@@ -1437,9 +1465,9 @@ async function LoginOrSubmit(e: Event, elems: ICommentElements)
 		const result = await APIRequest("GET", url)
 		if (!result.success)
 		{
-			elems.submitButton.focus()
 			elems.submitButton.disabled = false
-			elems.submitButton.style.border = "2px solid var(--error)"
+			elems.submitButton.focus()
+			SetCurrentError(elems.submitError, elems.submitStatus, result.response?.status)
 			return
 		}
 
@@ -1473,14 +1501,15 @@ async function Logout(e: Event, elems: ICommentElements)
 
 	elems.logoutButton.parentElement!.focus()
 	elems.logoutButton.disabled = true
+	ClearCurrentError(elems.logoutError)
 
 	const url = `${commentState.apiUrl}/logout`
 	const result = await APIRequest("POST", url)
 	if (!result.success)
 	{
 		elems.logoutButton.disabled = false
-		elems.logoutButton.style.border = "1px solid red"
 		elems.logoutButton.focus()
+		SetCurrentError(elems.logoutError, elems.logoutStatus, result.response?.status)
 		return
 	}
 
@@ -1691,7 +1720,6 @@ function CancelAutoScroll()
 
 async function Initialize()
 {
-	console.log(performance.now() % 1_000_000, "Initialize")
 	InitFeatures()
 	InitTheme()
 	InitImages()

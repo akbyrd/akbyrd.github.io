@@ -25,6 +25,7 @@ foreach ($out in $codeOut)
 		--unicodes='uf0450' <# nf-md-refresh #> `
 		--unicodes="uf046b" <# nf-md-rss #> `
 		--unicodes="uf0544" <# nf-md-twitter #> `
+		--unicodes="uf05d6" <# nf-md-alert_circle_outline #> `
 		--unicodes="uf0ad1" <# nf-md-mastodon #>
 
 	$name = Split-Path -Leaf $out

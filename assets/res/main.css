@@ -459,7 +459,7 @@ li:has(input) {
 /* ---------------------------------------------------------------------------------------------- */
 /* Code */
 
-code, annotation, .copy-block, .symbol {
+code, annotation, .copy-block, .symbol, .code {
 	font-family: code;
 	font-feature-settings: "ss01";
 	font-size-adjust: ex-height 0.48;
@@ -919,6 +919,7 @@ code, annotation {
 
 .reply-input > div {
 	height: 0px;
+	overflow: hidden;
 	transition-property: border, height, padding;
 	transition-duration: 200ms;
 }
@@ -946,37 +947,59 @@ code, annotation {
 	line-height: 0px;
 }
 
+.comment-logout,
 .comment-submit {
-	background-color: #347d39;
-	box-sizing: border-box;
-	margin-left: auto;
-	min-width: 116px;
-	text-align: center;
+	display: flex;
+	align-items: stretch;
 }
 
-.comment-submit:hover {
+.comment-submit {
+	margin-left: auto;
+}
+
+.comment-submit button {
+	background-color: #347d39;
+	box-sizing: border-box;
+	min-width: 100px;
+	margin-left: 8px;
+}
+
+.comment-submit button:hover {
 	background-color: #37843c;
 }
 
-.comments-logged-out .comment-submit :nth-child(1) {
+.comments-logged-out .comment-submit button :nth-child(1) {
 	display: none;
 }
 
-.comments-logged-in .comment-submit :nth-child(2),
-.comments-logged-in .comment-submit :nth-child(3) {
+.comments-logged-in .comment-submit button :nth-child(2),
+.comments-logged-in .comment-submit button :nth-child(3) {
 	display: none;
 }
 
-.comment-logout {
+.comment-logout button {
 	color: var(--text-detail);
+}
+
+.comment-logout button:hover {
+	color: var(--text);
 }
 
 .comments-logged-out .comment-logout {
 	display: none;
 }
 
-.comment-logout:hover {
-	color: var(--text);
+.comment-button-error {
+	align-items: center;
+	color: var(--error);
+	display: flex;
+	gap: 8px;
+	margin: 0 8px;
+	user-select: none;
+}
+
+.comment-button-error .symbol {
+	font-size: 36px;
 }
 
 .comments-state-loading {

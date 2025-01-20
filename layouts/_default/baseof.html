@@ -116,15 +116,21 @@
 						<form class="reply-input" novalidate>
 							<textarea name="Enter Reply Text" placeholder="Write a reply" required rows="1"></textarea>
 							<div tabindex="-1">
-								<button class="comment-logout" type="button" aria-label="Sign Out">
-									<span class="symbol">&#xf426;</span>
-									<span>Sign out</span>
-								</button>
-								<button class="comment-submit" type="submit" disabled aria-label="Post Reply">
-									<span>Comment</span>
-									<span class="symbol">&#xf02a4;</span>
-									<span>Sign in</span>
-								</button>
+								<span class="comment-logout">
+									<button type="button" aria-label="Sign Out">
+										<span class="symbol">&#xf426;</span>
+										<span>Sign out</span>
+									</button>
+									<span class="comment-button-error" style="display: none;"><span class="symbol">&#xf05d6;</span><span class="error-status code"></span></span>
+								</span>
+								<span class="comment-submit">
+									<span class="comment-button-error" style="display: none;"><span class="error-status code"></span><span class="symbol">&#xf05d6;</span></span>
+									<button type="submit" disabled aria-label="Post Reply">
+										<span>Comment</span>
+										<span class="symbol">&#xf02a4;</span>
+										<span>Sign in</span>
+									</button>
+								</span>
 							</div>
 						</form>
 					</section>
@@ -207,15 +213,21 @@
 					<form class="comment-input" novalidate>
 						<textarea name="Enter Comment Text" placeholder="Write a comment" required rows="1"></textarea>
 						<div>
-							<button class="comment-logout" type="button" aria-label="Sign Out">
-								<span class="symbol">&#xf426;</span>
-								<span>Sign out</span>
-							</button>
-							<button class="comment-submit" type="submit" disabled aria-label="Post Comment">
-								<span>Reply</span>
-								<span class="symbol">&#xf02a4;</span>
-								<span>Sign in</span>
-							</button>
+							<span class="comment-logout">
+								<button type="button" aria-label="Sign Out">
+									<span class="symbol">&#xf426;</span>
+									<span>Sign out</span>
+								</button>
+								<span class="comment-button-error" style="display: none;"><span class="symbol">&#xf05d6;</span><span class="error-status code">500</span></span>
+							</span>
+							<span class="comment-submit">
+								<span class="comment-button-error" style="display: none;"><span class="error-status code"></span><span class="symbol">&#xf05d6;</span></span>
+								<button type="submit" disabled aria-label="Post Comment">
+									<span>Reply</span>
+									<span class="symbol">&#xf02a4;</span>
+									<span>Sign in</span>
+								</button>
+							</span>
 						</div>
 					</form>
 				</section>

@@ -1,17 +1,16 @@
 General
 TODO: Implement comments
+	Merge comment and reply naming
+	Add refresh button for comments (updatedAt and reconcile)
+	Entrance animation for comments
+	---
 	Investiage bfcache
 		https://web.dev/articles/bfcache
 		https://developer.chrome.com/docs/web-platform/page-lifecycle-api
 	Consider impact of multiple tabs when dealing with localStorage (auto-scroll)
 	---
-	Error popup instead of red border
-	Add new comments without reloading
-	---
 	Encrypt cookie
 	Regenerate secrets
-	---
-	Entrance animation for comments
 
 TODO: Fix scrolling on math in comments (don't use <math> because it behaves poorly)
 TODO: Fix bottom margin on Chrome
