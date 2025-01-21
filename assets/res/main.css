@@ -191,6 +191,10 @@ body {
 	text-shadow: 1px 1px 6px var(--text-shadow);
 }
 
+body > footer {
+	padding-bottom: 20px;
+}
+
 button {
 	cursor: pointer;
 	overflow: hidden;
