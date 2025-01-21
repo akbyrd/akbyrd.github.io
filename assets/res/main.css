@@ -882,8 +882,7 @@ code, annotation {
 	border-top-width: 2px;
 }
 
-.comment-input textarea,
-.reply-input textarea {
+.comment-input textarea {
 	box-sizing: border-box;
 	display: block;
 	font-family: sans-serif;
@@ -896,18 +895,15 @@ code, annotation {
 	width: 100%;
 }
 
-.comment-input textarea:read-only,
-.reply-input textarea:read-only {
+.comment-input textarea:read-only {
 	cursor: not-allowed;
 }
 
-.comment-input textarea:read-only:not(:placeholder-shown),
-.reply-input textarea:read-only:not(:placeholder-shown) {
+.comment-input textarea:read-only:not(:placeholder-shown) {
 	opacity: 50%;
 }
 
-.comment-input > div,
-.reply-input > div {
+.comment-input > div {
 	border-color: var(--outline);
 	border-style: solid;
 	border-width: 0;
@@ -924,7 +920,7 @@ code, annotation {
 	transition-duration: 200ms;
 }
 
-.comment-input > div,
+.comment-input:not(.reply-input) > div,
 .reply-input:focus-within > div,
 .reply-input textarea:not(:placeholder-shown) + div {
 	border-width: 1px 0 0 0;
@@ -932,8 +928,7 @@ code, annotation {
 	padding: 8px 0;
 }
 
-.comment-input button,
-.reply-input button {
+.comment-input button  {
 	display: inline-flex;
 	align-items: center;
 	gap: 8px;
@@ -941,8 +936,7 @@ code, annotation {
 	padding: 0 8px;
 }
 
-.comment-input .symbol,
-.reply-input .symbol {
+.comment-input .symbol {
 	font-size: 32px;
 	line-height: 0px;
 }
@@ -968,12 +962,8 @@ code, annotation {
 	background-color: #37843c;
 }
 
-.comments-logged-out .comment-submit button :nth-child(1) {
-	display: none;
-}
-
-.comments-logged-in .comment-submit button :nth-child(2),
-.comments-logged-in .comment-submit button :nth-child(3) {
+.comments-logged-out .comment-submit button .submit,
+.comments-logged-in .comment-submit button .login {
 	display: none;
 }
 

@@ -1,6 +1,6 @@
 General
 TODO: Implement comments
-	Merge comment and reply naming
+	Fix footer space
 	Add refresh button for comments (updatedAt and reconcile)
 	Entrance animation for comments
 	---
