@@ -401,10 +401,6 @@ async function RefreshUserAuth(ctx: IContext, force: boolean = false): Promise<F
 
 		const result = await RESTRequest("RefreshUserAuth", "", "POST", url.toString())
 
-		// TODO: Remove this once tested
-		console.log(`refreshing - ${result.response.ok}, ${result.response.status}, ${result.response.statusText}`)
-		console.dir(result.json, { depth: null })
-
 		if (!result.success && result.json.error == "bad_refresh_token") return result
 		if (!result.success) throw result.json
 

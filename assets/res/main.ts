@@ -1571,8 +1571,6 @@ function SaveScrollPos()
 {
 	const now = performance.now()
 	const elapsed = now - commentState.lastSaveScrollPos
-	if (elapsed < 0) return
-
 	const throttle = 200 - elapsed
 	if (throttle > 0)
 	{
@@ -1581,19 +1579,25 @@ function SaveScrollPos()
 		return
 	}
 
-	for (const elems of commentState.commentElems)
+	if (!commentState.successContainer.hasAttribute("data-disabled"))
 	{
-		const rect = elems.root.getClientRects()[0]
-		if (rect.y < window.innerHeight)
+		for (const elems of commentState.commentElems)
 		{
-			const autoScroll = PrepareAutoScroll(elems.textArea, elems.commentId)
-
-			const state = history.state || {}
-			state.autoScroll = autoScroll
-			history.replaceState(state, "")
-			return
+			const rect = elems.root.getClientRects()[0]
+			if (rect.y < window.innerHeight)
+			{
+				const autoScroll = PrepareAutoScroll(elems.textArea, elems.commentId)
+				const state = history.state || {}
+				state.autoScroll = autoScroll
+				history.replaceState(state, "")
+				return
+			}
 		}
 	}
+
+	const state = history.state || {}
+	state.autoScroll = null
+	history.replaceState(state, "")
 }
 
 function RestoreScrollPos()

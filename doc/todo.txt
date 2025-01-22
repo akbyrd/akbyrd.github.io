@@ -1,19 +1,11 @@
 General
 TODO: Implement comments
-	Reactions don't look great on mobile
-	Add refresh button for comments (updatedAt and reconcile)
-	Entrance animation for comments
-	---
-	Investiage bfcache
-		https://web.dev/articles/bfcache
-		https://developer.chrome.com/docs/web-platform/page-lifecycle-api
-	Consider impact of multiple tabs when dealing with localStorage (auto-scroll)
-	---
 	Encrypt cookie
 	Regenerate secrets
+	Reactions don't look great on mobile
 
+TODO: Change checkboxes to icons
 TODO: Fix scrolling on math in comments (don't use <math> because it behaves poorly)
-TODO: Fix bottom margin on Chrome
 TODO: Check for missing math glyphs (should be using a single font, not falling back)
 TODO: Fix initial math style (incorrect until code runs)
 TODO: Add "fix typo" button (https://www.ii.com/vscode-uri-scheme-and-hugo/)
@@ -26,6 +18,7 @@ TODO: Add search support
 TODO: Show copy buttons when hovering entire area
 TODO: Make copy buttons sticky
 TODO: Use Vercel storage to cache app token locally
+TODO: Math is a little squished together on Chrome
 
 Atom / RSS
 TODO: Add an XML stylesheet (.xsl) to Atom feed
@@ -33,7 +26,6 @@ TODO: Split Atom feed into multiple files
 TODO: Fix icon on Inoreader
 
 Code
-TODO: Fix 1px gap below scroll bars
 TODO: Replace syntax highlighting implementation (use compiler, support inline code)
 TODO: It's still possible to scroll + select with touch on Firefox on Android
 TODO: Rethink line selection (2 long presses?)
@@ -60,6 +52,10 @@ TODO: Code line anchors
 			Desktop cases with mouse
 			mouse, touch
 			touch, mouse
+
+Comments
+TODO: Add refresh button (updatedAt and reconcile)
+TODO: Add entrance animation
 
 Content
 TODO: Improve about page content

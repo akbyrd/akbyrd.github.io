@@ -58,14 +58,14 @@
 			"detail": "hugo test (development)",
 			"type": "shell",
 			"hide": true,
-			"command": "hugo server -e development --bind 0.0.0.0 --tlsAuto --cleanDestinationDir --printPathWarnings --ignoreCache --noHTTPCache",
+			"command": "hugo server -e development --bind 0.0.0.0 --tlsAuto --cleanDestinationDir --printPathWarnings --ignoreCache",
 		},
 		{
 			// w
 			"label": "test-project",
 			"detail": "hugo test (staging)",
 			"type": "shell",
-			"command": "hugo server -e staging --bind 0.0.0.0 --tlsAuto --cleanDestinationDir --printPathWarnings --ignoreCache --noHTTPCache",
+			"command": "hugo server -e staging --bind 0.0.0.0 --tlsAuto --cleanDestinationDir --printPathWarnings --ignoreCache",
 			"dependsOn": ["deploy-api-staging"],
 		},
 		{
