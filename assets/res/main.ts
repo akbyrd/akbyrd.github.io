@@ -1014,7 +1014,7 @@ function InitComments()
 				observer.unobserve(entry.target)
 			}
 		}
-	}, { threshold: 1.0, })
+	})
 	observer.observe(commentState.parent)
 }
 

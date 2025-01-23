@@ -156,6 +156,8 @@ QUESTION: Is there a way to debug locally?
 QUESTION: Alerts for failed web calls
 BUG: Automatically deployed to production the first time
 BUG: Stack traces are incorrect
+BUG: Edge runtime crashes with ArrayBuffers in importKey
+BUG: Edge runtime crashes with TextDecoder
 Has a CLI
 Dynamic hosting server location
 Requires a phone number for signup

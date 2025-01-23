@@ -5,6 +5,7 @@ declare const process:
 		CLIENT_ID?: string
 		CLIENT_SECRET?: string
 		PRIVATE_KEY?: string
+		ENCRYPTION_KEY?: string
 	}
 }
 
@@ -16,10 +17,11 @@ interface ISession
 
 interface IContext
 {
-	updateCookie: boolean
-	devRequest:   boolean
-	redirect?:    string
-	session:      ISession
+	updateCookie:  boolean
+	devRequest:    boolean
+	redirect?:     string
+	session:       ISession
+	encryptionKey: CryptoKey
 }
 
 type RequestEx = Request &
@@ -34,9 +36,9 @@ class ResponseEx
 {
 	headers = new Headers()
 
-	send(ctx: IContext, status: number, body?: {}): Response
+	async send(ctx: IContext, status: number, body?: {}): Promise<Response>
 	{
-		this.updateCookie(ctx)
+		await this.updateCookie(ctx)
 		this.headers.set("content-type", "application/json")
 		return new Response(JSON.stringify(body), {
 			status,
@@ -44,9 +46,9 @@ class ResponseEx
 		})
 	}
 
-	redirect(ctx: IContext, status: number, url: string | URL): Response
+	async redirect(ctx: IContext, status: number, url: string | URL): Promise<Response>
 	{
-		this.updateCookie(ctx)
+		await this.updateCookie(ctx)
 		this.headers.set("location", url.toString())
 		return new Response(null, {
 			status,
@@ -54,7 +56,7 @@ class ResponseEx
 		})
 	}
 
-	updateCookie(ctx: IContext): void
+	async updateCookie(ctx: IContext): Promise<void>
 	{
 		if (ctx.session.userAuth)
 		{
@@ -64,7 +66,7 @@ class ResponseEx
 
 		if (ctx.updateCookie)
 		{
-			const sessionStr = EncryptSession(ctx.session)
+			const sessionStr = await EncryptSession(ctx, ctx.session)
 			const userExp    = ctx.session.userAuth ? ctx.session.userAuth.refreshExp * 1000 : 0
 			const appExp     = Date.now() + 6 * 30 * 24 * 60 * 60 * 1000 // 6 months
 			const expiresStr = new Date(Math.max(userExp, appExp)).toUTCString()
@@ -84,7 +86,7 @@ export default async function handler(_request: Request): Promise<Response>
 {
 	// NOTE: Unhandled failure modes:
 	// * Large requests - limited to 4.5 MB or 4 MB, depdending on runtime
-	// * Time outs      - limited to 10s or 25s, depending on /*r*/untime
+	// * Time outs      - limited to 10s or 25s, depending on runtime
 
 	const url = new URL(_request.url)
 	const request: RequestEx = Object.assign(_request, {
@@ -95,9 +97,10 @@ export default async function handler(_request: Request): Promise<Response>
 	})
 	const response = new ResponseEx()
 	const ctx: IContext = {
-		updateCookie: false,
-		devRequest:   false,
-		session:      {},
+		updateCookie:  false,
+		devRequest:    false,
+		session:       {},
+		encryptionKey: CryptoKey.prototype,
 	}
 
 	try
@@ -105,9 +108,10 @@ export default async function handler(_request: Request): Promise<Response>
 		console.log(`\n${request.method}\n${request.url}`)
 		console.time("Total")
 
-		if (!process.env.CLIENT_ID)     throw "Client Id not set"
-		if (!process.env.CLIENT_SECRET) throw "Client Secret not set"
-		if (!process.env.PRIVATE_KEY)   throw "Private Key not set"
+		if (!process.env.CLIENT_ID)      throw "Client Id not set"
+		if (!process.env.CLIENT_SECRET)  throw "Client Secret not set"
+		if (!process.env.PRIVATE_KEY)    throw "Private Key not set"
+		if (!process.env.ENCRYPTION_KEY) throw "Encryption Key not set"
 
 		const prodOrigin  = "https://akbyrd.dev"
 		const devOrigins  = ["https://localhost:1313", "https://192.168.0.106:1313"]
@@ -125,8 +129,9 @@ export default async function handler(_request: Request): Promise<Response>
 		if (request.method == "OPTIONS")
 			return response.send(ctx, 204)
 
-		ctx.devRequest = devRequest
-		ctx.session = DecryptSession(request.cookies.session)
+		ctx.devRequest    = devRequest
+		ctx.encryptionKey = await ImportEncryptionKey()
+		ctx.session       = await DecryptSession(ctx, request.cookies.session)
 
 		switch (request.urlEx.pathname)
 		{
@@ -255,17 +260,37 @@ export default async function handler(_request: Request): Promise<Response>
 // -------------------------------------------------------------------------------------------------
 // Session Management
 
-function EncryptSession(session: ISession): string
+async function ImportEncryptionKey(): Promise<CryptoKey>
 {
-	const sessionStr = btoa(JSON.stringify(session))
+	const key_bytes = b64tobytes(process.env.ENCRYPTION_KEY!)
+	const key       = await crypto.subtle.importKey("raw", key_bytes, { name: "AES-GCM" }, false, ["encrypt", "decrypt"])
+	return key
+}
+
+async function EncryptSession(ctx: IContext, session: ISession): Promise<string>
+{
+	const payload = objtobytes(session)
+	const iv      = crypto.getRandomValues(new Uint8Array(12))
+	const bytes   = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, ctx.encryptionKey, payload)
+
+	const iv_bytes = new Uint8Array(iv.length + bytes.byteLength)
+	iv_bytes.set(iv, 0)
+	iv_bytes.set(new Uint8Array(bytes), iv.length)
+
+	const sessionStr = bytestob64(iv_bytes)
 	return sessionStr
 }
 
-function DecryptSession(sessionStr: string): ISession
+async function DecryptSession(ctx: IContext, sessionStr: string): Promise<ISession>
 {
 	try
 	{
-		const session = JSON.parse(atob(sessionStr))
+		const iv_bytes = b64tobytes(sessionStr)
+		const iv       = iv_bytes.slice(0, 12)
+		const bytes    = iv_bytes.slice(12)
+
+		const payload = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, ctx.encryptionKey, bytes)
+		const session = bytestoobj(payload)
 		return session
 	}
 	catch
@@ -296,17 +321,17 @@ async function CreateJWT(): Promise<string>
 	// can be in use at once.) Since comments lazily load it's somewhat hard for users to hammer
 	// them.
 
-	const key_b64 = b64tobytes(process.env.PRIVATE_KEY!)
-	const alg = { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256", }
-	const key = await crypto.subtle.importKey("pkcs8", new DataView(key_b64), alg, false, ["sign"])
+	const key_bytes = b64tobytes(process.env.PRIVATE_KEY!)
+	const key_alg   = { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256", }
+	const key       = await crypto.subtle.importKey("pkcs8", key_bytes, key_alg, false, ["sign"])
 
-	const now = Math.floor(Date.now() / 1000) - 60
-	const header_b64 = objtob64({ alg: "RS256", typ: "JWT", })
-	const payload_b64 = objtob64({ iat: now, exp: now + 300, iss: process.env.CLIENT_ID!, })
+	const now           = Math.floor(Date.now() / 1000) - 60
+	const header_b64    = objtob64({ alg: "RS256", typ: "JWT", })
+	const payload_b64   = objtob64({ iat: now, exp: now + 300, iss: process.env.CLIENT_ID!, })
 	const message_bytes = strtobytes(`${header_b64}.${payload_b64}`)
 
-	const signature_bytes = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", key, new DataView(message_bytes))
-	const signature_b64 = bytestob64(signature_bytes)
+	const signature_bytes = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", key, message_bytes)
+	const signature_b64   = bytestob64(signature_bytes)
 
 	const token = `${header_b64}.${payload_b64}.${signature_b64}`
 	return token
@@ -796,48 +821,58 @@ function Validate(statusCode: number, obj: any, key: string): string
 	return obj[key]
 }
 
-function strtobytes(s: string): ArrayBuffer
+function strtobytes(str: string): Uint8Array
 {
-	const buf = new ArrayBuffer(s.length)
-	const view = new Uint8Array(buf)
-
-	for (let i = 0; i < s.length; i++)
-		view[i] = s.charCodeAt(i)
-
-	return buf
+	const bytes = new Uint8Array(str.length)
+	for (let i = 0; i < str.length; i++)
+		bytes[i] = str.charCodeAt(i)
+	return bytes
 }
 
-function b64tobytes(str: string): ArrayBuffer
+function bytestostr(bytes: ArrayBufferLike): string
 {
-	const binary = atob(str)
-	const buf = new ArrayBuffer(binary.length)
-	const view = new Uint8Array(buf)
-
-	for (let i = 0; i < binary.length; i++)
-		view[i] = binary.charCodeAt(i)
-
-	return buf
-}
-
-function bytestob64(buf: ArrayBuffer): string
-{
-	const view = new Uint8Array(buf)
-	const str = String.fromCharCode(...view)
-	const b64 = strtob64(str)
-	return b64
-}
-
-function strtob64(str: string): string
-{
-	str = btoa(str)
-	str = str.replace(/=/g, "")
-	str = str.replace(/\+/g, "-")
-	str = str.replace(/\//g, "_")
+	const str = new TextDecoder("latin1").decode(bytes)
 	return str
+}
+
+function b64tobytes(b64: string): Uint8Array
+{
+	const str = atob(b64)
+	const bytes = strtobytes(str)
+	return bytes
+}
+
+function bytestob64(bytes: ArrayBufferLike): string
+{
+	const str = bytestostr(bytes)
+	const b64 = btoa(str)
+	return b64
 }
 
 function objtob64(obj: any): string
 {
-	const json = JSON.stringify(obj)
-	return strtob64(json)
+	const str = JSON.stringify(obj)
+	const b64 = btoa(str)
+	return b64
+}
+
+function b64toobj(b64: string): {}
+{
+	const str = atob(b64)
+	const obj = JSON.parse(str)
+	return obj
+}
+
+function objtobytes(obj: {}): Uint8Array
+{
+	const str = JSON.stringify(obj)
+	const bytes = strtobytes(str)
+	return bytes
+}
+
+function bytestoobj(bytes: ArrayBufferLike): any
+{
+	const str = bytestostr(bytes)
+	const obj = JSON.parse(str)
+	return obj
 }

@@ -1,24 +1,20 @@
 General
-TODO: Implement comments
-	Encrypt cookie
-	Regenerate secrets
-	Reactions don't look great on mobile
-
+TODO: Try removing multistep conversion functions
 TODO: Change checkboxes to icons
 TODO: Fix scrolling on math in comments (don't use <math> because it behaves poorly)
 TODO: Check for missing math glyphs (should be using a single font, not falling back)
 TODO: Fix initial math style (incorrect until code runs)
 TODO: Add "fix typo" button (https://www.ii.com/vscode-uri-scheme-and-hugo/)
 TODO: Get link previews working on {Discord, X, Mastodon, Bluesky, Hacker News, Github, LinkedIn, Slack}
-TODO: Choose a diagram method: goat, mermaid (jerky layout), graphviz, other
 TODO: Try a render hook for images https://gohugo.io/render-hooks/images/
 TODO: Lazy image loading
 TODO: Implement zoom for images (current page? new page?)
-TODO: Add search support
 TODO: Show copy buttons when hovering entire area
 TODO: Make copy buttons sticky
-TODO: Use Vercel storage to cache app token locally
 TODO: Math is a little squished together on Chrome
+----
+TODO: Choose a diagram method: goat, mermaid (jerky layout), graphviz, other
+TODO: Add search support
 
 Atom / RSS
 TODO: Add an XML stylesheet (.xsl) to Atom feed
@@ -39,21 +35,23 @@ TODO: Code line anchors
 		test on chrome desktop touch
 		test on edge desktop touch
 
-		Desktop test cases
-			down, m/r/b/f down
-			down, arrow/page/home/end
-			down, wheel scroll
-			down, mclick scroll
-			down, drag off window, up
-			down, middle, drag off window, up
-			refresh, down
+	Desktop test cases
+		down, m/r/b/f down
+		down, arrow/page/home/end
+		down, wheel scroll
+		down, mclick scroll
+		down, drag off window, up
+		down, middle, drag off window, up
+		refresh, down
 
-		Mobile test cases
-			Desktop cases with mouse
-			mouse, touch
-			touch, mouse
+	Mobile test cases
+		Desktop cases with mouse
+		mouse, touch
+		touch, mouse
 
 Comments
+TODO: Use Vercel storage to cache app token locally
+TODO: Reactions don't look great on mobile
 TODO: Add refresh button (updatedAt and reconcile)
 TODO: Add entrance animation
 
