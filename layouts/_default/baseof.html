@@ -64,7 +64,7 @@
 
 	<noscript>
 		<style>
-			.require-js { display: none; }
+			.require-js { display: none !important; }
 		</style>
 	</noscript>
 
@@ -106,7 +106,7 @@
 		{{- block "main" . }}{{ end }}
 
 		{{- if .Page.Params.comments }}
-		<div class="end-mark symbol">&#xe22e;</div>
+		<div class="end-mark symbol require-js">&#xe22e;</div>
 		<section id="comments" class="require-js no-mathml">
 			<div class="comments-templates" style="display: none;">
 				<template id="comment-template">

@@ -262,14 +262,14 @@ export default async function handler(_request: Request): Promise<Response>
 
 async function ImportEncryptionKey(): Promise<CryptoKey>
 {
-	const key_bytes = b64tobytes(process.env.ENCRYPTION_KEY!)
+	const key_bytes = strtobytes(atob(process.env.ENCRYPTION_KEY!))
 	const key       = await crypto.subtle.importKey("raw", key_bytes, { name: "AES-GCM" }, false, ["encrypt", "decrypt"])
 	return key
 }
 
 async function EncryptSession(ctx: IContext, session: ISession): Promise<string>
 {
-	const payload = objtobytes(session)
+	const payload = strtobytes(JSON.stringify(session))
 	const iv      = crypto.getRandomValues(new Uint8Array(12))
 	const bytes   = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, ctx.encryptionKey, payload)
 
@@ -277,7 +277,7 @@ async function EncryptSession(ctx: IContext, session: ISession): Promise<string>
 	iv_bytes.set(iv, 0)
 	iv_bytes.set(new Uint8Array(bytes), iv.length)
 
-	const sessionStr = bytestob64(iv_bytes)
+	const sessionStr = btoa(bytestostr(iv_bytes))
 	return sessionStr
 }
 
@@ -285,12 +285,12 @@ async function DecryptSession(ctx: IContext, sessionStr: string): Promise<ISessi
 {
 	try
 	{
-		const iv_bytes = b64tobytes(sessionStr)
+		const iv_bytes = strtobytes(atob(sessionStr))
 		const iv       = iv_bytes.slice(0, 12)
 		const bytes    = iv_bytes.slice(12)
 
 		const payload = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, ctx.encryptionKey, bytes)
-		const session = bytestoobj(payload)
+		const session = JSON.parse(bytestostr(payload))
 		return session
 	}
 	catch
@@ -321,17 +321,17 @@ async function CreateJWT(): Promise<string>
 	// can be in use at once.) Since comments lazily load it's somewhat hard for users to hammer
 	// them.
 
-	const key_bytes = b64tobytes(process.env.PRIVATE_KEY!)
+	const key_bytes = strtobytes(atob(process.env.PRIVATE_KEY!))
 	const key_alg   = { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256", }
 	const key       = await crypto.subtle.importKey("pkcs8", key_bytes, key_alg, false, ["sign"])
 
 	const now           = Math.floor(Date.now() / 1000) - 60
-	const header_b64    = objtob64({ alg: "RS256", typ: "JWT", })
-	const payload_b64   = objtob64({ iat: now, exp: now + 300, iss: process.env.CLIENT_ID!, })
+	const header_b64    = btoa(JSON.stringify(({ alg: "RS256", typ: "JWT" })))
+	const payload_b64   = btoa(JSON.stringify(({ iat: now, exp: now + 300, iss: process.env.CLIENT_ID! })))
 	const message_bytes = strtobytes(`${header_b64}.${payload_b64}`)
 
 	const signature_bytes = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", key, message_bytes)
-	const signature_b64   = bytestob64(signature_bytes)
+	const signature_b64   = btoa(bytestostr(signature_bytes))
 
 	const token = `${header_b64}.${payload_b64}.${signature_b64}`
 	return token
@@ -833,46 +833,4 @@ function bytestostr(bytes: ArrayBufferLike): string
 {
 	const str = new TextDecoder("latin1").decode(bytes)
 	return str
-}
-
-function b64tobytes(b64: string): Uint8Array
-{
-	const str = atob(b64)
-	const bytes = strtobytes(str)
-	return bytes
-}
-
-function bytestob64(bytes: ArrayBufferLike): string
-{
-	const str = bytestostr(bytes)
-	const b64 = btoa(str)
-	return b64
-}
-
-function objtob64(obj: any): string
-{
-	const str = JSON.stringify(obj)
-	const b64 = btoa(str)
-	return b64
-}
-
-function b64toobj(b64: string): {}
-{
-	const str = atob(b64)
-	const obj = JSON.parse(str)
-	return obj
-}
-
-function objtobytes(obj: {}): Uint8Array
-{
-	const str = JSON.stringify(obj)
-	const bytes = strtobytes(str)
-	return bytes
-}
-
-function bytestoobj(bytes: ArrayBufferLike): any
-{
-	const str = bytestostr(bytes)
-	const obj = JSON.parse(str)
-	return obj
 }

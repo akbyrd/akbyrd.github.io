@@ -1157,6 +1157,7 @@ async function LoadComments()
 
 	const discussion = result.json as IDiscussion
 	SetCommentsState(CommentsState.Success)
+	SetLoggedIn(commentState.loggedIn)
 	SetDiscussion(discussion)
 }
 

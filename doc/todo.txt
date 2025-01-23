@@ -1,5 +1,4 @@
 General
-TODO: Try removing multistep conversion functions
 TODO: Change checkboxes to icons
 TODO: Fix scrolling on math in comments (don't use <math> because it behaves poorly)
 TODO: Check for missing math glyphs (should be using a single font, not falling back)
@@ -29,6 +28,7 @@ TODO: Rethink auto-scroll (smooth, by line, wait for scrollend or custom timer)
 TODO: Consider Shift + Click for line selection
 TODO: There's 1 pixel of clickable space around the first and last lines when highlighted
 TODO: Adjust block code lines down 1px
+TODO: Allow selection over line numbers when Javascript is disabled
 TODO: Code line anchors
 	Mobile
 		test on firefox desktop touch
