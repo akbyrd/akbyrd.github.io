@@ -543,6 +543,10 @@ code, annotation {
 	}
 }
 
+.comment .container.code code {
+	padding: 8px;
+}
+
 .copy-block {
 	background-color: var(--code-highlight-background);
 	box-shadow: 0px 0px 0px 1px var(--outline);
@@ -562,6 +566,7 @@ code, annotation {
 	transition-timing-function: ease-out;
 }
 
+.copy-block + div,
 .copy-block + pre {
 	margin-top: -34px;
 }
@@ -1195,7 +1200,7 @@ math[display="block"] mtr mtd:not([class]) + mtd:not([class]) {
 }
 
 .container.math .scroll {
-	margin: 0;
+	margin-bottom: 0;
 }
 
 .no-mathml .container:has(math),

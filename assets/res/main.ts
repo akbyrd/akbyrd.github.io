@@ -1218,7 +1218,11 @@ function CreateComment(templates: CommentTemplates, commentTemplate: HTMLTemplat
 
 		const blockCodes = content.querySelectorAll("div.highlight")
 		for (const codeDiv of blockCodes)
-			ConstructCodeBlock(codeDiv, codeDiv)
+		{
+			const pre = codeDiv.querySelector("pre")
+			if (pre)
+				ConstructCodeBlock(codeDiv, pre)
+		}
 
 		const blockCodesNoLang = content.querySelectorAll("div.snippet-clipboard-content")
 		for (const codeDiv of blockCodesNoLang)
