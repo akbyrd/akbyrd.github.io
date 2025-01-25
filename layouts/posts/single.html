@@ -18,5 +18,7 @@
 			<time class="post-time"></time>
 			{{- end }}
 		</h1>
-		{{ .Content }}
+		{{- $content := .Content }}
+		{{- $content = partial "fixup-task-lists.html" .Content }}
+		{{- $content }}
 {{- end -}}

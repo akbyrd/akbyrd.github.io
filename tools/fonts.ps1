@@ -19,6 +19,8 @@ foreach ($out in $codeOut)
 		--unicodes="uf426"  <# nf-oct-sign_out #> `
 		--unicodes="uf4a2"  <# nf-oct-smiley #> `
 		--unicodes="uf4bb"  <# nf-oct-copy #> `
+		--unicodes="uf0131" <# nf-md-checkbox_blank_outline #> `
+		--unicodes="uf0132" <# nf-md-checkbox_marked #> `
 		--unicodes="uf01ee" <# nf-md-email #> `
 		--unicodes="uf02a4" <# nf-md-github #> `
 		--unicodes="uf033b" <# nf-md-linkedin #> `

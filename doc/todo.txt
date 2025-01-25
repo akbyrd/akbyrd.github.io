@@ -1,5 +1,4 @@
 General
-TODO: Change checkboxes to icons
 TODO: Fix scrolling on math in comments (don't use <math> because it behaves poorly)
 TODO: Check for missing math glyphs (should be using a single font, not falling back)
 TODO: Fix initial math style (incorrect until code runs)

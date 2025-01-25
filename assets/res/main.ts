@@ -1262,6 +1262,21 @@ function CreateComment(templates: CommentTemplates, commentTemplate: HTMLTemplat
 		}
 	}
 
+	// Task lists
+	{
+		const taskListItems = content.querySelectorAll(".task-list-item")
+		for (const taskListItem of taskListItems)
+		{
+			const input = taskListItem.children[0]
+			if (input)
+			{
+				if (input.hasAttribute("checked"))
+					taskListItem.classList.add("checked")
+				input.remove()
+			}
+		}
+	}
+
 	// Footer
 	{
 		const footerFragment = templates.footer.content.cloneNode(true) as DocumentFragment

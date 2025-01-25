@@ -1,0 +1,4 @@
+{{- $content := . }}
+{{- $content = replaceRE `<li><input(?:( checked)="")? disabled="" type="checkbox"> ` `<li class="task-list-item$1">` $content }}
+{{- $content = $content | safeHTML }}
+{{- $content -}}

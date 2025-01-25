@@ -446,24 +446,9 @@ th, td {
 }
 
 /* ---------------------------------------------------------------------------------------------- */
-/* Checklists */
-
-ul:has(li input) {
-	padding-left: 20px;
-}
-
-ul:has(li input) ul:has(li input) {
-	padding-left: 40px;
-}
-
-li:has(input) {
-	display: block;
-}
-
-/* ---------------------------------------------------------------------------------------------- */
 /* Code */
 
-code, annotation, .copy-block, .symbol, .code {
+code, annotation, .symbol, .code, li.task-list-item::before {
 	font-family: code;
 	font-feature-settings: "ss01";
 	font-size-adjust: ex-height 0.48;
@@ -585,6 +570,11 @@ code, annotation {
 	&:hover {
 		opacity: 100%;
 	}
+
+.copy-block:focus-visible {
+	opacity: 100%;
+	transition-property: opacity, outline-offset, outline-color !important;
+}
 
 	&:focus-visible {
 		opacity: 100%;
@@ -929,6 +919,7 @@ code, annotation {
 .reply-input textarea:not(:placeholder-shown) + div {
 	border-width: 1px 0 0 0;
 	height: 30px;
+	overflow: visible;
 	padding: 8px 0;
 }
 
@@ -947,7 +938,7 @@ code, annotation {
 
 .comment-logout,
 .comment-submit {
-	display: flex;
+	display: inline-flex;
 	align-items: stretch;
 }
 
@@ -1244,6 +1235,26 @@ math[display="block"] mtr mtd:not([class]) + mtd:not([class]) {
 
 .no-mathml math semantics > :not(annotation) {
 	display: none;
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* Task Lists */
+
+li.task-list-item {
+	list-style-type: none;
+	position: relative;
+}
+
+li.task-list-item::before {
+	content: "\f0131";
+	font-size: 1.25em;
+	left: -0.86em;
+	position: absolute;
+	top: -.11em;
+}
+
+li.task-list-item.checked::before {
+	content: "\f0132";
 }
 
 /* ---------------------------------------------------------------------------------------------- */
