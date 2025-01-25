@@ -1,15 +1,13 @@
 General
 TODO: Fix scrolling on math in comments (don't use <math> because it behaves poorly)
-TODO: Check for missing math glyphs (should be using a single font, not falling back)
 TODO: Fix initial math style (incorrect until code runs)
+TODO: Math is a little squished together on Chrome
+TODO: Check for missing math glyphs (should be using a single font, not falling back)
 TODO: Add "fix typo" button (https://www.ii.com/vscode-uri-scheme-and-hugo/)
 TODO: Get link previews working on {Discord, X, Mastodon, Bluesky, Hacker News, Github, LinkedIn, Slack}
 TODO: Try a render hook for images https://gohugo.io/render-hooks/images/
 TODO: Lazy image loading
 TODO: Implement zoom for images (current page? new page?)
-TODO: Show copy buttons when hovering entire area
-TODO: Make copy buttons sticky
-TODO: Math is a little squished together on Chrome
 ----
 TODO: Choose a diagram method: goat, mermaid (jerky layout), graphviz, other
 TODO: Add search support
