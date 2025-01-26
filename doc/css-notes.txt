@@ -33,16 +33,16 @@ Issues
 
 Text Wrapping
 -------------
-white-space          - 2015 text-wrap + white-space-collapse
-word-break           - 2015 {break-all, break-word} break between or inside words (without moving word to new line)
-overflow-wrap        - 2018 {anywhere, break-word} break between or inside words (after moving word to new line)
+white-space          - 2015 text-wrap + white-space-collapse                                        {normal, collapse, pre, pre-wrap, pre-line, preserve nowrap, wrap}
+word-break           - 2015 break between or inside words (without moving word to new line)         {normal, break-all, break-word, keep-all}
+overflow-wrap        - 2018 break between or inside words (after moving word to new line)           {anywhere, break-word}
 word-wrap            - ---- Non-standard alias of overflow-wrap
 line-break           - 2020 For CJK breaking
-hyphens              - 2023 {manual, auto} allows words to break across lines. Requires lang attribute.
-white-space-collapse - 2024 {break-spaces} provides line breaks at white space
+hyphens              - 2023 allows words to break across lines. Requires lang attribute.            {manual, auto}
+white-space-collapse - 2024 provides line breaks at white space                                     {collapse, preserve, preserve-breaks, preserve-spaces, break-spaces}
 text-wrap            - 2024 text-wrap-mode + text-wrap-style
-text-wrap-mode       - ---- enable or disable wrapping
-text-wrap-style      - ---- {auto, balance, stable} set wrapping logic
+text-wrap-mode       - 2024 enable or disable wrapping                                              {wrap, nowrap}
+text-wrap-style      - 2024 set wrapping logic                                                      {auto, balance, stable}
 
 https://jsfiddle.net/kesr2Ltf/14/
 

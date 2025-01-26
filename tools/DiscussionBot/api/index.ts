@@ -30,6 +30,7 @@ type RequestEx = Request &
 	cookies:   Record<string, string>
 	headersEx: Record<string, string>
 	params:    Record<string, string>
+	bodyEx:    Record<string, string>
 }
 
 class ResponseEx
@@ -88,13 +89,6 @@ export default async function handler(_request: Request): Promise<Response>
 	// * Large requests - limited to 4.5 MB or 4 MB, depdending on runtime
 	// * Time outs      - limited to 10s or 25s, depending on runtime
 
-	const url = new URL(_request.url)
-	const request: RequestEx = Object.assign(_request, {
-		urlEx:     url,
-		params:    Object.fromEntries(url.searchParams.entries()),
-		cookies:   Object.fromEntries((_request.headers.get("cookie") || "").split(";").map(c => c.split("="))),
-		headersEx: Object.fromEntries(_request.headers.entries()),
-	})
 	const response = new ResponseEx()
 	const ctx: IContext = {
 		updateCookie:  false,
@@ -105,8 +99,18 @@ export default async function handler(_request: Request): Promise<Response>
 
 	try
 	{
-		console.log(`\n${request.method}\n${request.url}`)
+		const url = new URL(_request.url)
+		const request: RequestEx = Object.assign(_request, {
+			urlEx:     url,
+			params:    Object.fromEntries(url.searchParams.entries()),
+			cookies:   Object.fromEntries((_request.headers.get("cookie") || "").split(";").map(c => c.split("="))),
+			headersEx: Object.fromEntries(_request.headers.entries()),
+			bodyEx:   ["GET", "HEAD"].includes(_request.method) ? {} : await _request.json(),
+		})
+
 		console.time("Total")
+		console.log(`\n${request.method}\n${request.url}`)
+		console.dir(request.bodyEx)
 
 		if (!process.env.CLIENT_ID)      throw "Client Id not set"
 		if (!process.env.CLIENT_SECRET)  throw "Client Secret not set"
@@ -152,7 +156,6 @@ export default async function handler(_request: Request): Promise<Response>
 
 				ctx.devRequest ||= devOrigins.includes(new URL(ctx.redirect!).origin)
 				await GetUserAuth(ctx, code)
-
 				return response.redirect(ctx, 302, ctx.redirect!)
 			}
 
@@ -160,17 +163,16 @@ export default async function handler(_request: Request): Promise<Response>
 			{
 				ctx.updateCookie = true
 				ctx.session.userAuth = undefined
-
 				return response.send(ctx, 204)
 			}
 
 			case "/discussion":
 			{
 				const params = {
-					owner:    Validate(400, request.params, "owner"),
-					repo:     Validate(400, request.params, "repo"),
-					category: Validate(400, request.params, "category").replace(/\+/g, " "),
-					page:     Validate(400, request.params, "page"),
+					owner:    Validate(400, request.bodyEx, "owner"),
+					repo:     Validate(400, request.bodyEx, "repo"),
+					category: Validate(400, request.bodyEx, "category"),
+					page:     Validate(400, request.bodyEx, "page"),
 				}
 
 				if (ctx.session.userAuth)
@@ -182,7 +184,6 @@ export default async function handler(_request: Request): Promise<Response>
 
 				const appAuth    = await GetAppAuth(ctx, params.owner, params.repo)
 				const discussion = await GetAppDiscussion(appAuth, params)
-
 				return response.send(ctx, 200, discussion)
 			}
 
@@ -191,43 +192,56 @@ export default async function handler(_request: Request): Promise<Response>
 				const params = {
 					_:            Validate(401, ctx.session,       "userAuth"),
 					origin:       Validate(400, request.headersEx, "origin"),
-					page:         Validate(400, request.params,    "page"),
-					owner:        Validate(400, request.params,    "owner"),
-					repo:         Validate(400, request.params,    "repo"),
-					category:     Validate(400, request.params,    "category").replace(/\+/g, " "),
-					content:      Validate(400, request.params,    "content"),
-					discussionId: request.params.discussionId,
-					commentId:    request.params.commentId,
+					host:         Validate(400, request.headersEx, "host"),
+					page:         Validate(400, request.bodyEx,    "page"),
+					owner:        Validate(400, request.bodyEx,    "owner"),
+					repo:         Validate(400, request.bodyEx,    "repo"),
+					category:     Validate(400, request.bodyEx,    "category"),
+					content:      Validate(400, request.bodyEx,    "content"),
+					discussionId: request.bodyEx.discussionId,
+					commentId:    request.bodyEx.commentId,
 				} as ICommentParams
 
 				if (!params.discussionId)
 				{
-					const appAuth    = await GetAppAuth(ctx, params.owner, params.repo)
-					const discussion = await CreateDiscussion(ctx, appAuth, params)
-					params.discussionId = discussion.id
+					const result = await GetUserDiscussion(ctx, params)
+					if (result.success && result.json.id)
+					{
+						const discussion = result.json as IDiscussion
+						params.discussionId = discussion.id
 
-					const comment = await AddComment(ctx, params)
-					discussion.comments.nodes.push(comment)
+						const comment = await AddComment(ctx, params)
+						discussion.comments.nodes.push(comment)
+						return response.send(ctx, 200, discussion)
+					}
+					else
+					{
+						const appAuth    = await GetAppAuth(ctx, params.owner, params.repo)
+						const discussion = await CreateDiscussion(ctx, appAuth, params)
+						params.discussionId = discussion.id
 
-					return response.send(ctx, 200, discussion)
+						const comment = await AddComment(ctx, params)
+						discussion.comments.nodes.push(comment)
+						return response.send(ctx, 200, discussion)
+					}
 				}
 				else
 				{
 					const comment = await AddComment(ctx, params)
-
 					return response.send(ctx, 200, comment)
 				}
 			}
 
 			case "/react":
 			{
-				const _         = Validate(401, ctx.session,    "userAuth")
-				const subjectId = Validate(400, request.params, "subjectId")
-				const reaction  = Validate(400, request.params, "reaction")
-				const add       = Validate(400, request.params, "add")
+				const params = {
+					_:         Validate(401, ctx.session,    "userAuth"),
+					subjectId: Validate(400, request.bodyEx, "subjectId"),
+					reaction:  Validate(400, request.bodyEx, "reaction"),
+					add:       Validate(400, request.bodyEx, "add"),
+				}
 
-				await SetReaction(ctx, subjectId, reaction, add)
-
+				await SetReaction(ctx, params.subjectId, params.reaction, params.add)
 				return response.send(ctx, 204)
 			}
 		}
@@ -607,6 +621,7 @@ async function GetDiscussionIds(auth: IAuth, owner: string, repo: string, catego
 interface ICommentParams
 {
 	origin:       string
+	host:         string
 	page:         string
 	owner:        string
 	repo:         string
@@ -635,7 +650,7 @@ async function CreateDiscussion(ctx: IContext, auth: IAuth, params: ICommentPara
 	// freshly created discussion that the current user has reacted to (which is the only thing
 	// that's different about being logged in).
 
-	if (params.origin.startsWith("localhost"))
+	if (params.host.startsWith("localhost"))
 		throw { statusCode: 400, body: { error: "Creating discussions from localhost is disabled" } }
 
 	const ids = await GetDiscussionIds(auth, params.owner, params.repo, params.category)
@@ -679,21 +694,24 @@ async function AddComment(ctx: IContext, params: ICommentParams): Promise<IComme
 	const replyTo = params.commentId ? `, replyToId: "${params.commentId}"` : ""
 	const mutationId = crypto.randomUUID()
 	const mutation =
-		`mutation {
-			addDiscussionComment(input: {clientMutationId: "${mutationId}", body: "${params.content}", discussionId: "${params.discussionId}"${replyTo}}) {
+		`mutation($content: String!) {
+			addDiscussionComment(input: {clientMutationId: "${mutationId}", body: $content, discussionId: "${params.discussionId}"${replyTo}}) {
 				clientMutationId
 				comment {
 					${commentQueryData}
 				}
 			}
 		}`
+	const variables = {
+		content: params.content,
+	}
 
 	let result
 
 	result = await RefreshUserAuth(ctx, false)
 	if (!result.success) throw result.json
 
-	result = await GraphQLRequest("AddComment", ctx.session.userAuth!, mutation)
+	result = await GraphQLRequest("AddComment", ctx.session.userAuth!, mutation, variables)
 	if (result.success && result.json.data.addDiscussionComment.clientMutationId != mutationId) throw result.json
 	ValidateUserAuth(ctx, result.response, true)
 	if (result.success) return result.json.data.addDiscussionComment.comment as IComment
@@ -701,7 +719,7 @@ async function AddComment(ctx: IContext, params: ICommentParams): Promise<IComme
 	result = await RefreshUserAuth(ctx, true)
 	if (!result.success) throw result.json
 
-	result = await GraphQLRequest("AddComment", ctx.session.userAuth!, mutation)
+	result = await GraphQLRequest("AddComment", ctx.session.userAuth!, mutation, variables)
 	if (result.success && result.json.data.addDiscussionComment.clientMutationId != mutationId) throw result.json
 	ValidateUserAuth(ctx, result.response, true)
 	if (!result.success) throw result.json

@@ -1142,13 +1142,15 @@ async function LoadComments()
 {
 	SetCommentsState(CommentsState.Loading)
 
-	const url = new URL(`${commentState.apiUrl}/discussion`)
-	url.searchParams.append("page", location.pathname)
-	url.searchParams.append("owner", "akbyrd")
-	url.searchParams.append("repo", "akbyrd.github.io")
-	url.searchParams.append("category", "Blog Post Comments")
+	const url = `${commentState.apiUrl}/discussion`
+	const body = {
+		page:     location.pathname,
+		owner:    "akbyrd",
+		repo:     "akbyrd.github.io",
+		category: "Blog Post Comments",
+	}
 
-	const result = await APIRequest("GET", url)
+	const result = await APIRequest("POST", url, body)
 	if (!result.success)
 	{
 		SetCommentsState(CommentsState.Error)
@@ -1353,12 +1355,14 @@ async function ToggleReaction(e: Event, comment: ICommentBase)
 	const reaction = reactionButton.name as keyof Reaction
 	const add = !reactionButton.hasAttribute("data-pressed")
 
-	const url = new URL(`${commentState.apiUrl}/react`)
-	url.searchParams.append("subjectId", comment.id)
-	url.searchParams.append("reaction", reaction)
-	url.searchParams.append("add", add.toString())
+	const url = `${commentState.apiUrl}/react`
+	const body = {
+		subjectId: comment.id,
+		reaction:  reaction,
+		add:       add.toString(),
+	}
 
-	const result = await APIRequest("GET", url)
+	const result = await APIRequest("POST", url, body)
 	if (!result.success)
 	{
 		reactionButton.disabled = false
@@ -1473,16 +1477,18 @@ async function LoginOrSubmit(e: Event, elems: ICommentElements)
 	}
 	else
 	{
-		const url = new URL(`${commentState.apiUrl}/comment`)
-		url.searchParams.append("page", location.pathname)
-		url.searchParams.append("owner", "akbyrd")
-		url.searchParams.append("repo", "akbyrd.github.io")
-		url.searchParams.append("category", "Blog Post Comments")
-		url.searchParams.append("discussionId", elems.discussionId)
-		url.searchParams.append("commentId", elems.commentId)
-		url.searchParams.append("content", elems.textArea.value)
+		const url = `${commentState.apiUrl}/comment`
+		const body = {
+			page:         location.pathname,
+			owner:        "akbyrd",
+			repo:         "akbyrd.github.io",
+			category:     "Blog Post Comments",
+			discussionId: elems.discussionId,
+			commentId:    elems.commentId,
+			content:      elems.textArea.value,
+		}
 
-		const result = await APIRequest("GET", url)
+		const result = await APIRequest("POST", url, body)
 		if (!result.success)
 		{
 			elems.submitButton.disabled = false
@@ -1543,7 +1549,7 @@ type FetchResult<T = Record<string, any>> = {
 	json:      T
 }
 
-async function APIRequest(method: string, url: URL | string, headers: { [key: string]: string } = {}): Promise<FetchResult>
+async function APIRequest(method: string, url: URL | string, body?: {}, headers: { [key: string]: string } = {}): Promise<FetchResult>
 {
 	// NOTE: Including cookies is tricky
 	// * Must use credentials: include
@@ -1552,6 +1558,9 @@ async function APIRequest(method: string, url: URL | string, headers: { [key: st
 	// * Must use SameSite: None
 	// * Must use Secure
 	// * Must use HTTPS
+
+	console.assert(method == "GET"  ? body == undefined : true)
+	console.assert(method == "HEAD" ? body == undefined : true)
 
 	let response
 	let json
@@ -1562,6 +1571,7 @@ async function APIRequest(method: string, url: URL | string, headers: { [key: st
 
 		response = await fetch(url, {
 			method,
+			body: JSON.stringify(body),
 			credentials: "include",
 			headers,
 		})
