@@ -1,9 +1,52 @@
-Issues
-------
-Firefox doesn't support `overflow-wrap: anywhere;` (entire equation will still wrap)
-Firefox doesn't support `position: absolute;` on <mtd> (e.g. line numbers)
-Firefox doesn't support `display: math;` which makes support detection impossible
-Chrome doesn't support columnalign (or just about any attributes)
+Test matrix
+-----------
+Browsers: { Chrome, Firefox }
+Math:     { Inline, Block }
+Location  { Body, Comment }
+Support   { Yes, No, Disabled }
+
+Inline { line spacing, line wrapping, overflow }
+Copy button { functionality, alignment, sticky }
+Block equation alignment
+
+[x] Firefox    Inline    Body       Yes
+[x] Firefox    Inline    Body       No
+[x] Firefox    Inline    Body       Disabled
+[x] Firefox    Inline    Comment    Yes
+[x] Firefox    Inline    Comment    No
+[x] Firefox    Inline    Comment    Disabled
+[x] Firefox    Block     Body       Yes
+[x] Firefox    Block     Body       No
+[x] Firefox    Block     Body       Disabled
+[x] Firefox    Block     Comment    Yes
+[x] Firefox    Block     Comment    No
+[x] Firefox    Block     Comment    Disabled
+[x] Chrome     Inline    Body       Yes
+[-] Chrome     Inline    Body       No
+[x] Chrome     Inline    Body       Disabled
+[x] Chrome     Inline    Comment    Yes
+[-] Chrome     Inline    Comment    No
+[x] Chrome     Inline    Comment    Disabled
+[x] Chrome     Block     Body       Yes
+[-] Chrome     Block     Body       No
+[x] Chrome     Block     Body       Disabled
+[x] Chrome     Block     Comment    Yes
+[-] Chrome     Block     Comment    No
+[x] Chrome     Block     Comment    Disabled
+
+NOTE: Behavior is different between browsers and sometimes buggy. Styling issues are extremely subtle.
+Common  - MathML equations don't wrap https://jsfiddle.net/h079jkqo/89/
+Firefox - Doesn't use or support `display: inline math` or `block math`
+Firefox - Doesn't wrap annotations unless math is disabled in settings
+Firefox - block math defaults to `text-align: center`
+Firefox - block math handles `min-width: fit-content` as if all content is on a single line
+Firefox - Doesn't support `overflow-wrap: anywhere;` (entire equation will still wrap)
+Firefox - Doesn't support `position: absolute;` on <mtd> (e.g. line numbers)
+Firefox - Doesn't support `display: math;` which makes support detection impossible
+Chrome  - `display: inline` on annotation is replaced with `block` if semantics is `block`
+Chrome  - Padding on inline annotation is wrong size if set to `block`
+Chrome  - inline math treated as block unless forced to `inline`
+Chrome  - Doesn't support columnalign (or just about any attributes)
 
 
 

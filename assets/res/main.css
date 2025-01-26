@@ -296,6 +296,8 @@ ol, ul {
 
 p {
 	margin: 20px 0;
+	overflow-x: auto;
+	scrollbar-width: thin;
 }
 
 pre {
@@ -483,6 +485,11 @@ code, annotation {
 	}
 }
 
+#comments :not(pre) > code {
+	bottom: unset;
+	position: unset;
+}
+
 .container.code {
 	pre {
 		counter-reset: line-numbers var(--ln-start, 1);
@@ -561,7 +568,7 @@ code, annotation {
 	margin-left: auto;
 	position: sticky;
 	text-align: center;
-	top: 0;
+	top: 1px;
 	width: 34px;
 	z-index: 1;
 
@@ -617,6 +624,7 @@ code, annotation {
 
 #comments {
 	font-size: 12pt;
+	line-height: 1.35;
 	display: grid;
 	grid-template-columns: 100%;
 }
@@ -1172,27 +1180,44 @@ math {
 	cursor: text;
 }
 
-semantics {
+annotation {
+	color: var(--code-default);
+}
+
+.no-mathml math {
+	line-height: 19px;
+}
+
+.no-mathml semantics > :not(annotation) {
+	display: none;
+}
+
+math[display="inline"] annotation {
+	border-color: var(--outline);
+	border-style: solid;
+	border-width: 1px;
+}
+
+#comments math[display="inline"] annotation {
+	bottom: unset;
+	position: unset;
+}
+
+.no-mathml math[display="inline"],
+.no-mathml math[display="inline"] semantics,
+.no-mathml math[display="inline"] annotation {
 	display: inline;
-	display: inline math;
-
-	/* TODO: move to math */
-	font-family: math2;
 }
 
-math[display="inline"] {
-	/* TODO: remove */
-	white-space: normal;
-}
-
-math[display="inline"] semantics > * {
-	white-space: break-spaces;
-}
-
-math[display="block"] {
+math[display="block"] semantics {
 	min-width: fit-content;
-	padding: 6.5px 8px;
-	text-align: center;
+	padding: 6px 8px;
+}
+
+math[display="block"] annotation {
+	tab-size: 4;
+	text-align: left;
+	white-space: pre;
 }
 
 math[display="block"] mtr mtd:not([class]) {
@@ -1203,30 +1228,20 @@ math[display="block"] mtr mtd:not([class]) + mtd:not([class]) {
 	text-align: left;
 }
 
+.no-mathml .container.math {
+	border-color: var(--outline);
+	border-style: solid;
+	border-width: 1px;
+}
+
 .container.math .scroll {
 	margin-bottom: 0;
 }
 
-.no-mathml .container:has(math),
-.no-mathml math[display="inline"] annotation {
-	border-color: var(--outline);
-	border-style: solid;
-	border-width: 1px;
-	font-size: 11pt;
-}
-
-.no-mathml math[display="block"] {
-	display: block;
-	display: block math;
-	text-align: left;
-}
-
+.no-mathml math[display="block"],
+.no-mathml math[display="block"] semantics,
 .no-mathml math[display="block"] annotation {
 	display: block;
-}
-
-.no-mathml math semantics > :not(annotation) {
-	display: none;
 }
 
 /* ---------------------------------------------------------------------------------------------- */

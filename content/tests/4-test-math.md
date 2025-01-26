@@ -9,7 +9,14 @@ $`\sqrt{3x-1}+(1+x)^2`$ \
 `\sqrt{3x-1}+(1+x)^2`
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. \
+Aenean sagittis porttitor nisl, at congue sem rutrum lobortis. \
+Aenean sagittis porttitor nisl, at congue sem rutrum lobortis. \
+Aenean sagittis porttitor nisl, at congue sem rutrum lobortis. \
+Phasellus suscipit libero odio, sed vulputate nisi euismod eu.
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. \
 Aenean sagittis porttitor nisl, $a^*=x-b^*$ at congue sem rutrum lobortis. \
+Aenean sagittis porttitor nisl, $`a^*=x-b^*`$ at congue sem rutrum lobortis. \
 Aenean sagittis porttitor nisl, `a^*=x-b^*` at congue sem rutrum lobortis. \
 Phasellus suscipit libero odio, sed vulputate nisi euismod eu.
 

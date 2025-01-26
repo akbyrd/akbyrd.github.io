@@ -1,10 +1,13 @@
 General
-TODO: Too much top and bottom padding in code
-TODO: Hide test page discussions in github?
-
+TODO: Require block math to have an id
 TODO: Fix initial math style (incorrect until code runs)
 TODO: Math is a little squished together on Chrome
 TODO: Check for missing math glyphs (should be using a single font, not falling back)
+TODO: Hide test page discussions in github?
+TODO: Fix 1px gap on scroll bar (test-code, Firefox)
+TODO: Improve outline on post list
+TODO: Add support for :emoji:
+TODO: Ass support for notes (https://gist.github.com/Myndex/5140d6fe98519bb15c503c490e713233#new-notes)
 TODO: Add "fix typo" button (https://www.ii.com/vscode-uri-scheme-and-hugo/)
 TODO: Get link previews working on {Discord, X, Mastodon, Bluesky, Hacker News, Github, LinkedIn, Slack}
 TODO: Try a render hook for images https://gohugo.io/render-hooks/images/
@@ -24,8 +27,9 @@ TODO: Replace syntax highlighting implementation (use compiler, support inline c
 TODO: It's still possible to scroll + select with touch on Firefox on Android
 TODO: Rethink line selection (2 long presses?)
 TODO: Rethink auto-scroll (smooth, by line, wait for scrollend or custom timer)
-TODO: Consider Shift + Click for line selection
 TODO: There's 1 pixel of clickable space around the first and last lines when highlighted
+TODO: Code blocks are a couple pixels shorter than math/they should be due to overlapping (box-shadow?)
+TODO: Consider Shift + Click for line selection
 TODO: Adjust block code lines down 1px
 TODO: Allow selection over line numbers when Javascript is disabled
 TODO: Code line anchors

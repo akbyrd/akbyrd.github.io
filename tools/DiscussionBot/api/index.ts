@@ -655,8 +655,8 @@ async function CreateDiscussion(ctx: IContext, auth: IAuth, params: ICommentPara
 	// freshly created discussion that the current user has reacted to (which is the only thing
 	// that's different about being logged in).
 
-	if (params.host.startsWith("localhost"))
-		throw { statusCode: 400, body: { error: "Creating discussions from localhost is disabled" } }
+	//if (params.host.startsWith("localhost"))
+	//	throw { statusCode: 400, body: { error: "Creating discussions from localhost is disabled" } }
 
 	const ids = await GetDiscussionIds(auth, params.owner, params.repo, params.category)
 	const body = new URL(params.page, params.origin).toString()

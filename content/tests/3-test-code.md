@@ -5,6 +5,7 @@ title = 'Test Code'
 ## Code
 ### Inline
 Some `code` embedded in a line of normal text: `{ "label": "hugo build" }` \
+Some `code` embedded in a line of normal text: `{ "label": "hugo build" }` \
 Some `code` embedded in a line of normal text: {{< hl json >}}{ "label": "hugo build" }{{< /hl >}}
 
 ### Standard

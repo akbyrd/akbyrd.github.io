@@ -20,7 +20,7 @@ markup.goldmark.extensions.extras.subscript.enable = true
 markup.goldmark.extensions.extras.superscript.enable = true
 markup.goldmark.extensions.passthrough.enable = true
 markup.goldmark.extensions.passthrough.delimiters.block = [['$$', '$$']]
-markup.goldmark.extensions.passthrough.delimiters.inline = [['$', '$']]
+markup.goldmark.extensions.passthrough.delimiters.inline = [['$`', '`$'], ['$', '$']]
 markup.goldmark.extensions.strikethrough = false
 
 markup.highlight.noClasses = false

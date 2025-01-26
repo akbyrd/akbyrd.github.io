@@ -15,43 +15,56 @@
 	{{- $lineStart = mod . 1e256 }}
 {{- end }}
 
-{{- $result := (transform.HighlightCodeBlock .).Wrapped }}
+{{- if eq $lang "math" }}
+	{{- $args := dict
+		"Attributes" .Attributes
+		"Inner"      .Inner
+		"Ordinal"    .Ordinal
+		"Page"       .Page
+		"PageInner"  .PageInner
+		"Position"   .Position
+		"Type"       "block"
+	}}
+	{{- template "_default/_markup/render-passthrough.html" $args }}
+{{- else}}
+	{{- $result := (transform.HighlightCodeBlock .).Wrapped }}
 
-{{- /* Set classes */}}
-{{- $result = replaceRE `class="highlight` `class="container code` $result }}
-{{- $result = replaceRE `class="chroma` `class="chroma code scroll` $result }}
+	{{- /* Set classes */}}
+	{{- $result = replaceRE `class="highlight` `class="container code` $result }}
+	{{- $result = replaceRE `class="chroma` `class="chroma code scroll` $result }}
 
-{{- /* Add some newlines */}}
-{{- $result = replaceRE `^(<div [^>]*>)` "$1\n" $result }}
-{{- $result = replaceRE "</div>$" "\n</div>\n" $result }}
+	{{- /* Add some newlines */}}
+	{{- $result = replaceRE `^(<div [^>]*>)` "$1\n" $result }}
+	{{- $result = replaceRE "</div>$" "\n</div>\n" $result }}
 
-{{- /* Add copy button */}}
-{{- $btnFmt := "<button class=\"copy-block symbol require-js\" type=\"button\" aria-label=\"Copy\">&#xf4bb;</button>\n<pre" }}
-{{- $result = replaceRE `<pre` $btnFmt $result }}
+	{{- /* Add copy button */}}
+	{{- $btnFmt := "<button class=\"copy-block symbol require-js\" type=\"button\" aria-label=\"Copy\">&#xf4bb;</button>\n<pre" }}
+	{{- $result = replaceRE `<pre` $btnFmt $result }}
 
-{{- /* Remove some junk */}}
-{{- $result = replaceRE `<code class="([^"]*)" data-lang="([^"]*)">` `<code>` $result }}
-{{- $result = replaceRE ` tabindex="0"` `` $result }}
+	{{- /* Remove some junk */}}
+	{{- $result = replaceRE `<code class="([^"]*)" data-lang="([^"]*)">` `<code>` $result }}
+	{{- $result = replaceRE ` tabindex="0"` `` $result }}
 
-{{- /* Add line number data */}}
-{{- $newLines := strings.Count "\n" .Inner }}
-{{- $lineEnd := add $lineStart $newLines }}
-{{- $lineWidth := len (printf "%d" $lineEnd) }}
+	{{- /* Add line number data */}}
+	{{- $newLines := strings.Count "\n" .Inner }}
+	{{- $lineEnd := add $lineStart $newLines }}
+	{{- $lineWidth := len (printf "%d" $lineEnd) }}
 
-{{- $lineStartFmt := "" }}
-{{- if ne $lineStart 1 }}
-	{{- $lineStartFmt = printf `--ln-start: %d;` $lineStart }}
+	{{- $lineStartFmt := "" }}
+	{{- if ne $lineStart 1 }}
+		{{- $lineStartFmt = printf `--ln-start: %d;` $lineStart }}
+	{{- end }}
+
+	{{- $lineWidthFmt := "" }}
+	{{- if gt $lineEnd 10 }}
+		{{- $lineWidthFmt = printf `--ln-width: %dch;` $lineWidth }}
+	{{- end }}
+
+	{{- with or $lineStartFmt $lineWidthFmt }}
+		{{- $separator := or (and (and $lineStartFmt $lineWidthFmt) " ") "" }}
+		{{- $lineFmt := printf `<div$1 style="%s%s%s">` $lineStartFmt $separator $lineWidthFmt }}
+		{{- $result = replaceRE `^<div([^>]*)>` $lineFmt $result }}
+	{{- end }}
+
+	{{- $result | safeHTML -}}
 {{- end }}
-
-{{- $lineWidthFmt := "" }}
-{{- if gt $lineEnd 10 }}
-	{{- $lineWidthFmt = printf `--ln-width: %dch;` $lineWidth }}
-{{- end }}
-
-{{- with or $lineStartFmt $lineWidthFmt }}
-	{{- $separator := or (and (and $lineStartFmt $lineWidthFmt) " ") "" }}
-	{{- $lineFmt := printf `<div$1 style="%s%s%s">` $lineStartFmt $separator $lineWidthFmt }}
-	{{- $result = replaceRE `^<div([^>]*)>` $lineFmt $result }}
-{{- end }}
-
-{{- $result | safeHTML -}}

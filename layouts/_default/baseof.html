@@ -30,8 +30,8 @@
 	{{- $woff2 := partial "resource" "res/code.woff2" }}
 	{{- $woff := partial "resource" "res/code.woff" }}
 	{{- $hasSymbols := strings.FindRE `\p{Co}` (.Page.Content | htmlUnescape) 1 }}
-	{{- $hasSymbols := gt 0 (len $hasSymbols) }}
-	{{- $hasSymbols := or $hasSymbols .Page.Params.comments }}
+	{{- $hasSymbols = gt (len $hasSymbols) 0 }}
+	{{- $hasSymbols = or $hasSymbols .Page.Params.comments }}
 	{{- $hasCode := strings.Contains .Page.Content "<code>" }}
 	{{- if or $hasSymbols $hasCode }}
 	<link rel="preload" as="font" href="{{ $woff2.RelPermalink }}" type="font/woff2"{{ $woff2.Integrity }}>

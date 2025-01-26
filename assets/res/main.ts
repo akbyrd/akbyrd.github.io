@@ -262,7 +262,7 @@ function AttachCopyFunction(elements: NodeListOf<Element> | Element, func: (e: E
 function CopyCode(e: Event)
 {
 	const button = e.currentTarget as HTMLElement
-	const pre = button.previousElementSibling!
+	const pre = button.nextElementSibling!
 	const code = pre.querySelector("code")!
 	if (code.textContent)
 		navigator.clipboard.writeText(code.textContent)
@@ -271,7 +271,7 @@ function CopyCode(e: Event)
 function CopyMath(e: Event)
 {
 	const button = e.currentTarget as HTMLElement
-	const pre = button.previousElementSibling!
+	const pre = button.nextElementSibling!
 	const math = pre.querySelector("annotation")!
 	if (math.textContent)
 		navigator.clipboard.writeText(math.textContent.trim())
@@ -1264,7 +1264,10 @@ function CreateComment(templates: CommentTemplates, commentTemplate: HTMLTemplat
 			const button = mathFragment.querySelector("button")!
 			AttachCopyFunction(button, CopyMath)
 
-			ghMath.parentElement!.replaceChild(mathFragment, ghMath)
+			if (ghMath.parentElement!.tagName == "P")
+				ghMath.parentElement!.parentElement!.replaceChild(mathFragment, ghMath.parentElement!)
+			else
+				ghMath.parentElement!.replaceChild(mathFragment, ghMath)
 		}
 	}
 

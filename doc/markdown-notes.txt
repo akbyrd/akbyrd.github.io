@@ -1,0 +1,8 @@
+References
+----------
+
+GitHub Flavored Markdown Spec
+https://github.github.com/gfm/
+
+GitHub Flavored Markdown Cheat Sheet
+https://gist.github.com/Myndex/5140d6fe98519bb15c503c490e713233
