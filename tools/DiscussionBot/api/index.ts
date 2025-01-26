@@ -540,14 +540,19 @@ async function GetUserDiscussion(ctx: IContext, params: IDiscussionParams): Prom
 
 async function GetDiscussion(auth: IAuth, params: IDiscussionParams): Promise<FetchResult<IDiscussion>>
 {
+	// NOTE: sort:author-date[-asc] doesn't seem to work, even in the web UI.
+	// NOTE: Need to be super careful about
+	// NOTE: Arbitrarily picking 25 as the limit because 50+ causes MAX_NODE_LIMIT_EXCEEDED
+
 	const title = params.page.replace(/^\/?|\/?$/g, "")
 	const result = await GraphQLRequest("GetDiscussion", auth,
 		`query {
-			search(type: DISCUSSION, query: "repo:${params.owner}/${params.repo} in:title ${title}", first: 2) {
+			search(type: DISCUSSION, query: "repo:${params.owner}/${params.repo} in:title ${title}", first: 25) {
 				discussionCount
 				nodes {
 					... on Discussion {
 						id
+						title
 						createdAt
 						comments(first: 100) {
 							nodes {
@@ -561,14 +566,14 @@ async function GetDiscussion(auth: IAuth, params: IDiscussionParams): Promise<Fe
 
 	if (!result.success) return result as FetchResult<IDiscussion>
 
-	let discussion = null as IDiscussion | null
-	const discussions = result.json.data.search.nodes as IDiscussion[]
+	let discussions = result.json.data.search.nodes as (IDiscussion & { title: string })[]
+	discussions = discussions.filter(d => d.title == title)
 	if (discussions.length)
 	{
 		const created = discussions.map(d => new Date(d.createdAt))
 		const iOldest = created.reduce<number>((p, c, i) => created[i] < created[p] ? i : p, 0)
 
-		discussion = discussions[iOldest]
+		const discussion = discussions[iOldest]
 		result.json = discussion
 	}
 	else

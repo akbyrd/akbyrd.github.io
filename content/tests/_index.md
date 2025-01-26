@@ -1,6 +1,7 @@
 +++
 title = 'Tests'
 url = '/:slug/'
+comments = false
 
 [[cascade]]
 	# Remove the numeric prefix from page URLs

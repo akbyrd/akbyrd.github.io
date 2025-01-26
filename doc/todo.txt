@@ -1,8 +1,6 @@
 General
 TODO: Too much top and bottom padding in code
-TODO: Tests section finds comments when it shouldn't (exact match only?)
-TODO: Disable comments on tests sections
-TODO: Hide test page discussions
+TODO: Hide test page discussions in github?
 
 TODO: Fix initial math style (incorrect until code runs)
 TODO: Math is a little squished together on Chrome
