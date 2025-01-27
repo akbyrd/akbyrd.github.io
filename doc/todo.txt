@@ -1,5 +1,4 @@
 General
-TODO: Require block math to have an id
 TODO: Fix initial math style (incorrect until code runs)
 TODO: Math is a little squished together on Chrome
 TODO: Check for missing math glyphs (should be using a single font, not falling back)
@@ -70,7 +69,6 @@ TODO: "css overflow auto causing jitter"?
 TODO: Improve rendering perf of code (grid? (has border-collapse) less html?)
 
 Theme
-TODO: Improve checkboxes on Chrome
 TODO: Pay a UI designer for a review and recommendations
 TODO: Fix colors in print preview
 TODO: Read about meterial design https://m3.material.io/

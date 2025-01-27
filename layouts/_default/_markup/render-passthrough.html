@@ -2,6 +2,11 @@
 {{- $inner := replaceRE `(?s)^\n(.*?)\n*$` `$1` .Inner }}
 
 {{- if eq .Type "block" -}}
+	{{- $id := index .Attributes "id" }}
+	{{- if not $id }}
+		{{- errorf "Id is required for math blocks.\n\t%s" (partial "relpath" .) }}
+	{{- end }}
+
 	{{- $opts := dict "output" "mathml" "displayMode" true }}
 	{{- $result = (transform.ToMath $inner $opts).Value }}
 
@@ -10,14 +15,15 @@
 	{{- $result = replaceRE "span>$" "div>" $result }}
 
 	{{- /* Add a second div and set classes */}}
-	{{- $result = replaceRE `<div class="katex">` "<div class=\"container math\">\n<div class=\"scroll\">" $result }}
+	{{- $divFmt := printf `<div id="%s" class="container math">%c<div class="scroll">` $id '\n' }}
+	{{- $result = replaceRE `<div class="katex">` $divFmt $result }}
 	{{- $result = replaceRE `</div>` "</div>\n</div>" $result }}
 
 	{{- /* Add copy button */}}
-	{{- $btnFmt := "<button class=\"copy-block symbol require-js\" type=\"button\" aria-label=\"Copy\">&#xf4bb;</button>\n$1" }}
+	{{- $btnFmt := printf `<button class="copy-block symbol require-js" type="button" aria-label="Copy">&#xf4bb;</button>%c$1` '\n' }}
 	{{- $result = replaceRE `(<div class="scroll">)` $btnFmt $result }}
 
-	{{- /* New lines for readbility in development */}}
+	{{- /* New lines for readability in development */}}
 	{{- $result = replaceRE `<math` "\n<math" $result }}
 {{- else }}
 	{{- $opts := dict "output" "mathml" "displayMode" false }}
