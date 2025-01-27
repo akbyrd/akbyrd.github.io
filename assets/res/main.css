@@ -1182,6 +1182,7 @@ math {
 
 annotation {
 	color: var(--code-default);
+	text-align: left;
 }
 
 .no-mathml math {
@@ -1212,12 +1213,6 @@ math[display="inline"] annotation {
 math[display="block"] semantics {
 	min-width: fit-content;
 	padding: 6px 8px;
-}
-
-math[display="block"] annotation {
-	tab-size: 4;
-	text-align: left;
-	white-space: pre;
 }
 
 math[display="block"] mtr mtd:not([class]) {
