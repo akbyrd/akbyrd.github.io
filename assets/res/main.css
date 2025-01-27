@@ -17,6 +17,17 @@ button, textarea {
 	--accent-fade: #007fd4a0;
 	--error:       #b71c1c;
 
+	--callout-note:         #1f6feb;
+	--callout-note-bg:      #1f6feb20;
+	--callout-tip:          #238636;
+	--callout-tip-bg:       #23863620;
+	--callout-important:    #8957e5;
+	--callout-important-bg: #8957e520;
+	--callout-warning:      #9e6a03;
+	--callout-warning-bg:   #9e6a0320;
+	--callout-caution:      #da3633;
+	--callout-caution-bg:   #da363320;
+
 	--dark-background:    #212121;
 	--dark-background-2:  #2a2a2a;
 	--dark-background-3:  #313131;
@@ -172,7 +183,7 @@ blockquote {
 	border-left-color: var(--text-detail);
 	border-left-style: solid;
 	border-left-width: 3px;
-	margin: unset;
+	margin: 20px 8px;
 }
 
 body {
@@ -454,6 +465,53 @@ th, td {
 		a[title="GitHub"] & { font-size: 105%; }
 		a[title="Mastodon"] & { font-size: 98%; }
 	}
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* Callouts / Alerts */
+
+/* TODO: Look at other icons */
+/* TODO: Pick better colors */
+/* TODO: Light mode */
+/* TODO: Folding */
+
+.callout-note      { --callout-color: var(--callout-note);      --callout-color-bg: var(--callout-note-bg);      }
+.callout-tip       { --callout-color: var(--callout-tip);       --callout-color-bg: var(--callout-tip-bg);       }
+.callout-important { --callout-color: var(--callout-important); --callout-color-bg: var(--callout-important-bg); }
+.callout-warning   { --callout-color: var(--callout-warning);   --callout-color-bg: var(--callout-warning-bg);   }
+.callout-caution   { --callout-color: var(--callout-caution);   --callout-color-bg: var(--callout-caution-bg);   }
+
+.callout {
+	background-color: var(--callout-color-bg);
+	border-color: var(--callout-color);
+	border-radius: 4px;
+	padding: 8px 16px;
+}
+
+.callout-heading {
+	color: var(--callout-color);
+	overflow: visible;
+}
+
+.callout-icon {
+	font-size: 1.5em;
+	line-height: 0;
+	position: relative;
+	top: .15em;
+	padding-right: 8px;
+}
+
+.callout-tip .callout-icon {
+	font-size: 1.2em;
+	top: .1em;
+}
+
+.callout .callout-heading {
+	margin-bottom: 10px;
+}
+
+.callout p {
+	margin: 0;
 }
 
 /* ---------------------------------------------------------------------------------------------- */

@@ -1,5 +1,4 @@
 General
-TODO: (Launch) Add support for notes (https://gist.github.com/Myndex/5140d6fe98519bb15c503c490e713233#new-notes)
 TODO: (Launch) Add "fix typo" button (https://www.ii.com/vscode-uri-scheme-and-hugo/)
 TODO: (Launch) Get link previews working on {Discord, X, Mastodon, Bluesky, Hacker News, Github, LinkedIn, Slack}
 TODO: (Launch) Try a render hook for images https://gohugo.io/render-hooks/images/

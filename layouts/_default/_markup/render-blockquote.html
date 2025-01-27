@@ -1,0 +1,20 @@
+{{ $emojis := dict
+	"caution"   "&#xf46e;"
+	"important" "&#xf50a;"
+	"note"      "&#xf449;"
+	"tip"       "&#xf400;"
+	"warning"   "&#xf421;"
+}}
+
+{{ if eq .Type "alert" }}
+	<blockquote class="callout callout-{{ .AlertType }}">
+	<p class="callout-heading">
+		<span class="callout-icon symbol">{{ (index $emojis .AlertType) | safeHTML }}</span>{{ or .AlertTitle (title .AlertType) }}
+	</p>
+	{{ .Text }}
+	</blockquote>
+{{ else }}
+	<blockquote>
+	{{ .Text }}
+	</blockquote>
+{{ end }}
