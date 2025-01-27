@@ -12,7 +12,7 @@ Systems programmer in the game industry. Interested in game engines, productivit
 { .about-text }
 
 {{< about-links.inline >}}
-<ul class="about-link-container">
+<ul class="about-link-container symbol">
 	<li>
 		<a href="{{ (.Site.Home.OutputFormats.Get "atom").RelPermalink }}" title="RSS">
 			<p style="background-image: linear-gradient(#ee802f80, #ee802f80);">&#xf046b;</p>

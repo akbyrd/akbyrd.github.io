@@ -1,7 +1,5 @@
 General
-TODO: Fix initial math style (incorrect until code runs)
-TODO: Math is a little squished together on Chrome
-TODO: Check for missing math glyphs (should be using a single font, not falling back)
+TODO: Fix layout when javascript is disabled
 TODO: Hide test page discussions in github?
 TODO: Fix 1px gap on scroll bar (test-code, Firefox)
 TODO: Improve outline on post list
@@ -22,7 +20,7 @@ TODO: Split Atom feed into multiple files
 TODO: Fix icon on Inoreader
 
 Code
-TODO: Replace syntax highlighting implementation (use compiler, support inline code)
+TODO: (SSG) Replace syntax highlighting implementation (use compiler, support inline code)
 TODO: It's still possible to scroll + select with touch on Firefox on Android
 TODO: Rethink line selection (2 long presses?)
 TODO: Rethink auto-scroll (smooth, by line, wait for scrollend or custom timer)
@@ -55,6 +53,7 @@ Comments
 TODO: Use Vercel storage to cache app token locally
 TODO: Reactions don't look great on mobile
 TODO: Add refresh button (updatedAt and reconcile)
+TODO: Refresh when restoring from bfcache
 TODO: Add entrance animation
 
 Content
@@ -62,6 +61,9 @@ TODO: Improve about page content
 TODO: Add my rss list
 TODO: Input on Windows
 TODO: Blog roll
+
+Math
+TODO: (SSG) Math is a little squished together on Chrome
 
 Optimization
 TODO: Reduce classes used for syntax highlighting (stutter on firefox)

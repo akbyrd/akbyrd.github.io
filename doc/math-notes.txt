@@ -72,6 +72,15 @@ https://github.com/Modernizr/Modernizr/blob/master/feature-detects/mathml.js
 
 Resources
 ---------
+New Computer Modern (based on Computer Modern / Latin Modern)
+https://ctan.org/pkg/newcomputermodern
+
+MLModern well regarded?
+https://ctan.org/pkg/mlmodern
+
+Knuth math font
+https://ctan.org/tex-archive/fonts/concrete
+
 https://misha.brukman.net/blog/2022/04/writing-math-with-hugo/
 https://mertbakir.gitlab.io/hugo/math-typesetting-in-hugo/
 https://developer.mozilla.org/en-US/docs/Web/MathML
