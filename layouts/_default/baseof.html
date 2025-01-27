@@ -76,15 +76,8 @@
 		const html = document.getElementsByTagName("html")[0]
 		html.classList.remove("theme-system")
 		html.classList.add(classes[theme])
+		html.classList.add("has-js")
 	</script>
-
-	{{- if .Page.Store.Get "hasMermaid" }}
-
-	<script type="module">
-		import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';
-		mermaid.initialize({ startOnLoad: true });
-	</script>
-	{{- end }}
 
 	{{- block "head" . }}{{ end }}
 </head>

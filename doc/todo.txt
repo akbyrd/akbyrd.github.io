@@ -1,5 +1,4 @@
 General
-TODO: Fix layout when javascript is disabled
 TODO: Hide test page discussions in github?
 TODO: Fix 1px gap on scroll bar (test-code, Firefox)
 TODO: Improve outline on post list

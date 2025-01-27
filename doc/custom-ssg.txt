@@ -8,15 +8,17 @@ Ideas & Requirements
 * Incremental builds with web server
 * Render HTML properly indented for readability (still minify for production)
 * Hot reload for the generator itself
-* Compiles to WASM an runs in browser
+* Compiles to WASM and runs in browser
 	* Dependencies must compile to WASM as well
+* Render math to both HTML and MathML and pick at runtime
+* Render math in Github comments
 
 
 
 Motivation
 ----------
 * Real syntax highlighting
-* Offline rendering of LaTeX to SVG
+* Offline rendering of LaTeX to SVG/HTML
 * HTML classes for any element (namely, inline ones)
 * HTML formatting for readability
 * Simplicity

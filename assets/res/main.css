@@ -576,8 +576,8 @@ code, annotation {
 	transition-timing-function: ease-out;
 }
 
-.copy-block + div,
-.copy-block + pre {
+.has-js .copy-block + div,
+.has-js .copy-block + pre {
 	margin-top: -34px;
 }
 
