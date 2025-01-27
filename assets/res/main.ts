@@ -1286,6 +1286,13 @@ function CreateComment(templates: CommentTemplates, commentTemplate: HTMLTemplat
 		}
 	}
 
+	// Emoji
+	{
+		const emojis = content.querySelectorAll(".emoji")
+		for (const emoji of emojis)
+			emoji.setAttribute("draggable", "false")
+	}
+
 	// Footer
 	{
 		const footerFragment = templates.footer.content.cloneNode(true) as DocumentFragment
@@ -1755,7 +1762,7 @@ function CancelAutoScroll()
 // -------------------------------------------------------------------------------------------------
 // Initialization
 
-async function Initialize()
+function Initialize()
 {
 	InitFeatures()
 	InitTheme()

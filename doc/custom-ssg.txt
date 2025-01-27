@@ -10,16 +10,16 @@ Ideas & Requirements
 * Hot reload for the generator itself
 * Compiles to WASM and runs in browser
 	* Dependencies must compile to WASM as well
-* Render math to both HTML and MathML and pick at runtime
-* Render math in Github comments
 
 
 
 Motivation
 ----------
 * Real syntax highlighting
-* Offline rendering of LaTeX to SVG/HTML
+* Offline rendering of LaTeX to SVG/HTML/MathML
 * HTML classes for any element (namely, inline ones)
 * HTML formatting for readability
 * Simplicity
-* Render dynamic content like comments (WASM)
+* Render dynamic content like math in comments (WASM)
+* Render different graph types
+* Tooltips for :emoji:

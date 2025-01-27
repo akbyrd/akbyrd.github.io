@@ -346,13 +346,9 @@ th, td {
 	position: relative;
 }
 
-.image-background {
-	display: block;
-	margin: 0 auto;
-	outline: 1px solid var(--outline);
-	outline-offset: 0px;
-	overflow: hidden;
-	width: fit-content;
+.emoji {
+	cursor: text;
+	display: inline;
 }
 
 .fade-in {
@@ -371,6 +367,15 @@ th, td {
 		opacity: 100%;
 		scale: 100%;
 	}
+}
+
+.image-background {
+	display: block;
+	margin: 0 auto;
+	outline: 1px solid var(--outline);
+	outline-offset: 0px;
+	overflow: hidden;
+	width: fit-content;
 }
 
 .loading-spinner {
