@@ -1,22 +1,18 @@
 General
-TODO: Hide test page discussions in github?
-TODO: Fix 1px gap on scroll bar (test-code, Firefox)
-TODO: Improve outline on post list
-TODO: Add support for :emoji:
-TODO: Ass support for notes (https://gist.github.com/Myndex/5140d6fe98519bb15c503c490e713233#new-notes)
-TODO: Add "fix typo" button (https://www.ii.com/vscode-uri-scheme-and-hugo/)
-TODO: Get link previews working on {Discord, X, Mastodon, Bluesky, Hacker News, Github, LinkedIn, Slack}
-TODO: Try a render hook for images https://gohugo.io/render-hooks/images/
-TODO: Lazy image loading
-TODO: Implement zoom for images (current page? new page?)
-----
+TODO: (Launch) Add support for :emoji:
+TODO: (Launch) Ass support for notes (https://gist.github.com/Myndex/5140d6fe98519bb15c503c490e713233#new-notes)
+TODO: (Launch) Add "fix typo" button (https://www.ii.com/vscode-uri-scheme-and-hugo/)
+TODO: (Launch) Get link previews working on {Discord, X, Mastodon, Bluesky, Hacker News, Github, LinkedIn, Slack}
+TODO: (Launch) Try a render hook for images https://gohugo.io/render-hooks/images/
+TODO: (Launch) Lazy image loading
+TODO: (Launch) Implement zoom for images (current page? new page?)
 TODO: Choose a diagram method: goat, mermaid (jerky layout), graphviz, other
 TODO: Add search support
 
 Atom / RSS
+TODO: (Launch) Fix icon on Inoreader
 TODO: Add an XML stylesheet (.xsl) to Atom feed
 TODO: Split Atom feed into multiple files
-TODO: Fix icon on Inoreader
 
 Code
 TODO: (SSG) Replace syntax highlighting implementation (use compiler, support inline code)
@@ -49,14 +45,14 @@ TODO: Code line anchors
 		touch, mouse
 
 Comments
+TODO: (Launch) Reactions don't look great on mobile
 TODO: Use Vercel storage to cache app token locally
-TODO: Reactions don't look great on mobile
-TODO: Add refresh button (updatedAt and reconcile)
 TODO: Refresh when restoring from bfcache
+TODO: Add refresh button (updatedAt and reconcile)
 TODO: Add entrance animation
 
 Content
-TODO: Improve about page content
+TODO: (Launch) Improve about page content
 TODO: Add my rss list
 TODO: Input on Windows
 TODO: Blog roll
@@ -70,22 +66,20 @@ TODO: "css overflow auto causing jitter"?
 TODO: Improve rendering perf of code (grid? (has border-collapse) less html?)
 
 Theme
-TODO: Pay a UI designer for a review and recommendations
+TODO: (Launch) Pay a UI designer for a review and recommendations
+TODO: (Launch) Add text selection color
 TODO: Fix colors in print preview
 TODO: Read about meterial design https://m3.material.io/
-TODO: Add text selection color
 TODO: Light theme for code
 
 Testing / Compatibility
+TODO: (Launch) Remove nesting/& (2024), :has (2024), :not (2021) selectors, nth-child (2023)
 TODO: Theme transition isn't smooth on mobile
-TODO: Remove nesting/& (2024), :has (2024), :not (2021) selectors, nth-child (2023)
 TODO: Test in safari
 TODO: Test apple touch icon
 TODO: Test theme-color on android
 TODO: Test search engine results
-TODO: Test double tap to zoom on text
 TODO: Add syntax highlighting samples test page
-TODO: 1 frame of missing text in firefox
 TODO: Run site audit as part of deployment
 TODO: Chrome Lighthouse report
 TODO: https://jigsaw.w3.org/css-validator/

@@ -291,6 +291,7 @@ main {
 }
 
 ol, ul {
+	margin: 20px 0;
 	padding-left: 1.5em;
 }
 
@@ -1105,72 +1106,6 @@ body.error {
 }
 
 /* ---------------------------------------------------------------------------------------------- */
-/* Home */
-
-.home main {
-	padding: 0;
-}
-
-.post-list {
-	list-style: none;
-	padding-left: 0;
-}
-
-.post-list-item {
-	margin: 10px 0;
-}
-
-.post-link {
-	display: block;
-	outline-offset: 3px;
-	text-decoration: none;
-
-	&.draft {
-		background: repeating-linear-gradient(
-			35deg,
-			transparent,
-			transparent 10px,
-			var(--draft-stripe) 10px,
-			var(--draft-stripe) 20px
-		);
-	}
-
-	&:focus-visible {
-		outline-offset: -3px;
-	}
-
-	@supports not selector(:focus-visible) {
-		&:focus:not(:active) {
-			outline-offset: -3px;
-		}
-	}
-}
-
-.post-title {
-	color: var(--accent);
-	padding-top: 10px;
-
-	.home & {
-		margin: 0;
-	}
-
-	.post-link:hover & {
-		text-decoration: underline;
-	}
-}
-
-.post-time {
-	color: var(--text-detail);
-	display: block;
-	font-family: sans-serif;
-	font-size: 11pt;
-	font-weight: normal;
-	min-width: 1lh;
-	min-height: 1lh;
-	padding-bottom: 10px;
-}
-
-/* ---------------------------------------------------------------------------------------------- */
 /* Math */
 
 math {
@@ -1240,6 +1175,65 @@ math[display="block"] mtr mtd:not([class]) + mtd:not([class]) {
 mover[accent="true"] mo {
 	position: relative;
 	bottom: 2px;
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* Post List */
+
+.post-list {
+	list-style: none;
+	padding-left: 0;
+}
+
+.post-list-item {
+	margin: 20px -20px;
+}
+
+.post-list-item.draft {
+	background: repeating-linear-gradient(
+		35deg,
+		transparent,
+		transparent 10px,
+		var(--draft-stripe) 10px,
+		var(--draft-stripe) 20px
+	);
+}
+
+.post-link {
+	display: block;
+	outline-offset: 3px;
+	text-decoration: none;
+	padding: 0 20px;
+}
+
+.post-link:focus-visible {
+	outline-offset: -3px;
+}
+
+@supports not selector(:focus-visible) {
+	.post-link:focus:not(:active) {
+		outline-offset: -3px;
+	}
+}
+
+.post-list .post-title {
+	margin: 0;
+}
+
+.post-link:hover .post-title {
+	text-decoration: underline;
+}
+
+.tests .post-list .post-list-item + .post-list-item {
+	margin-top: 30px;
+}
+
+.post-time {
+	color: var(--text-detail);
+	display: block;
+	font-family: sans-serif;
+	font-size: 11pt;
+	min-height: 1lh;
 }
 
 /* ---------------------------------------------------------------------------------------------- */
