@@ -826,14 +826,9 @@ let commentState: {
 	}
 	lastSaveScrollPos: number
 	parent:            HTMLElement
-	templates: {
+	templates: CommentTemplates & {
 		comment:        HTMLTemplateElement
 		reply:          HTMLTemplateElement
-		header:         HTMLTemplateElement
-		codeBlock:      HTMLTemplateElement
-		mathInline:     HTMLTemplateElement
-		mathBlock:      HTMLTemplateElement
-		footer:         HTMLTemplateElement
 	}
 	loadingContainer:  HTMLElement
 	errorContainer:    HTMLElement
@@ -874,6 +869,7 @@ interface CommentTemplates
 	codeBlock: HTMLTemplateElement
 	mathInline: HTMLTemplateElement
 	mathBlock: HTMLTemplateElement
+	callout: HTMLTemplateElement
 	footer: HTMLTemplateElement
 }
 
@@ -963,6 +959,7 @@ function InitComments()
 			codeBlock:  document.getElementById("comment-code-block-template") as HTMLTemplateElement,
 			mathInline: document.getElementById("comment-math-inline-template") as HTMLTemplateElement,
 			mathBlock:  document.getElementById("comment-math-block-template") as HTMLTemplateElement,
+			callout:    document.getElementById("comment-callout-template") as HTMLTemplateElement,
 			footer:     document.getElementById("comment-footer-template") as HTMLTemplateElement,
 		},
 		loadingContainer: parent.querySelector(".comments-state-loading") as HTMLElement,
@@ -1283,6 +1280,53 @@ function CreateComment(templates: CommentTemplates, commentTemplate: HTMLTemplat
 					taskListItem.classList.add("checked")
 				input.remove()
 			}
+		}
+	}
+
+	// Callouts
+	{
+		const callouts = content.querySelectorAll(".markdown-alert")
+		for (const callout of callouts)
+		{
+			const calloutFragment = templates.callout.content.cloneNode(true) as DocumentFragment
+
+			const root  = calloutFragment.querySelector(".callout")!
+			const icon  = calloutFragment.querySelector(".callout-icon")!
+			const title = calloutFragment.querySelector(".callout-title")!
+
+			const ghRoot    = callout
+			const ghHeading = callout.querySelector(".markdown-alert-title")!
+			const ghIcon    = callout.querySelector("svg")!
+
+			ghIcon.remove()
+			title.append(...ghHeading.childNodes)
+
+			ghHeading.remove()
+			for (const ghText of ghRoot.childNodes)
+			{
+				if (ghText instanceof HTMLElement)
+					ghText.classList.add("callout-text")
+			}
+			root.append(...ghRoot.childNodes)
+
+			const classRemaps = [
+				[ "markdown-alert-note",      "callout-note",      "&#xf05a;"  ],
+				[ "markdown-alert-tip",       "callout-tip",       "&#xf0335;" ],
+				[ "markdown-alert-important", "callout-important", "&#xf11ce;" ],
+				[ "markdown-alert-warning",   "callout-warning",   "&#xf40c;"  ],
+				[ "markdown-alert-caution",   "callout-caution",   "&#xf0029;" ],
+			]
+
+			for (const remap of classRemaps)
+			{
+				if (ghRoot.classList.contains(remap[0]))
+				{
+					root.classList.add(remap[1])
+					icon.innerHTML = remap[2]
+				}
+			}
+
+			ghRoot.replaceWith(calloutFragment)
 		}
 	}
 

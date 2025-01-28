@@ -1,20 +1,36 @@
-{{ $emojis := dict
-	"caution"   "&#xf46e;"
-	"important" "&#xf50a;"
-	"note"      "&#xf449;"
-	"tip"       "&#xf400;"
-	"warning"   "&#xf421;"
-}}
+{{ $emojis := dict }}
+{{ $outline := false }}
+
+{{ if $outline }}
+	{{ $emojis = dict
+		"note"      "&#xf449;"
+		"tip"       "&#xf400;"
+		"important" "&#xf11cf;"
+		"warning"   "&#xf421;"
+		"caution"   "&#xf46e;"
+	}}
+{{ else }}
+	{{ $emojis = dict
+		"note"      "&#xf05a;"
+		"tip"       "&#xf0335;"
+		"important" "&#xf11ce;"
+		"warning"   "&#xf40c;"
+		"caution"   "&#xf0029;"
+	}}
+{{ end }}
 
 {{ if eq .Type "alert" }}
-	<blockquote class="callout callout-{{ .AlertType }}">
-	<p class="callout-heading">
-		<span class="callout-icon symbol">{{ (index $emojis .AlertType) | safeHTML }}</span>{{ or .AlertTitle (title .AlertType) }}
-	</p>
-	{{ .Text }}
-	</blockquote>
+<blockquote class="callout callout-{{ .AlertType }}">
+	<div class="callout-heading code">
+		{{ $icon := (index $emojis .AlertType) | safeHTML }}
+		{{ $title := or .AlertTitle (title .AlertType) }}
+		{{ $arrow := ">" }}
+		<span class="callout-icon symbol">{{ $icon }}</span><span class="callout-title">{{ $title }}</span>
+	</div>
+	{{ (replaceRE `^<p>` `<p class="callout-text">` .Text) | safeHTML }}
+</blockquote>
 {{ else }}
-	<blockquote>
+<blockquote>
 	{{ .Text }}
-	</blockquote>
+</blockquote>
 {{ end }}

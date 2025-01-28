@@ -306,6 +306,19 @@ ol, ul {
 	padding-left: 1.5em;
 }
 
+ol ol, ol ul, ul ol, ul ul {
+	margin-top: 0;
+}
+
+ul:not(.task-list) { list-style-type: disc; }
+ul:not(.task-list) ul:not(.task-list) { list-style-type: circle; }
+ul:not(.task-list) ul:not(.task-list) ul:not(.task-list) { list-style-type: square; }
+
+ol { list-style-type: decimal; }
+ol ol { list-style-type: lower-latin; }
+ol ol ol { list-style-type: lower-roman; }
+ol ol ol ol { list-style-type: lower-greek; }
+
 p {
 	margin: 20px 0;
 	overflow-x: auto;
@@ -470,10 +483,9 @@ th, td {
 /* ---------------------------------------------------------------------------------------------- */
 /* Callouts / Alerts */
 
-/* TODO: Look at other icons */
-/* TODO: Pick better colors */
-/* TODO: Light mode */
+/* TODO: Consider using ::before for icons */
 /* TODO: Folding */
+/* TODO: Light mode */
 
 .callout-note      { --callout-color: var(--callout-note);      --callout-color-bg: var(--callout-note-bg);      }
 .callout-tip       { --callout-color: var(--callout-tip);       --callout-color-bg: var(--callout-tip-bg);       }
@@ -489,28 +501,30 @@ th, td {
 }
 
 .callout-heading {
+	align-items: center;
 	color: var(--callout-color);
+	display: flex;
+	margin: 0 0 10px 0;
 	overflow: visible;
+}
+
+.callout-title {
+	font-size: .95em;
+	font-weight: bold;
 }
 
 .callout-icon {
 	font-size: 1.5em;
 	line-height: 0;
-	position: relative;
-	top: .15em;
 	padding-right: 8px;
 }
 
 .callout-tip .callout-icon {
 	font-size: 1.2em;
-	top: .1em;
 }
 
-.callout .callout-heading {
-	margin-bottom: 10px;
-}
-
-.callout p {
+.callout-text {
+	font-size: .9em;
 	margin: 0;
 }
 

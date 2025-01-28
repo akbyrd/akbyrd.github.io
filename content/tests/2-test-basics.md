@@ -76,18 +76,24 @@ Task list
 - [ ] Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two
 	- [ ] Sub
 		- [ ] Sub
+			* Unordered
+				1. Ordered
 
 Unordered
 * One
 * Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two
 	* Sub
 		* Sub
+			- [x] Task list
+				1. Ordered
 
 Ordered
 1. One
 1. Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two Two
 	1. Sub
 		1. Sub
+			- [x] Task list
+				* Unordered
 
 ### Tables
 | Number | Text  |
