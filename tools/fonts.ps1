@@ -39,11 +39,6 @@ foreach ($out in $codeOut)
 		--unicodes="uf4a2"  <# nf-oct-smiley #> `
 		--unicodes="uf4bb"  <# nf-oct-copy #>
 
-		#f460 nf-oct-chevron_right
-		#f054 nf-fa-chevron_right
-		#f44a nf-oct-triangle_right
-		#eb70 nf-cod-triangle_right
-
 	$name = Split-Path -Leaf $out
 	$size = (Get-Item $out).Length / 1024
 	Write-Host ("{0,-12} {1,5:0.0} kb" -f $name, $size)

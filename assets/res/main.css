@@ -321,8 +321,6 @@ ol ol ol ol { list-style-type: lower-greek; }
 
 p {
 	margin: 20px 0;
-	overflow-x: auto;
-	scrollbar-width: thin;
 }
 
 pre {
@@ -484,8 +482,6 @@ th, td {
 /* Callouts / Alerts */
 
 /* TODO: Consider using ::before for icons */
-/* TODO: Folding */
-/* TODO: Light mode */
 
 .callout-note      { --callout-color: var(--callout-note);      --callout-color-bg: var(--callout-note-bg);      }
 .callout-tip       { --callout-color: var(--callout-tip);       --callout-color-bg: var(--callout-tip-bg);       }
@@ -1254,11 +1250,16 @@ mover[accent="true"] mo {
 	bottom: 2px;
 }
 
+*:has(math[display="inline"]) {
+	overflow-x: auto;
+	scrollbar-width: thin;
+}
+
 /* ---------------------------------------------------------------------------------------------- */
 /* Post List */
 
 .post-list {
-	list-style: none;
+	list-style: none !important;
 	padding-left: 0;
 }
 

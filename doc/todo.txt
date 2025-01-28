@@ -14,6 +14,8 @@ TODO: Add an XML stylesheet (.xsl) to Atom feed
 TODO: Split Atom feed into multiple files
 
 Code
+TODO: (Launch) Make copy button fit in one line code/math blocks
+TODO: (Launch) Don't show copy button on empty code/math blocks
 TODO: (SSG) Replace syntax highlighting implementation (use compiler, support inline code)
 TODO: It's still possible to scroll + select with touch on Firefox on Android
 TODO: Rethink line selection (2 long presses?)
