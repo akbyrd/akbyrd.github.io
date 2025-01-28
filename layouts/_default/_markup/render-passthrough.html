@@ -8,7 +8,7 @@
 	{{- end }}
 
 	{{- $opts := dict "output" "mathml" "displayMode" true }}
-	{{- $result = (transform.ToMath $inner $opts).Value }}
+	{{- $result = transform.ToMath $inner $opts }}
 
 	{{- /* Change span to div */}}
 	{{- $result = replaceRE "^<span" "<div" $result }}
@@ -27,7 +27,7 @@
 	{{- $result = replaceRE `<math` "\n<math" $result }}
 {{- else }}
 	{{- $opts := dict "output" "mathml" "displayMode" false }}
-	{{- $result = (transform.ToMath $inner $opts).Value }}
+	{{- $result = transform.ToMath $inner $opts }}
 
 	{{- /* Set classes */}}
 	{{- $result = replaceRE `<math([^>]*)>` `<math$1 display="inline">` $result }}
