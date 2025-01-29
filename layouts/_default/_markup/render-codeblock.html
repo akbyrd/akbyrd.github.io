@@ -10,6 +10,10 @@
 	{{- warnf "Language is required for code blocks.\n\t%s" (partial "relpath" .) }}
 {{- end }}
 
+{{- if not .Inner }}
+	{{- warnf "Code blocks should not be empty.\n\t%s" (partial "relpath" .) }}
+{{- end }}
+
 {{- $lineStart := 1 }}
 {{- with index .Options "lineNoStart" }}
 	{{- $lineStart = mod . 1e256 }}

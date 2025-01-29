@@ -635,24 +635,22 @@ code, annotation {
 	background-color: var(--code-highlight-background);
 	box-shadow: 0px 0px 0px 1px var(--outline);
 	display: block;
+	float: right;
 	font-size: 24px;
-	height: 34px;
 	justify-content: center;
 	margin-left: auto;
 	position: sticky;
 	text-align: center;
 	top: 1px;
-	width: 34px;
 	z-index: 1;
+
+	height: 32px;
+	width: 32px;
+	margin-left: -32px;
 
 	opacity: 0%;
 	transition-duration: 100ms;
 	transition-timing-function: ease-out;
-}
-
-.has-js .copy-block + div,
-.has-js .copy-block + pre {
-	margin-top: -34px;
 }
 
 .container:hover .copy-block {

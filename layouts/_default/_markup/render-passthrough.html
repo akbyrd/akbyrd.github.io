@@ -7,6 +7,10 @@
 		{{- errorf "Id is required for math blocks.\n\t%s" (partial "relpath" .) }}
 	{{- end }}
 
+	{{- if not .Inner }}
+		{{- warnf "Math blocks should not be empty.\n\t%s" (partial "relpath" .) }}
+	{{- end }}
+
 	{{- $opts := dict "output" "mathml" "displayMode" true }}
 	{{- $result = transform.ToMath $inner $opts }}
 

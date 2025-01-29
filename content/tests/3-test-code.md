@@ -33,10 +33,6 @@ inline u32 IndexToHandle(u32 index, u8 generation)
 // hello
 ```
 
-### Empty
-```cpp {#CodeEmpty}
-```
-
 ### Characters
 `01 airlg \/|&$@*- {} [] <> () __ -- << >> || '' ""`
 

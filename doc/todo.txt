@@ -14,16 +14,15 @@ TODO: Add an XML stylesheet (.xsl) to Atom feed
 TODO: Split Atom feed into multiple files
 
 Code
-TODO: (Launch) Make copy button fit in one line code/math blocks
-TODO: (Launch) Don't show copy button on empty code/math blocks
 TODO: (SSG) Replace syntax highlighting implementation (use compiler, support inline code)
+TODO: Refactor code layout
+	There's 1 pixel of clickable space around the first and last lines when highlighted
+	Code blocks are a couple pixels shorter than math/they should be due to overlapping (box-shadow?)
+	Make copy button precisely fit in one line code/math blocks
 TODO: It's still possible to scroll + select with touch on Firefox on Android
 TODO: Rethink line selection (2 long presses?)
 TODO: Rethink auto-scroll (smooth, by line, wait for scrollend or custom timer)
-TODO: There's 1 pixel of clickable space around the first and last lines when highlighted
-TODO: Code blocks are a couple pixels shorter than math/they should be due to overlapping (box-shadow?)
 TODO: Consider Shift + Click for line selection
-TODO: Adjust block code lines down 1px
 TODO: Allow selection over line numbers when Javascript is disabled
 TODO: Code line anchors
 	Mobile
