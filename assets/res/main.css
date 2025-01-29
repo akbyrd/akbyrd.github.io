@@ -1137,22 +1137,28 @@ body.error footer {
 	font-size: 10pt;
 	line-height: unset;
 	margin: 0;
+	padding: 20px 0;
+	position: absolute;
+	right: 100%;
+	top: 0;
+
 	opacity: 0%;
-	padding: 20px 10px;
 	scale: 0%;
 	transition-duration: 100ms;
 	transition-timing-function: ease-out;
 	transition-property: scale, opacity;
 }
 
-.header-theme-label:has(+ .header-theme-button:hover) {
-	opacity: 50%;
-	scale: 100%;
-}
-
 .header-theme-button {
 	font-size: 18px;
 	padding: 20px 10px;
+	position: relative;
+	overflow: visible;
+}
+
+.header-theme-button:hover .header-theme-label {
+	opacity: 50%;
+	scale: 100%;
 }
 
 .header-theme-icon {
