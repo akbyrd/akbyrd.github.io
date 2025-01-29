@@ -617,13 +617,15 @@ code, annotation {
 	border-right-color: var(--code-highlight-border);
 }
 
-.container.code .hl:nth-child(1 of .hl) {
+.container.code .hl:first-child,
+.container.code .line:not(.hl) + .hl,
+.container.code .hl + .line:not(.hl) {
 	border-top-color: var(--code-highlight-border);
 	position: relative;
 	z-index: 1;
 }
 
-.container.code .hl:nth-last-child(1 of .hl) {
+.container.code .hl:last-child {
 	border-bottom-color: var(--code-highlight-border);
 	position: relative;
 	z-index: 1;

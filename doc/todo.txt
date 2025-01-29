@@ -73,7 +73,6 @@ TODO: Read about meterial design https://m3.material.io/
 TODO: Light theme for code
 
 Testing / Compatibility
-TODO: (Launch) :not (2021) selectors, nth-child (2023)
 TODO: Theme transition isn't smooth on mobile
 TODO: Test in safari
 TODO: Test apple touch icon
