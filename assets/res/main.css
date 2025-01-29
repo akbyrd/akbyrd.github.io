@@ -223,27 +223,27 @@ button:disabled {
 details {
 	display: block;
 	margin: 20px 0;
+}
 
-	summary {
-		cursor: pointer;
-		display: block;
-		font-family: sans-serif;
-		font-size: 14pt;
-		font-weight: bold;
-		border: 1px solid var(--outline);
-		padding: 4px 6px;
-		user-select: none;
-		transition-duration: 100ms;
-		transition-property: background-color;
+details[open] {
+	margin-bottom: -21px;
+}
 
-		&:hover {
-			background-color: var(--outline);
-		}
+details:hover {
+	background-color: var(--outline);
+}
 
-		details[open] & {
-			margin-bottom: -21px;
-		}
-	}
+summary {
+	cursor: pointer;
+	display: block;
+	font-family: sans-serif;
+	font-size: 14pt;
+	font-weight: bold;
+	border: 1px solid var(--outline);
+	padding: 4px 6px;
+	user-select: none;
+	transition-duration: 100ms;
+	transition-property: background-color;
 }
 
 div {
@@ -449,34 +449,34 @@ th, td {
 	max-width: calc(40px * 6 + 12px * 5);
 	padding: 0;
 	user-select: none;
-
-	li {
-		display: inline;
-		height: 40px;
-		width: 40px;
-	}
-
-	a {
-		display: block;
-		font-size: 44px;
-		font-size: 44px;
-		text-decoration: none;
-	}
-
-	p {
-		aspect-ratio: 1;
-		background-color: var(--dark-background);
-		border-radius: 4px;
-		color: var(--dark-text);
-		line-height: 42px;
-		margin: 0;
-		overflow: hidden;
-		text-align: center;
-
-		a[title="GitHub"] & { font-size: 105%; }
-		a[title="Mastodon"] & { font-size: 98%; }
-	}
 }
+
+.about-link-container li {
+	display: inline;
+	height: 40px;
+	width: 40px;
+}
+
+.about-link-container a {
+	display: block;
+	font-size: 44px;
+	font-size: 44px;
+	text-decoration: none;
+}
+
+.about-link-container p {
+	aspect-ratio: 1;
+	background-color: var(--dark-background);
+	border-radius: 4px;
+	color: var(--dark-text);
+	line-height: 42px;
+	margin: 0;
+	overflow: hidden;
+	text-align: center;
+}
+
+.about-link-container a[title="GitHub"] p { font-size: 105%; }
+.about-link-container a[title="Mastodon"] p { font-size: 98%; }
 
 /* ---------------------------------------------------------------------------------------------- */
 /* Callouts / Alerts */
@@ -527,6 +527,10 @@ th, td {
 /* ---------------------------------------------------------------------------------------------- */
 /* Code */
 
+code {
+	color: var(--code-default);
+}
+
 code, annotation, .symbol, .code, li.task-list-item::before {
 	font-family: code, monospace;
 	font-feature-settings: "ss01";
@@ -563,68 +567,66 @@ code, annotation {
 	position: unset;
 }
 
-.container.code {
-	pre {
-		counter-reset: line-numbers var(--ln-start, 1);
-		will-change: translate;
-	}
+.container.code pre {
+	counter-reset: line-numbers var(--ln-start, 1);
+	will-change: translate;
+}
 
-	code {
-		display: block;
-		min-width: fit-content;
-		padding: 8px 0;
-		cursor: text;
-	}
+.container.code code {
+	display: block;
+	min-width: fit-content;
+	padding: 8px 0;
+	cursor: text;
+}
 
-	.line {
-		border-color: transparent;
-		border-style: solid none;
-		border-width: 1px;
-		display: flex;
-		margin: -2px 0;
-	}
+.container.code .line {
+	border-color: transparent;
+	border-style: solid none;
+	border-width: 1px;
+	display: flex;
+	margin: -2px 0;
+}
 
-	.line::before {
-		border-color: inherit;
-		border-left-style: solid;
-		border-width: 1px;
-		content: counter(line-numbers);
-		left: 0;
-		padding: 0 8px;
-		position: sticky;
-		text-align: right;
-		width: var(--ln-width, 1);
-	}
+.container.code .line::before {
+	border-color: inherit;
+	border-left-style: solid;
+	border-width: 1px;
+	content: counter(line-numbers);
+	left: 0;
+	padding: 0 8px;
+	position: sticky;
+	text-align: right;
+	width: var(--ln-width, 1);
+}
 
-	.cl {
-		border-color: transparent;
-		border-style: none solid;
-		border-width: 0 1px 0 0;
-		counter-increment: line-numbers;
-		cursor: text;
-		flex-grow: 1;
-		padding-right: 8px;
-	}
+.container.code .cl {
+	border-color: transparent;
+	border-style: none solid;
+	border-width: 0 1px 0 0;
+	counter-increment: line-numbers;
+	cursor: text;
+	flex-grow: 1;
+	padding-right: 8px;
+}
 
-	.hl::before {
-		border-left-color: var(--code-highlight-border);
-	}
+.container.code .hl::before {
+	border-left-color: var(--code-highlight-border);
+}
 
-	.hl .cl {
-		border-right-color: var(--code-highlight-border);
-	}
+.container.code .hl .cl {
+	border-right-color: var(--code-highlight-border);
+}
 
-	.hl:nth-child(1 of .hl) {
-		border-top-color: var(--code-highlight-border);
-		position: relative;
-		z-index: 1;
-	}
+.container.code .hl:nth-child(1 of .hl) {
+	border-top-color: var(--code-highlight-border);
+	position: relative;
+	z-index: 1;
+}
 
-	.hl:nth-last-child(1 of .hl) {
-		border-bottom-color: var(--code-highlight-border);
-		position: relative;
-		z-index: 1;
-	}
+.container.code .hl:nth-last-child(1 of .hl) {
+	border-bottom-color: var(--code-highlight-border);
+	position: relative;
+	z-index: 1;
 }
 
 .comment .container.code code {
@@ -1079,23 +1081,23 @@ body.error {
 	display: flex;
 	flex-direction: column;
 	height: 80%;
+}
 
-	main {
-		align-items: center;
-		display: flex;
-		flex-grow: 1;
-		justify-content: center;
+body.error main {
+	align-items: center;
+	display: flex;
+	flex-grow: 1;
+	justify-content: center;
+}
 
-		p {
-			font-size: 96pt;
-			line-height: 80%;
-			margin: 0;
-		}
-	}
+body.error main p {
+	font-size: 96pt;
+	line-height: 80%;
+	margin: 0;
+}
 
-	footer {
-		display: none;
-	}
+body.error footer {
+	display: none;
 }
 
 /* ---------------------------------------------------------------------------------------------- */
@@ -1108,20 +1110,20 @@ body.error {
 	font-size: 14pt;
 	font-weight: bold;
 	line-height: 28px;
+}
 
-	* {
-		outline-offset: 3px;
-		text-decoration: none;
+.header * {
+	outline-offset: 3px;
+	text-decoration: none;
+}
 
-		&:focus-visible {
-			outline-offset: -3px;
-		}
+.header *:focus-visible {
+	outline-offset: -3px;
+}
 
-		@supports not selector(:focus-visible) {
-			&:focus:not(:active) {
-				outline-offset: -3px;
-			}
-		}
+@supports not selector(:focus-visible) {
+	.header *:focus:not(:active) {
+		outline-offset: -3px;
 	}
 }
 
@@ -1141,11 +1143,11 @@ body.error {
 	transition-duration: 100ms;
 	transition-timing-function: ease-out;
 	transition-property: scale, opacity;
+}
 
-	&:has(+ .header-theme-button:hover) {
-		opacity: 50%;
-		scale: 100%;
-	}
+.header-theme-label:has(+ .header-theme-button:hover) {
+	opacity: 50%;
+	scale: 100%;
 }
 
 .header-theme-button {
@@ -1335,101 +1337,97 @@ li.task-list-item.checked::before {
 /* ---------------------------------------------------------------------------------------------- */
 /* Syntax highlighting */
 
-code, .chroma {
-	color: var(--code-default);
+/* Comment          */ code .pl-c   { color: var(--code-comments);   color: rgb(145, 152, 161); color: unset; }
+/* Literal          */ code .pl-c1  { color: var(--code-literals);   color: rgb(121, 192, 255); color: unset; }
+/* Escape Sequence  */ code .pl-cce { color: var(--code-escape-seq); color: rgb(165, 214, 255); color: unset; }
+/* Type             */ code .pl-en  { color: var(--code-types);      color: rgb(210, 168, 255); color: unset; }
+/* Keyword          */ code .pl-k   { color: var(--code-keywords);   color: rgb(255, 123, 114); color: unset; }
+/* String Delimiter */ code .pl-pds { color: var(--code-literals);   color: rgb(165, 214, 255); color: unset; }
+/* String           */ code .pl-s   { color: var(--code-literals);   color: rgb(165, 214, 255); color: unset; }
+/* Function         */ code .pl-smi { color: var(--code-functions);  color: rgb(240, 246, 252); color: unset; }
 
-	/* Comment          */ .pl-c   { color: var(--code-comments);   color: rgb(145, 152, 161); color: unset; }
-	/* Literal          */ .pl-c1  { color: var(--code-literals);   color: rgb(121, 192, 255); color: unset; }
-	/* Escape Sequence  */ .pl-cce { color: var(--code-escape-seq); color: rgb(165, 214, 255); color: unset; }
-	/* Type             */ .pl-en  { color: var(--code-types);      color: rgb(210, 168, 255); color: unset; }
-	/* Keyword          */ .pl-k   { color: var(--code-keywords);   color: rgb(255, 123, 114); color: unset; }
-	/* String Delimiter */ .pl-pds { color: var(--code-literals);   color: rgb(165, 214, 255); color: unset; }
-	/* String           */ .pl-s   { color: var(--code-literals);   color: rgb(165, 214, 255); color: unset; }
-	/* Function         */ .pl-smi { color: var(--code-functions);  color: rgb(240, 246, 252); color: unset; }
-
-	/* Other                    */ .x               { color: var(--code-invalid); }
-	/* Error                    */ .err             { color: var(--code-invalid); }
-	/* CodeLine                 */ .cl              { color: var(--code-default); }
-	/* LineLink                 */ .lnlinks         { color: var(--code-invalid); }
-	/* LineHighlight            */ .hl .cl          { background-color: var(--code-highlight-background); }
-	/* LineNumbers              */ .line::before    { background-color: var(--code-background); color: var(--code-line-numbers); }
-	/* LineNumbers Highlight    */ .line.hl::before { background-color: var(--code-highlight-background); }
-	/* Line                     */ .line            { color: var(--code-default); }
-	/* Keyword                  */ .k               { color: var(--code-keywords); }
-	/* KeywordConstant          */ .kc              { color: var(--code-literals); }
-	/* KeywordDeclaration       */ .kd              { color: var(--code-invalid); }
-	/* KeywordNamespace         */ .kn              { color: var(--code-invalid); }
-	/* KeywordPseudo            */ .kp              { color: var(--code-invalid); }
-	/* KeywordReserved          */ .kr              { color: var(--code-keywords); }
-	/* KeywordType              */ .kt              { color: var(--code-types); }
-	/* Name                     */ .n               { color: var(--code-default); }
-	/* NameAttribute            */ .na              { color: var(--code-keywords); }
-	/* NameBuiltin              */ .nb              { color: var(--code-keywords); }
-	/* NameBuiltinPseudo        */ .bp              { color: var(--code-invalid); }
-	/* NameClass                */ .nc              { color: var(--code-types); }
-	/* NameConstant             */ .no              { color: var(--code-invalid); }
-	/* NameDecorator            */ .nd              { color: var(--code-invalid); }
-	/* NameEntity               */ .ni              { color: var(--code-invalid); }
-	/* NameException            */ .ne              { color: var(--code-invalid); }
-	/* NameFunction             */ .nf              { color: var(--code-functions); }
-	/* NameFunctionMagic        */ .fm              { color: var(--code-invalid); }
-	/* NameLabel                */ .nl              { color: var(--code-labels); }
-	/* NameNamespace            */ .nn              { color: var(--code-invalid); }
-	/* NameOther                */ .nx              { color: var(--code-variables); }
-	/* NameProperty             */ .py              { color: var(--code-invalid); }
-	/* NameTag                  */ .nt              { color: var(--code-variables); }
-	/* NameVariable             */ .nv              { color: var(--code-variables); }
-	/* NameVariableClass        */ .vc              { color: var(--code-invalid); }
-	/* NameVariableGlobal       */ .vg              { color: var(--code-invalid); }
-	/* NameVariableInstance     */ .vi              { color: var(--code-invalid); }
-	/* NameVariableMagic        */ .vm              { color: var(--code-invalid); }
-	/* Literal                  */ .l               { color: var(--code-invalid); }
-	/* LiteralDate              */ .ld              { color: var(--code-invalid); }
-	/* LiteralString            */ .s               { color: var(--code-literals); }
-	/* LiteralStringAffix       */ .sa              { color: var(--code-invalid); }
-	/* LiteralStringBacktick    */ .sb              { color: var(--code-invalid); }
-	/* LiteralStringChar        */ .sc              { color: var(--code-literals); }
-	/* LiteralStringDelimiter   */ .dl              { color: var(--code-invalid); }
-	/* LiteralStringDoc         */ .sd              { color: var(--code-invalid); }
-	/* LiteralStringDouble      */ .s2              { color: var(--code-literals); }
-	/* LiteralStringEscape      */ .se              { color: var(--code-escape-seq); }
-	/* LiteralStringHeredoc     */ .sh              { color: var(--code-invalid); }
-	/* LiteralStringInterpol    */ .si              { color: var(--code-invalid); }
-	/* LiteralStringOther       */ .sx              { color: var(--code-invalid); }
-	/* LiteralStringRegex       */ .sr              { color: var(--code-invalid); }
-	/* LiteralStringSingle      */ .s1              { color: var(--code-invalid); }
-	/* LiteralStringSymbol      */ .ss              { color: var(--code-invalid); }
-	/* LiteralNumber            */ .m               { color: var(--code-literals); }
-	/* LiteralNumberBin         */ .mb              { color: var(--code-literals); }
-	/* LiteralNumberFloat       */ .mf              { color: var(--code-literals); }
-	/* LiteralNumberHex         */ .mh              { color: var(--code-literals); }
-	/* LiteralNumberInteger     */ .mi              { color: var(--code-literals); }
-	/* LiteralNumberIntegerLong */ .il              { color: var(--code-invalid); }
-	/* LiteralNumberOct         */ .mo              { color: var(--code-invalid); }
-	/* Operator                 */ .o               { color: var(--code-default); }
-	/* OperatorWord             */ .ow              { color: var(--code-invalid); }
-	/* Punctuation              */ .p               { color: var(--code-default); }
-	/* Comment                  */ .c               { color: var(--code-comments); }
-	/* CommentHashbang          */ .ch              { color: var(--code-invalid); }
-	/* CommentMultiline         */ .cm              { color: var(--code-comments); }
-	/* CommentSingle            */ .c1              { color: var(--code-comments); }
-	/* CommentSpecial           */ .cs              { color: var(--code-invalid); }
-	/* CommentPreproc           */ .cp              { color: var(--code-control-flow); }
-	/* CommentPreprocFile       */ .cpf             { color: var(--code-literals); }
-	/* Generic                  */ .g               { color: var(--code-invalid); }
-	/* GenericDeleted           */ .gd              { color: var(--code-invalid); }
-	/* GenericEmph              */ .ge              { color: var(--code-invalid); font-style: italic; }
-	/* GenericError             */ .gr              { color: var(--code-invalid); }
-	/* GenericHeading           */ .gh              { color: var(--code-invalid); }
-	/* GenericInserted          */ .gi              { color: var(--code-invalid); }
-	/* GenericOutput            */ .go              { color: var(--code-invalid); }
-	/* GenericPrompt            */ .gp              { color: var(--code-invalid); }
-	/* GenericStrong            */ .gs              { color: var(--code-invalid); font-weight: bold; }
-	/* GenericSubheading        */ .gu              { color: var(--code-invalid); }
-	/* GenericTraceback         */ .gt              { color: var(--code-invalid); }
-	/* GenericUnderline         */ .gl              { color: var(--code-invalid); }
-	/* TextWhitespace           */ .w               { color: var(--code-invalid); }
-}
+/* Other                    */ code .x               { color: var(--code-invalid); }
+/* Error                    */ code .err             { color: var(--code-invalid); }
+/* CodeLine                 */ code .cl              { color: var(--code-default); }
+/* LineLink                 */ code .lnlinks         { color: var(--code-invalid); }
+/* LineHighlight            */ code .hl .cl          { background-color: var(--code-highlight-background); }
+/* LineNumbers              */ code .line::before    { background-color: var(--code-background); color: var(--code-line-numbers); }
+/* LineNumbers Highlight    */ code .line.hl::before { background-color: var(--code-highlight-background); }
+/* Line                     */ code .line            { color: var(--code-default); }
+/* Keyword                  */ code .k               { color: var(--code-keywords); }
+/* KeywordConstant          */ code .kc              { color: var(--code-literals); }
+/* KeywordDeclaration       */ code .kd              { color: var(--code-invalid); }
+/* KeywordNamespace         */ code .kn              { color: var(--code-invalid); }
+/* KeywordPseudo            */ code .kp              { color: var(--code-invalid); }
+/* KeywordReserved          */ code .kr              { color: var(--code-keywords); }
+/* KeywordType              */ code .kt              { color: var(--code-types); }
+/* Name                     */ code .n               { color: var(--code-default); }
+/* NameAttribute            */ code .na              { color: var(--code-keywords); }
+/* NameBuiltin              */ code .nb              { color: var(--code-keywords); }
+/* NameBuiltinPseudo        */ code .bp              { color: var(--code-invalid); }
+/* NameClass                */ code .nc              { color: var(--code-types); }
+/* NameConstant             */ code .no              { color: var(--code-invalid); }
+/* NameDecorator            */ code .nd              { color: var(--code-invalid); }
+/* NameEntity               */ code .ni              { color: var(--code-invalid); }
+/* NameException            */ code .ne              { color: var(--code-invalid); }
+/* NameFunction             */ code .nf              { color: var(--code-functions); }
+/* NameFunctionMagic        */ code .fm              { color: var(--code-invalid); }
+/* NameLabel                */ code .nl              { color: var(--code-labels); }
+/* NameNamespace            */ code .nn              { color: var(--code-invalid); }
+/* NameOther                */ code .nx              { color: var(--code-variables); }
+/* NameProperty             */ code .py              { color: var(--code-invalid); }
+/* NameTag                  */ code .nt              { color: var(--code-variables); }
+/* NameVariable             */ code .nv              { color: var(--code-variables); }
+/* NameVariableClass        */ code .vc              { color: var(--code-invalid); }
+/* NameVariableGlobal       */ code .vg              { color: var(--code-invalid); }
+/* NameVariableInstance     */ code .vi              { color: var(--code-invalid); }
+/* NameVariableMagic        */ code .vm              { color: var(--code-invalid); }
+/* Literal                  */ code .l               { color: var(--code-invalid); }
+/* LiteralDate              */ code .ld              { color: var(--code-invalid); }
+/* LiteralString            */ code .s               { color: var(--code-literals); }
+/* LiteralStringAffix       */ code .sa              { color: var(--code-invalid); }
+/* LiteralStringBacktick    */ code .sb              { color: var(--code-invalid); }
+/* LiteralStringChar        */ code .sc              { color: var(--code-literals); }
+/* LiteralStringDelimiter   */ code .dl              { color: var(--code-invalid); }
+/* LiteralStringDoc         */ code .sd              { color: var(--code-invalid); }
+/* LiteralStringDouble      */ code .s2              { color: var(--code-literals); }
+/* LiteralStringEscape      */ code .se              { color: var(--code-escape-seq); }
+/* LiteralStringHeredoc     */ code .sh              { color: var(--code-invalid); }
+/* LiteralStringInterpol    */ code .si              { color: var(--code-invalid); }
+/* LiteralStringOther       */ code .sx              { color: var(--code-invalid); }
+/* LiteralStringRegex       */ code .sr              { color: var(--code-invalid); }
+/* LiteralStringSingle      */ code .s1              { color: var(--code-invalid); }
+/* LiteralStringSymbol      */ code .ss              { color: var(--code-invalid); }
+/* LiteralNumber            */ code .m               { color: var(--code-literals); }
+/* LiteralNumberBin         */ code .mb              { color: var(--code-literals); }
+/* LiteralNumberFloat       */ code .mf              { color: var(--code-literals); }
+/* LiteralNumberHex         */ code .mh              { color: var(--code-literals); }
+/* LiteralNumberInteger     */ code .mi              { color: var(--code-literals); }
+/* LiteralNumberIntegerLong */ code .il              { color: var(--code-invalid); }
+/* LiteralNumberOct         */ code .mo              { color: var(--code-invalid); }
+/* Operator                 */ code .o               { color: var(--code-default); }
+/* OperatorWord             */ code .ow              { color: var(--code-invalid); }
+/* Punctuation              */ code .p               { color: var(--code-default); }
+/* Comment                  */ code .c               { color: var(--code-comments); }
+/* CommentHashbang          */ code .ch              { color: var(--code-invalid); }
+/* CommentMultiline         */ code .cm              { color: var(--code-comments); }
+/* CommentSingle            */ code .c1              { color: var(--code-comments); }
+/* CommentSpecial           */ code .cs              { color: var(--code-invalid); }
+/* CommentPreproc           */ code .cp              { color: var(--code-control-flow); }
+/* CommentPreprocFile       */ code .cpf             { color: var(--code-literals); }
+/* Generic                  */ code .g               { color: var(--code-invalid); }
+/* GenericDeleted           */ code .gd              { color: var(--code-invalid); }
+/* GenericEmph              */ code .ge              { color: var(--code-invalid); font-style: italic; }
+/* GenericError             */ code .gr              { color: var(--code-invalid); }
+/* GenericHeading           */ code .gh              { color: var(--code-invalid); }
+/* GenericInserted          */ code .gi              { color: var(--code-invalid); }
+/* GenericOutput            */ code .go              { color: var(--code-invalid); }
+/* GenericPrompt            */ code .gp              { color: var(--code-invalid); }
+/* GenericStrong            */ code .gs              { color: var(--code-invalid); font-weight: bold; }
+/* GenericSubheading        */ code .gu              { color: var(--code-invalid); }
+/* GenericTraceback         */ code .gt              { color: var(--code-invalid); }
+/* GenericUnderline         */ code .gl              { color: var(--code-invalid); }
+/* TextWhitespace           */ code .w               { color: var(--code-invalid); }
 
 /* ---------------------------------------------------------------------------------------------- */
 /* Debug */
