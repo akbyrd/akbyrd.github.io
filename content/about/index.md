@@ -2,13 +2,14 @@
 title = 'About'
 date = 2023-12-10
 layout = 'about'
-draft = true
 build.publishResources = false
 +++
 
 {{< image File="me.png" Alt="Me" Size="256x" ContainerClass="about-pic-container" ImageClass="about-pic" >}}
 
-Systems programmer in the game industry. Interested in game engines, productivity (both human and machine), data oriented design, managing codebases over time, and personal growth. Dislikes: modern C++ and unnecessary complexity. Currently at Epic Games. Previously at Phoenix Labs, Blizzard Entertainment, Procedural Reality, and Pixel Dash Studios.
+Systems programmer in the game industry. Interested in game engines, productivity (both human and machine), data oriented design, managing codebases over time, and personal growth. Allergic to modern C++ and unnecessary complexity.
+
+Currently at Epic Games. Previously at Phoenix Labs, Blizzard Entertainment, Procedural Reality, and Pixel Dash Studios.
 { .about-text }
 
 {{< about-links.inline >}}
