@@ -78,6 +78,19 @@
 		html.classList.add(classes[theme])
 		html.classList.add("has-js")
 	</script>
+	{{- if not hugo.IsProduction}}
+
+	<script>
+		window.addEventListener("keydown", (e) => {
+			if (e.key == "F1") window.open("https://github.com/akbyrd/akbyrd.github.io")
+			if (e.key == "F2") window.open("https://akbyrd.dev/tests")
+			if (e.key == "F3") window.open("https://github.com/gohugoio/hugo")
+			if (e.key == "F4") window.open("https://gohugo.io/documentation/")
+			if (e.key == "F6") window.open("https://caniuse.com/")
+			if (e.key == "F7") window.open("https://vercel.com/akbyrd")
+	}, { passive: true })
+	</script>
+	{{- end }}
 
 	{{- block "head" . }}{{ end }}
 </head>
