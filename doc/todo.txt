@@ -1,4 +1,5 @@
 General
+TODO: (Launch) Inline math breaks margin collapse
 TODO: (Launch) Add "fix typo" button (https://www.ii.com/vscode-uri-scheme-and-hugo/)
 TODO: (Launch) Get link previews working on {Discord, X, Mastodon, Bluesky, Hacker News, Github, LinkedIn, Slack}
 TODO: (Launch) Try a render hook for images https://gohugo.io/render-hooks/images/
