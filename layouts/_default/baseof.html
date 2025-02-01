@@ -27,29 +27,24 @@
 	<meta property="og:title" content="{{ .Title }}" />
 	<meta property="og:locale" content="{{ .Site.Language.LanguageCode }}" />
 	<meta property="og:site_name" content="akbyrd.dev" />
-	{{- with partial "resource" "res/favicon-og.png" }}
-	<meta property="og:image" content="{{ .Permalink }}" />
-	<meta property="og:image:width" content="{{ .Width }}" />
-	<meta property="og:image:height" content="{{ .Height }}" />
-	{{- end }}
+	{{- $og := partial "resource" "res/favicon-og.png" }}
+	<meta property="og:image" content="{{ $og.Permalink }}" />
+	<meta property="og:image:width" content="{{ $og.Width }}" />
+	<meta property="og:image:height" content="{{ $og.Height }}" />
 	<meta name="twitter:card" content="summary" />
 	<meta name="twitter:creator" content="@abyrd89" />
 
 	{{ with .Site.Home.OutputFormats.Get "atom" -}}
 		{{ (printf `<link rel="%s" href="%s" type="%s" title="%s">` .Rel .RelPermalink .MediaType site.Title) | safeHTML }}
 	{{- end }}
-	{{ with partial "resource" (dict "Name" "favicon.ico" "Rename" false) -}}
-	<link rel="icon" href="{{ .RelPermalink }}" sizes="32x32">
-	{{- end }}
-	{{- with partial "resource" "res/favicon.svg" }}
-	<link rel="icon" href="{{ .RelPermalink }}" sizes="any" type="image/svg+xml">
-	{{- end }}
-	{{- with partial "resource" "res/main.css" }}
-	<link rel="stylesheet" href="{{ .RelPermalink }}"{{ .Integrity }}>
-	{{- end }}
-	{{- with partial "resource" "res/main.ts" }}
-	<script src="{{ .RelPermalink }}" async{{ .Integrity }}></script>
-	{{- end }}
+	{{ $ico := partial "resource" (dict "Name" "favicon.ico" "Rename" false) -}}
+	<link rel="icon" href="{{ $ico.RelPermalink }}" sizes="32x32">
+	{{- $svg := partial "resource" "res/favicon.svg" }}
+	<link rel="icon" href="{{ $svg.RelPermalink }}" sizes="any" type="image/svg+xml">
+	{{- $css := partial "resource" "res/main.css" }}
+	<link rel="stylesheet" href="{{ $css.RelPermalink }}"{{ $css.Integrity }}>
+	{{- $ts := partial "resource" "res/main.ts" }}
+	<script src="{{ $ts.RelPermalink }}" async{{ $ts.Integrity }}></script>
 
 	{{- $woff2 := partial "resource" "res/code.woff2" }}
 	{{- $woff := partial "resource" "res/code.woff" }}
@@ -124,9 +119,8 @@
 			<button class="header-theme-button require-js" id="header-theme-button" type="button" aria-label="Toggle Theme">
 				<label class="header-theme-label" for="header-theme-button"></label>
 {{/**/}}
-			{{- with resources.Get "res/theme-icon.svg" }}
-				{{- partial "indent" (slice .Content 3) | chomp | safeHTML }}
-			{{- end }}
+			{{- $theme := resources.Get "res/theme-icon.svg" }}
+				{{- partial "indent" (slice $theme.Content 3) | chomp | safeHTML }}
 			</button>
 			<a class="header-about" href="{{ (.Site.GetPage "about").RelPermalink }}">About</a>
 		</nav>
