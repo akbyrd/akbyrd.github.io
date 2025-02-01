@@ -39,10 +39,10 @@
 		{{ (printf `<link rel="%s" href="%s" type="%s" title="%s">` .Rel .RelPermalink .MediaType site.Title) | safeHTML }}
 	{{- end }}
 	{{ with partial "resource" (dict "Name" "favicon.ico" "Rename" false) -}}
-	<link rel="icon" href="{{ .RelPermalink }}" sizes="32x32"{{ .Integrity }}>
+	<link rel="icon" href="{{ .RelPermalink }}" sizes="32x32">
 	{{- end }}
 	{{- with partial "resource" "res/favicon.svg" }}
-	<link rel="icon" href="{{ .RelPermalink }}" sizes="any" type="image/svg+xml"{{ .Integrity }}>
+	<link rel="icon" href="{{ .RelPermalink }}" sizes="any" type="image/svg+xml">
 	{{- end }}
 	{{- with partial "resource" "res/main.css" }}
 	<link rel="stylesheet" href="{{ .RelPermalink }}"{{ .Integrity }}>
@@ -59,7 +59,6 @@
 	{{- $hasCode := strings.Contains .Content "<code>" }}
 	{{- if or $hasSymbols $hasCode }}
 	<link rel="preload" as="font" href="{{ $woff2.RelPermalink }}" type="font/woff2"{{ $woff2.Integrity }}>
-	<link href="{{ $woff.RelPermalink }}" type="font/woff"{{ $woff.Integrity }}>
 	<style>
 		@font-face {
 			font-display: swap;
@@ -76,7 +75,6 @@
 	{{- $woff := partial "resource" "res/math.woff" }}
 
 	<link rel="preload" as="font" href="{{ $woff2.RelPermalink }}" type="font/woff2"{{ $woff2.Integrity }}>
-	<link href="{{ $woff.RelPermalink }}" type="font/woff"{{ $woff.Integrity }}>
 	<style>
 		@font-face {
 			font-display: swap;
@@ -124,7 +122,7 @@
 		<nav class="header">
 			<a class="header-title" href="{{ .Site.Home.RelPermalink }}">akbyrd</a>
 			<button class="header-theme-button require-js" id="header-theme-button" type="button" aria-label="Toggle Theme">
-				<p class="header-theme-label" for="header-theme-button"></p>
+				<label class="header-theme-label" for="header-theme-button"></label>
 {{/**/}}
 			{{- with resources.Get "res/theme-icon.svg" }}
 				{{- partial "indent" (slice .Content 3) | chomp | safeHTML }}
