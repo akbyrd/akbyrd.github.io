@@ -481,8 +481,6 @@ th, td {
 /* ---------------------------------------------------------------------------------------------- */
 /* Callouts / Alerts */
 
-/* TODO: Consider using ::before for icons */
-
 .callout-note      { --callout-color: var(--callout-note);      --callout-color-bg: var(--callout-note-bg);      }
 .callout-tip       { --callout-color: var(--callout-tip);       --callout-color-bg: var(--callout-tip-bg);       }
 .callout-important { --callout-color: var(--callout-important); --callout-color-bg: var(--callout-important-bg); }
@@ -1258,7 +1256,7 @@ mover[accent="true"] mo {
 	bottom: 2px;
 }
 
-*:has(math[display="inline"]) {
+p:has(math[display="inline"]) {
 	overflow-x: auto;
 	scrollbar-width: thin;
 }

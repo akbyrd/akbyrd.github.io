@@ -1,15 +1,39 @@
 <!DOCTYPE html>
-<html class="theme-system" lang="en-us" dir="ltr">
+<html class="theme-system" lang="en-us" dir="ltr" prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# profile: https://ogp.me/ns/profile# website: https://ogp.me/ns/website#">
 
 <head>
-	{{ if .Title -}}
-	<title>{{ .Title }}</title>
+	{{ with .Title -}}
+	<title>{{ . }}</title>
 	{{- end }}
 
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1" />
 	<meta name="theme-color" content="#212121" />
 	<meta name="theme-color" media="(prefers-color-scheme: light)" content="#bdbdbd" />
+
+	{{ block "open-graph" . -}}
+		{{- if .IsNode -}}
+	<meta property="og:type" content="website" />
+		{{- else }}
+	<meta property="og:type" content="article" />
+			{{- with .Date }}
+				{{- $pubDate := .Format "2006-01-02T15:04:05-07:00" }}
+	{{ (printf `<meta property="article:published_time" content="%s" />` $pubDate) | safeHTML }}
+			{{- end }}
+	<meta property="article:author" content="{{ (.Site.GetPage "about").Permalink }}" />
+		{{- end }}
+	{{- end }}
+	<meta property="og:url" content="{{ .Permalink }}" />
+	<meta property="og:title" content="{{ .Title }}" />
+	<meta property="og:locale" content="{{ .Site.Language.LanguageCode }}" />
+	<meta property="og:site_name" content="akbyrd.dev" />
+	{{- with partial "resource" "res/favicon-og.png" }}
+	<meta property="og:image" content="{{ .Permalink }}" />
+	<meta property="og:image:width" content="{{ .Width }}" />
+	<meta property="og:image:height" content="{{ .Height }}" />
+	{{- end }}
+	<meta name="twitter:card" content="summary" />
+	<meta name="twitter:creator" content="@abyrd89" />
 
 	{{ with .Site.Home.OutputFormats.Get "atom" -}}
 		{{ (printf `<link rel="%s" href="%s" type="%s" title="%s">` .Rel .RelPermalink .MediaType site.Title) | safeHTML }}
@@ -29,10 +53,10 @@
 
 	{{- $woff2 := partial "resource" "res/code.woff2" }}
 	{{- $woff := partial "resource" "res/code.woff" }}
-	{{- $hasSymbols := strings.FindRE `\p{Co}` (.Page.Content | htmlUnescape) 1 }}
+	{{- $hasSymbols := strings.FindRE `\p{Co}` (.Content | htmlUnescape) 1 }}
 	{{- $hasSymbols = gt (len $hasSymbols) 0 }}
-	{{- $hasSymbols = or $hasSymbols .Page.Params.comments }}
-	{{- $hasCode := strings.Contains .Page.Content "<code>" }}
+	{{- $hasSymbols = or $hasSymbols .Params.comments }}
+	{{- $hasCode := strings.Contains .Content "<code>" }}
 	{{- if or $hasSymbols $hasCode }}
 	<link rel="preload" as="font" href="{{ $woff2.RelPermalink }}" type="font/woff2"{{ $woff2.Integrity }}>
 	<link href="{{ $woff.RelPermalink }}" type="font/woff"{{ $woff.Integrity }}>
@@ -47,7 +71,7 @@
 	</style>
 	{{- end }}
 
-	{{- if .Page.Store.Get "hasMath" }}
+	{{- if .Store.Get "hasMath" }}
 	{{- $woff2 := partial "resource" "res/math.woff2" }}
 	{{- $woff := partial "resource" "res/math.woff" }}
 
@@ -95,7 +119,7 @@
 	{{- block "head" . }}{{ end }}
 </head>
 
-<body class="{{ or .Page.Layout .Page.Section }}">
+<body class="{{ or .Layout .Section }}">
 	<header>
 		<nav class="header">
 			<a class="header-title" href="{{ .Site.Home.RelPermalink }}">akbyrd</a>
@@ -106,14 +130,14 @@
 				{{- partial "indent" (slice .Content 3) | chomp | safeHTML }}
 			{{- end }}
 			</button>
-			<a class="header-about" href="{{ (site.GetPage "about").RelPermalink }}">About</a>
+			<a class="header-about" href="{{ (.Site.GetPage "about").RelPermalink }}">About</a>
 		</nav>
 	</header>
 
 	<main>
 		{{- block "main" . }}{{ end }}
 
-		{{- if .Page.Params.comments }}
+		{{- if .Params.comments }}
 		<div class="end-mark symbol require-js">&#xe22e;</div>
 		<section id="comments" class="require-js no-mathml">
 			<div class="comments-templates" style="display: none;">

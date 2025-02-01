@@ -59,9 +59,24 @@
 
 	{{ $resource = resources.Copy $name $resource }}
 
-	{{ $permalink := $resource.Permalink }}
-	{{ $relPermalink := $resource.RelPermalink }}
-	{{ $ret = dict "Resource" $resource "Integrity" $integrity "Permalink" $permalink "RelPermalink" $relPermalink }}
+	{{/* TODO: 'try' spams debug lines the log */}}
+	{{ $width := "" }}
+	{{ $height := "" }}
+	{{ if eq $resource.MediaType.MainType "image" }}
+		{{ if not (in (slice "svg" "x-icon" "vnd.microsoft.icon") $resource.MediaType.SubType) }}
+			{{ $width = $resource.Width }}
+			{{ $height = $resource.Height }}
+		{{ end }}
+	{{ end }}
+
+	{{ $ret = dict
+		"Resource"     $resource
+		"Integrity"    $integrity
+		"Permalink"    $resource.Permalink
+		"RelPermalink" $resource.RelPermalink
+		"Width"        $width
+		"Height"       $height
+	}}
 {{ end }}
 
 {{ return $ret }}

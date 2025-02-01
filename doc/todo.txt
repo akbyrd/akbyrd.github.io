@@ -1,10 +1,11 @@
 General
+TODO: (Launch) metadata https://webcode.tools/meta-tags-generator
 TODO: (Launch) Inline math breaks margin collapse
 TODO: (Launch) Add "fix typo" button (https://www.ii.com/vscode-uri-scheme-and-hugo/)
-TODO: (Launch) Get link previews working on {Discord, X, Mastodon, Bluesky, Hacker News, Github, LinkedIn, Slack}
 TODO: (Launch) Try a render hook for images https://gohugo.io/render-hooks/images/
 TODO: (Launch) Lazy image loading
 TODO: (Launch) Implement zoom for images (current page? new page?)
+TODO: (Launch) Consider using ::before for icons
 TODO: Choose a diagram method: goat, mermaid (jerky layout), graphviz, other
 TODO: Add search support
 TODO: (SSG) Add tooltips for :emoji:
@@ -15,7 +16,6 @@ TODO: Add an XML stylesheet (.xsl) to Atom feed
 TODO: Split Atom feed into multiple files
 
 Code
-TODO: (SSG) Replace syntax highlighting implementation (use compiler, support inline code)
 TODO: Refactor code layout
 	There's 1 pixel of clickable space around the first and last lines when highlighted
 	Code blocks are a couple pixels shorter than math/they should be due to overlapping (box-shadow?)
@@ -25,6 +25,7 @@ TODO: Rethink line selection (2 long presses?)
 TODO: Rethink auto-scroll (smooth, by line, wait for scrollend or custom timer)
 TODO: Consider Shift + Click for line selection
 TODO: Allow selection over line numbers when Javascript is disabled
+TODO: (SSG) Replace syntax highlighting implementation (use compiler, support inline code)
 TODO: Code line anchors
 	Mobile
 		test on firefox desktop touch
@@ -68,7 +69,6 @@ TODO: Improve rendering perf of code (grid? (has border-collapse) less html?)
 
 Theme
 TODO: (Launch) Pay a UI designer for a review and recommendations
-TODO: (Launch) Add text selection color
 TODO: Fix colors in print preview
 TODO: Read about meterial design https://m3.material.io/
 TODO: Light theme for code

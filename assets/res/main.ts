@@ -25,7 +25,7 @@ function lerp(a: number, b: number, t: number)
 // -------------------------------------------------------------------------------------------------
 // Feature Detection
 
-function InitFeatures()
+function InitMath()
 {
 	document.body.insertAdjacentHTML("afterbegin",
 		"<div style=' \
@@ -1808,10 +1808,10 @@ function CancelAutoScroll()
 
 function Initialize()
 {
-	InitFeatures()
 	InitTheme()
 	InitImages()
 	InitCode()
+	InitMath()
 	InitComments()
 }
 

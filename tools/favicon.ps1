@@ -13,10 +13,12 @@ function Generate-Favicons
 	$output_png   = "$assets\res\favicon.png"
 	$output_ico   = "$assets\favicon.ico"
 	$output_apple = "$assets\res\apple-touch-icon.png"
+	$output_og    = "$assets\res\favicon-og.png"
 
 	Remove-Item -ErrorAction SilentlyContinue $output_svg
 	Remove-Item -ErrorAction SilentlyContinue $output_ico
 	Remove-Item -ErrorAction SilentlyContinue $output_apple
+	Remove-Item -ErrorAction SilentlyContinue $output_og
 
 	& $inkscape $input_svg -o $output_svg --export-plain-svg --export-text-to-path
 
@@ -33,6 +35,7 @@ function Generate-Favicons
 		$output_svg
 
 	& $magick -size 368x368 -background none $output_svg -gravity Center -extent 512x512 $output_png
+	& $magick -size 1200x500 -background none $output_svg -gravity Center -extent 1200x630 $output_og
 	& $magick -size 32x32 -background none $output_svg $output_ico
 
 	& $magick `

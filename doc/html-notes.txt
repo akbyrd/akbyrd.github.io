@@ -67,6 +67,28 @@ Must use smooth scrolling to be async with repaint
 
 
 
+Open Graph / Link Previews
+--------------------------
+Spec:      https://ogp.me/
+X:         https://cards-dev.x.com/validator
+LinkedIn:  https://www.linkedin.com/post-inspector/
+Facebook:  https://developers.facebook.com/tools/debug/
+Tester:    https://www.opengraph.xyz/
+Tester:    https://orcascan.com/tools/open-graph-validator
+Tester:    https://opengraph.dev/
+Tester:    https://boilerplatehq.com/tools/open-graph-checker
+Tester:    https://www.opengraphpreview.com/slack
+Generator: https://webcode.tools/open-graph-generator/article
+
+LinkedIn clips images so they are rectangular
+Discord looks slightly better with a rectangular image
+X works with either
+Bluesky doesn't like square
+Facebook works with both
+Slack no preview
+
+
+
 Misc
 ----
 Embedding a page with a seamless iframe
