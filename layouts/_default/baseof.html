@@ -10,6 +10,8 @@
 	<meta name="viewport" content="width=device-width,initial-scale=1" />
 	<meta name="theme-color" content="#212121" />
 	<meta name="theme-color" media="(prefers-color-scheme: light)" content="#bdbdbd" />
+	<meta name="color-scheme" content="dark light" />
+	<meta name="author" content="Adam Byrd" />
 
 	{{ block "open-graph" . -}}
 		{{- if .IsNode -}}
@@ -95,7 +97,7 @@
 		html.classList.add(classes[theme])
 		html.classList.add("has-js")
 	</script>
-	{{- if not hugo.IsProduction}}
+	{{- if hugo.IsServer}}
 
 	<script>
 		window.addEventListener("keydown", (e) => {
@@ -108,8 +110,6 @@
 	}, { passive: true })
 	</script>
 	{{- end }}
-
-	{{- block "head" . }}{{ end }}
 </head>
 
 <body class="{{ or .Layout .Section }}">

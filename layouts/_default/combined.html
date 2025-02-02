@@ -3,9 +3,11 @@
 			{{ .LinkTitle }}
 			{{- with .Date }}
 			<time class="post-time" datetime="{{ .Format "2006-01-02" }}">{{ .Format "Jan 2, 2006" }}</time>
-			{{- else }}
-			<time class="post-time"></time>
 			{{- end }}
+			{{- $localLink := printf `vscode://file/%s` (replace .File.Filename `\` `/`) }}
+			{{- $githubLink := printf `https://github.com/akbyrd/akbyrd.github.io/edit/main/content/%s` (replace .File.Path `\` `/`) }}
+			{{- $editLink := cond hugo.IsServer $localLink $githubLink }}
+			{{ printf `<a class="post-edit-link symbol" aria-label="Fix a bug" href="%s">&#xf46f;</a>` $editLink | safeHTML }}
 		</h1>
 	{{- $page := . }}
 	{{- $pages := (sort .CurrentSection.Pages "File.Path" "asc") }}

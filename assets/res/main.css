@@ -511,6 +511,7 @@ th, td {
 	font-size: 1.5em;
 	line-height: 0;
 	padding-right: 8px;
+	user-select: none;
 }
 
 .callout-tip .callout-icon {
@@ -1318,6 +1319,43 @@ p:has(math[display="inline"]) {
 	font-family: sans-serif;
 	font-size: 11pt;
 	min-height: 1lh;
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* Post Title */
+
+.post-title {
+	display: flex;
+	align-items: center;
+}
+
+.post-edit-link {
+	font-size: .9em;
+	font-weight: normal;
+	color: var(--text-detail);
+	opacity: 0%;
+	transition-duration: 50ms;
+	transition-timing-function: ease-out;
+
+	margin-top: .2em;
+	padding: 0 8px;
+}
+
+.post-title:hover .post-edit-link {
+	opacity: 100%;
+	text-decoration: none;
+}
+
+.post-edit-link:focus-visible {
+	opacity: 100%;
+	transition-property: opacity, outline-offset, outline-color;
+}
+
+@supports not selector(:focus-visible) {
+	.post-edit-link:focus {
+		opacity: 100%;
+		transition-property: opacity, outline-offset, outline-color;
+	}
 }
 
 /* ---------------------------------------------------------------------------------------------- */

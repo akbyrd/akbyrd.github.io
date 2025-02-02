@@ -36,6 +36,7 @@ foreach ($out in $codeOut)
 		--unicodes="uf426"  <# nf-oct-sign_out #> `
 		--unicodes="uf449"  <# nf-oct-info #> `
 		--unicodes="uf46e"  <# nf-oct-stop #> `
+		--unicodes="uf46f"  <# nf-oct-bug #> `
 		--unicodes="uf4a2"  <# nf-oct-smiley #> `
 		--unicodes="uf4bb"  <# nf-oct-copy #>
 
