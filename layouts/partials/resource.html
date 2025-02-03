@@ -1,82 +1,77 @@
 {{ $ret := false }}
 
-{{ $name := . }}
-{{ $rename := not hugo.IsDevelopment }}
-{{ $minify := hugo.IsProduction }}
+{{ $defaults := dict
+	"Name"   (try .Name).Value
+	"Rename" (not hugo.IsDevelopment)
+	"Minify" (not hugo.IsProduction)
+}}
 
-{{ if reflect.IsMap . }}
-	{{ $name = .Name }}
-	{{ $rename = .Rename }}
-{{ end }}
+{{ $ctx := cond (reflect.IsMap .) . (dict "Name" .) }}
+{{ $ctx = merge $defaults $ctx }}
 
-{{ with resources.Get $name }}
-	{{ $resource := . }}
-	{{ $fingerprint := "" }}
-	{{ $type := .MediaType.SubType }}
+{{ with $ctx }}
+	{{ $resources := cond .Page .Page.Resources resources }}
+	{{ $resource := $resources.Get .Name }}
 
-	{{ if $minify }}
-		{{ range slice "css" "json" "html" "svg" "xml" }}
-			{{ if strings.Contains $type . }}
-				{{ $resource = $resource | minify }}
-				{{ break }}
-			{{ end }}
-		{{ end }}
-	{{ end }}
+	{{ if $resource }}
+		{{ $type := $resource.MediaType.SubType }}
+		{{ $name := .Name }}
 
-	{{ if (eq $type "typescript") }}
-		{{/* NOTE: Can't cache-bust the source map because we need to know the name of the file before */}}
-		{{/* we compile. But the name of the file comes from hashing the compiled output. Chicken and egg. */}}
-		{{ $env := readFile ".env" }}
-		{{ $stagingKey := findRESubmatch `VERCEL_AUTOMATION_BYPASS_SECRET=("[^"]*")` $env 1 }}
-		{{ $stagingKey = default `""` (index (index $stagingKey 0) 1) }}
-
-		{{ if eq hugo.Environment "staging" }}
-			{{ if eq $stagingKey `""` }}
-				{{ warnf "Staging key missing" }}
+		{{ if .Minify }}
+			{{ range slice "css" "json" "html" "svg" "xml" }}
+				{{ if strings.Contains $type . }}
+					{{ $resource = $resource | minify }}
+					{{ break }}
+				{{ end }}
 			{{ end }}
 		{{ end }}
 
-		{{ $defines := dict "deploymentEnv" (printf `"%s"` hugo.Environment) "stagingKey" $stagingKey }}
-		{{ $opts := dict "target" "es2015" "sourceMap" "linked" "defines" $defines "minify" $minify }}
-		{{ $resource = $resource | js.Build $opts }}
-		{{ $name = replaceRE `\.ts\z` ".js" $name }}
-	{{ end }}
-
-	{{ $resource := $resource | fingerprint "sha384" }}
-	{{ $fingerprint = $resource.Data.Integrity }}
-	{{ $integrity := "" | safeHTMLAttr }}
-	{{ if ne hugo.Environment "development" }}
-	{{ $integrity = printf ` integrity=%q crossorigin="anonymous"` ($fingerprint | htmlEscape) | safeHTMLAttr }}
-	{{ else }}
-	{{ $integrity = ` crossorigin="anonymous"` | safeHTMLAttr }}
-	{{ end }}
-
-	{{ if $rename }}
-		{{ $hash := index (index (findRESubmatch `sha\d*-(.*)` $fingerprint) 0) 1 }}
-		{{ $hash = $hash | encoding.Base64Encode | first 6 }}
-		{{ $name = replaceRE `\.([^.]*\z)` (printf "-%s.$1" $hash) $name }}
-	{{ end }}
-
-	{{ $resource = resources.Copy $name $resource }}
-
-	{{/* TODO: 'try' spams debug lines the log */}}
-	{{ $width := "" }}
-	{{ $height := "" }}
-	{{ if eq $resource.MediaType.MainType "image" }}
-		{{ if not (in (slice "svg" "x-icon" "vnd.microsoft.icon") $resource.MediaType.SubType) }}
-			{{ $width = $resource.Width }}
-			{{ $height = $resource.Height }}
+		{{ if .Resize }}
+			{{ $resource = $resource.Resize (printf "%s jpeg q90 photo" .Resize) }}
 		{{ end }}
-	{{ end }}
 
-	{{ $ret = dict
-		"Resource"     $resource
-		"Integrity"    $integrity
-		"Permalink"    $resource.Permalink
-		"RelPermalink" $resource.RelPermalink
-		"Width"        $width
-		"Height"       $height
-	}}
+		{{ if (eq $type "typescript") }}
+			{{/* NOTE: Can't cache-bust the source map because we need to know the name of the file before */}}
+			{{/* we compile. But the name of the file comes from hashing the compiled output. Chicken and egg. */}}
+			{{ $env := readFile ".env" }}
+			{{ $stagingKey := findRESubmatch `VERCEL_AUTOMATION_BYPASS_SECRET=("[^"]*")` $env 1 }}
+			{{ $stagingKey = default `""` (index (index $stagingKey 0) 1) }}
+
+			{{ if eq hugo.Environment "staging" }}
+				{{ if eq $stagingKey `""` }}
+					{{ warnf "Staging key missing" }}
+				{{ end }}
+			{{ end }}
+
+			{{ $defines := dict "deploymentEnv" (printf `"%s"` hugo.Environment) "stagingKey" $stagingKey }}
+			{{ $opts := dict "target" "es2015" "sourceMap" "linked" "defines" $defines "minify" .Minify }}
+			{{ $resource = $resource | js.Build $opts }}
+			{{ $name = replaceRE `\.ts\z` ".js" $name }}
+		{{ end }}
+
+		{{ $resource = $resource | fingerprint "sha384" }}
+		{{ $fingerprint := $resource.Data.Integrity | htmlEscape}}
+		{{ $integrity := printf ` integrity=%q crossorigin="anonymous"` $fingerprint | safeHTMLAttr }}
+
+		{{ if .Rename }}
+			{{ $hash := index (index (findRESubmatch `sha\d*-(.*)` $fingerprint) 0) 1 }}
+			{{ $hash = $hash | encoding.Base64Encode | first 6 }}
+			{{ $name = replaceRE `\.([^.]*\z)` (printf "-%s.$1" $hash) $name }}
+		{{ end }}
+
+		{{ $dir := cond .Page (path.Split .Page.RelPermalink).Dir "" }}
+		{{ $path := printf `%s%s` $dir $name }}
+		{{ $resource = resources.Copy $path $resource }}
+
+		{{ $ret = dict
+			"Resource"     $resource
+			"Integrity"    $integrity
+			"Permalink"    $resource.Permalink
+			"RelPermalink" $resource.RelPermalink
+			"Width"        (try $resource.Width).Value
+			"Height"       (try $resource.Height).Value
+		}}
+	{{ end }}
 {{ end }}
 
 {{ return $ret }}

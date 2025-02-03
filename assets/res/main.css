@@ -391,7 +391,7 @@ th, td {
 	}
 }
 
-.image-background {
+.container.image {
 	display: block;
 	margin: 0 auto;
 	outline: 1px solid var(--outline);
@@ -426,19 +426,19 @@ th, td {
 /* ---------------------------------------------------------------------------------------------- */
 /* About */
 
-.about-pic-container {
+.container.image.about-pic {
 	float: left;
 	margin-right: 20px;
 }
 
 @media (max-width: 600px) {
-	.about-pic-container {
+	.container.image.about-pic {
 		float: none;
 		margin: 0 auto 20px auto;
 	}
 }
 
-.about-pic {
+.about-pic img {
 	max-width: 256px;
 }
 

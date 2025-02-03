@@ -1,0 +1,20 @@
+{{ $resource := partial "resource" (dict
+	"Name" .Destination
+	"Page" .Page
+	"Resize" (index .Attributes "resize"))
+}}
+
+{{ if not $resource }}
+	{{ errorf "Failed to find image \"%s\"\n\t%s" .Destination .Page.Path }}
+{{ end }}
+
+{{- /* */ -}}
+<div class="container image{{ with (index .Attributes "class") }} {{ . }}{{ end }}">
+	<img src="{{ .Destination | safeURL }}"
+		{{ with .Text }}alt="{{ . }}"{{ end }}
+		{{ with .Title }}title="{{ . }}"{{ end }}
+		{{ with $resource.Width }}width="{{ . }}"{{ end }}
+		{{ with $resource.Height }}height="{{ . }}"{{ end }}
+		decoding="async" loading="lazy" />
+</div>
+{{- /* */ -}}

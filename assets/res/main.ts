@@ -115,7 +115,7 @@ function InitImages()
 		function OnLoad()
 		{
 			image.style.opacity = "100%"
-			if (image.naturalWidth)
+			if (image.naturalWidth || image.naturalHeight)
 				image.classList.add("fade-in")
 		}
 

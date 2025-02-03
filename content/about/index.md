@@ -5,12 +5,12 @@ layout = 'about'
 build.publishResources = false
 +++
 
-{{< image File="me.png" Alt="Me" Size="256x" ContainerClass="about-pic-container" ImageClass="about-pic" >}}
+![Me](me.png)
+{ .about-pic resize="256x" }
 
 Systems programmer in the game industry. Interested in game engines, productivity (both human and machine), data oriented design, managing codebases over time, and personal growth. Allergic to modern C++ and unnecessary complexity.
 
-Currently at Epic Games. Previously at Phoenix Labs, Blizzard Entertainment, Procedural Reality, and Pixel Dash Studios.
-{ .about-text }
+Currently at Epic Games. Previously Phoenix Labs, Blizzard Entertainment, Procedural Reality, and Pixel Dash Studios.
 
 {{< about-links.inline >}}
 <ul class="about-link-container symbol">
