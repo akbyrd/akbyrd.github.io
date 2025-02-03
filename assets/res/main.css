@@ -254,7 +254,7 @@ footer {
 	margin-top: 20px;
 }
 
-h1, h2, h3 {
+h1, h2, h3, h4, h5, h6 {
 	font-family: sans-serif;
 	font-weight: bold;
 	margin: 20px 0;
@@ -262,18 +262,21 @@ h1, h2, h3 {
 	text-align: left;
 }
 
-h1 a, h2 a, h3 a {
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
 	color: var(--text);
 	text-decoration: none;
 }
 
-h1 a:hover, h2 a:hover, h3 a:hover {
+h1 a:hover, h2 a:hover, h3 a:hover, h4 a:hover, h5 a:hover, h6 a:hover {
 	text-decoration: underline;
 }
 
 h1 { font-size: 30pt; }
 h2 { font-size: 26pt; }
-h3 { font-size: 18pt; }
+h3 { font-size: 22pt; }
+h4 { font-size: 18pt; }
+h5 { font-size: 16pt; }
+h6 { font-size: 14pt; }
 
 header {
 	margin-bottom: 20px;
@@ -293,7 +296,10 @@ img {
 	align-items: center;
 	display: flex;
 	justify-content: space-evenly;
-	overflow: auto;
+}
+
+img::before {
+	color: var(--error);
 }
 
 main {
@@ -393,11 +399,17 @@ th, td {
 
 .container.image {
 	display: block;
-	margin: 0 auto;
+	margin: 20px auto;
+	max-width: 100%;
 	outline: 1px solid var(--outline);
 	outline-offset: 0px;
 	overflow: hidden;
 	width: fit-content;
+}
+
+.container.image img {
+	max-width: 100%;
+	height: auto;
 }
 
 .loading-spinner {
@@ -428,7 +440,7 @@ th, td {
 
 .container.image.about-pic {
 	float: left;
-	margin-right: 20px;
+	margin: 0 20px 0 0;
 }
 
 @media (max-width: 600px) {
@@ -770,7 +782,10 @@ code, annotation {
 
 .comment h1 { font-size: 24pt; }
 .comment h2 { font-size: 20pt; }
-.comment h3 { font-size: 12pt; }
+.comment h3 { font-size: 16pt; }
+.comment h4 { font-size: 14pt; }
+.comment h5 { font-size: 12pt; }
+.comment h6 { font-size: 10pt; }
 
 .comment pre > code {
 	padding: 8px;
@@ -1337,8 +1352,8 @@ p:has(math[display="inline"]) {
 	transition-duration: 50ms;
 	transition-timing-function: ease-out;
 
-	margin-top: .2em;
-	padding: 0 8px;
+	margin-top: .15em;
+	padding: 0 16px;
 }
 
 .post-title:hover .post-edit-link {

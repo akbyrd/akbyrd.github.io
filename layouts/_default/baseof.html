@@ -39,7 +39,7 @@
 	{{ with .Site.Home.OutputFormats.Get "atom" -}}
 		{{ (printf `<link rel="%s" href="%s" type="%s" title="%s">` .Rel .RelPermalink .MediaType site.Title) | safeHTML }}
 	{{- end }}
-	{{ $ico := partial "resource" (dict "Name" "favicon.ico" "Rename" false) -}}
+	{{ $ico := partial "resource" (dict "Name" "favicon.ico" "Hash" false) -}}
 	<link rel="icon" href="{{ $ico.RelPermalink }}" sizes="32x32">
 	{{- $svg := partial "resource" "res/favicon.svg" }}
 	<link rel="icon" href="{{ $svg.RelPermalink }}" sizes="any" type="image/svg+xml">

@@ -7,7 +7,7 @@
 	<link rel="self" href="{{ .Permalink }}" />
 	<id>{{ .Permalink }}</id>
 	<updated>{{ .Site.Lastmod.Format "2006-01-02T15:04:05-07:00" }}</updated>
-	{{ $icon := partial "resource" (dict "Name" "favicon.ico" "Rename" false) -}}
+	{{ $icon := partial "resource" (dict "Name" "favicon.ico" "Hash" false) -}}
 	<icon>{{ $icon.Permalink }}</icon>
 	{{- $logo := partial "resource" "res/favicon.png" }}
 	<logo>{{ $logo.Permalink }}</logo>

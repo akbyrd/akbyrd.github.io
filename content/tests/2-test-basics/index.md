@@ -11,6 +11,8 @@ Donec ac commodo orci. Donec a tempus elit. Etiam sit amet suscipit justo. Aliqu
 
 Aliquam enim est, iaculis eu nulla ac, ornare varius massa. Curabitur sed facilisis diam. Sed euismod sapien ante, vel tempor velit finibus at. Morbi mi felis, consequat vel risus pretium, posuere pulvinar lorem. Fusce nulla orci, accumsan a velit a, fermentum ultricies tortor. Nam consequat pretium metus, et rhoncus nibh vehicula congue. Cras ut quam rhoncus, pulvinar ante vel, suscipit sapien. In eget mollis augue. Nunc rhoncus metus ut neque mollis, quis varius mi consequat.
 
+
+### Links
 [Link](http://example.com "Alt Text")
 
 http://example.com/#example_example_example_example_example_example_example_example_example_example_example_example_example_example_example_example_example
@@ -105,6 +107,26 @@ Ordered
 | -----: | ---: |
 | 1      | One  |
 | 2      | Two  |
+
+### Images
+
+#### Local
+![Title](doom.png "Alt Text")
+{ resize="256x" rename="true" }
+
+![Title](doom.png "Alt Text")
+
+#### Global
+![Title](res/favicon-og.png "Alt Text")
+{ resize="256x" rename="true" }
+
+![Title](res/favicon-og.png "Alt Text")
+
+#### Remote
+![Title](https://octodex.github.com/images/labtocat.png "Alt Text")
+{ resize="256x" }
+
+![Title](https://octodex.github.com/images/labtocat.png "Alt Text")
 
 ### Footnotes
 Footnote [^footnote]
