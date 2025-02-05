@@ -1,5 +1,4 @@
 General
-TODO: (Launch) Chrome page scrolls slightly on refresh
 TODO: (Launch) Implement zoom for images (current page? new page?)
 TODO: Choose a diagram method: goat, mermaid (jerky layout), graphviz, other
 TODO: Search engine optimization
