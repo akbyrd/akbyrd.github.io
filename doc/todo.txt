@@ -1,9 +1,7 @@
 General
-TODO: (Launch) Background is darker on mobile
 TODO: Choose a diagram method: goat, mermaid (jerky layout), graphviz, other
 TODO: Search engine optimization
 TODO: Add search support
-TODO: Add lightbox to images in comments
 TODO: (SSG) Add tooltips for :emoji:
 
 Atom / RSS
@@ -53,6 +51,11 @@ TODO: (Launch) Improve about page content
 TODO: Add my rss list
 TODO: Input on Windows
 TODO: Blog roll
+
+Images
+TODO: (Launch) Maybe fit lightbox to page and zoom manually?
+TODO: Add lightbox to images in comments
+TODO: Ideally F5, Ctrl+L, etc don't close image
 
 Math
 TODO: (SSG) Math is a little squished together on Chrome

@@ -215,6 +215,8 @@ button {
 	cursor: pointer;
 	overflow: hidden;
 	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
 
 	transition-duration: 100ms;
 	transition-property: background-color, opacity;
@@ -247,6 +249,8 @@ summary {
 	border: 1px solid var(--outline);
 	padding: 4px 6px;
 	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
 	transition-duration: 100ms;
 	transition-property: background-color;
 }
@@ -441,6 +445,8 @@ th, td {
 	max-width: calc(40px * 6 + 12px * 5);
 	padding: 0;
 	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
 }
 
 .about-link-container li {
@@ -504,6 +510,8 @@ th, td {
 	line-height: 0;
 	padding-right: 8px;
 	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
 }
 
 .callout-tip .callout-icon {
@@ -677,6 +685,8 @@ code, annotation {
 	margin: 60px 0;
 	opacity: 60%;
 	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
 }
 
 .end-mark::before, .end-mark::after {
@@ -1060,6 +1070,8 @@ code, annotation {
 	gap: 8px;
 	margin: 0 8px;
 	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
 }
 
 .comment-button-error .symbol {
@@ -1205,12 +1217,6 @@ img::before {
 	max-width: 100%;
 	height: auto;
 }
-
-/* TODO: Ideally F5, Ctrl+L, etc don't close image */
-/* TODO: Use full size image */
-
-/* TODO: Handle URL bar on mobile */
-/* TODO: Lazy load comment images? */
 
 .lightbox-background {
 	bottom: 0;

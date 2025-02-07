@@ -106,6 +106,45 @@ function CycleTheme()
 // -------------------------------------------------------------------------------------------------
 // Images
 
+function OpenLightbox(lbBg: HTMLElement)
+{
+	const currLocation = new URL(location.href)
+	currLocation.hash = `#${lbBg.id}`
+	history.replaceState(history.state, "", currLocation)
+
+	OpenLightboxStyles(lbBg)
+}
+
+function OpenLightboxStyles(lbBg: HTMLElement)
+{
+	lbBg.classList.toggle("active", true)
+	lbBg.classList.toggle("inactive", false)
+	lbBg.focus()
+
+	document.body.style.height = "100%"
+	document.body.style.overflow = "hidden"
+	document.body.style.userSelect = "none"
+}
+
+function CloseLightbox(lbBg: HTMLElement)
+{
+	const currLocation = new URL(location.href)
+	currLocation.hash = ""
+	history.replaceState(history.state, "", currLocation)
+
+	CloseLightboxStyles(lbBg)
+}
+
+function CloseLightboxStyles(lbBg: HTMLElement)
+{
+	lbBg.classList.toggle("active", false)
+	lbBg.classList.toggle("inactive", true)
+
+	document.body.style.height = ""
+	document.body.style.overflow = ""
+	document.body.style.userSelect = ""
+}
+
 function InitImages()
 {
 	const imageContainers = document.querySelectorAll(".container.image")
@@ -130,46 +169,21 @@ function InitImages()
 			const original = image.src == lbImg.src
 			if (scaled || !original)
 			{
-				function OpenLightbox()
-				{
-					const currLocation = new URL(location.href)
-					currLocation.hash = `#${lbBg.id}`
-					history.replaceState(history.state, "", currLocation)
-
-					lbBg.classList.toggle("active", true)
-					lbBg.classList.toggle("inactive", false)
-					lbBg.addEventListener("keydown", CloseLightbox, { passive: true })
-					lbBg.focus()
-
-					document.body.style.height = "100%"
-					document.body.style.overflow = "hidden"
-					document.body.style.userSelect = "none"
-				}
-
-				function CloseLightbox()
-				{
-					const currLocation = new URL(location.href)
-					currLocation.hash = ""
-					history.replaceState(history.state, "", currLocation)
-
-					lbBg.classList.toggle("active", false)
-					lbBg.classList.toggle("inactive", true)
-					lbBg.removeEventListener("keydown", CloseLightbox)
-
-					document.body.style.height = ""
-					document.body.style.overflow = ""
-					document.body.style.userSelect = ""
-				}
-
 				function OnKeyDown_Open(e: KeyboardEvent)
 				{
 					if (e.key == "Enter")
-						OpenLightbox()
+						OpenLightbox(lbBg)
+				}
+
+				function OnKeyDown_Close(e: KeyboardEvent)
+				{
+					CloseLightbox(lbBg)
 				}
 
 				image.addEventListener("keydown", OnKeyDown_Open, { passive: true })
-				image.addEventListener("click", OpenLightbox, { passive: true })
-				lbBg.addEventListener("click", CloseLightbox, { passive: true })
+				lbBg.addEventListener("keydown", OnKeyDown_Close, { passive: true })
+				image.addEventListener("click", () => OpenLightbox(lbBg), { passive: true })
+				lbBg.addEventListener("click", () => CloseLightbox(lbBg), { passive: true })
 				image.style.cursor = "zoom-in"
 				image.tabIndex = 0
 				lbBg.tabIndex = 0
@@ -186,6 +200,14 @@ function InitImages()
 			image.onload = OnLoad
 			image.onerror = OnLoad
 		}
+	}
+
+	if (location.hash)
+	{
+		const id = location.hash.substring(1)
+		const lbBg = document.getElementById(id)
+		if (lbBg)
+			OpenLightboxStyles(lbBg)
 	}
 }
 
