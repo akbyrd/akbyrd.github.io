@@ -1,5 +1,8 @@
 General
 TODO: (Launch) Implement zoom for images (current page? new page?)
+	Original, fullsize image
+
+TODO: (Launch) Background is darker on mobile
 TODO: Choose a diagram method: goat, mermaid (jerky layout), graphviz, other
 TODO: Search engine optimization
 TODO: Add search support
@@ -41,6 +44,7 @@ TODO: Code line anchors
 		touch, mouse
 
 Comments
+TODO: (Launch) Rename "discussion" api to "comments" or "load"
 TODO: (Launch) Reactions don't look great on mobile
 TODO: Use Vercel storage to cache app token locally
 TODO: Refresh when restoring from bfcache

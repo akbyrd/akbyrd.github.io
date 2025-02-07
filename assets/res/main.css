@@ -40,6 +40,7 @@ button, textarea {
 	--dark-text-shadow:   #000000a0;
 	--dark-outline:       #404040;
 	--dark-scrollbar:     #767676;
+	--dark-lightbox:      #212121dd;
 
 	--light-background:    #bdbdbd;
 	--light-background-2:  #b8b8b8;
@@ -53,6 +54,7 @@ button, textarea {
 	--light-text-shadow:   #00000020;
 	--light-outline:       #404040;
 	--light-scrollbar:     #808080;
+	--light-lightbox:      #bdbdbddd;
 
 	--code-background:           #101010;
 	--code-line-numbers:         #424242;
@@ -89,6 +91,7 @@ button, textarea {
 	--text-shadow:   var(--dark-text-shadow);
 	--outline:       var(--dark-outline);
 	--scrollbar:     var(--dark-scrollbar);
+	--lightbox:      var(--dark-lightbox);
 }
 
 .theme-light {
@@ -104,6 +107,7 @@ button, textarea {
 	--text-shadow:   var(--light-text-shadow);
 	--outline:       var(--light-outline);
 	--scrollbar:     var(--light-scrollbar);
+	--lightbox:      var(--light-lightbox);
 }
 
 @media (prefers-color-scheme: light) {
@@ -120,6 +124,7 @@ button, textarea {
 		--text-shadow:   var(--light-text-shadow);
 		--outline:       var(--light-outline);
 		--scrollbar:     var(--light-scrollbar);
+		--lightbox:      var(--light-lightbox);
 	}
 }
 
@@ -292,16 +297,6 @@ html {
 	scrollbar-color: var(--scrollbar) var(--background);
 }
 
-img {
-	align-items: center;
-	display: flex;
-	justify-content: space-evenly;
-}
-
-img::before {
-	color: var(--error);
-}
-
 main {
 	font-size: 14pt;
 	padding: 0 20px;
@@ -395,21 +390,6 @@ th, td {
 		opacity: 100%;
 		scale: 100%;
 	}
-}
-
-.container.image {
-	display: block;
-	margin: 20px auto;
-	max-width: 100%;
-	outline: 1px solid var(--outline);
-	outline-offset: 0px;
-	overflow: hidden;
-	width: fit-content;
-}
-
-.container.image img {
-	max-width: 100%;
-	height: auto;
 }
 
 .loading-spinner {
@@ -1198,6 +1178,73 @@ body.error footer {
 
 .header a {
 	color: var(--text);
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* Images */
+
+img {
+	align-items: center;
+	display: flex;
+	justify-content: space-evenly;
+}
+
+img::before {
+	color: var(--error);
+}
+
+.container.image {
+	border: 1px solid var(--outline);
+	display: block;
+	margin: 20px auto;
+	max-width: 100%;
+	width: fit-content;
+}
+
+.container.image img {
+	max-width: 100%;
+	height: auto;
+}
+
+/* TODO: Ideally F5, Ctrl+L, etc don't close image */
+/* TODO: Use full size image */
+
+/* TODO: Handle URL bar on mobile */
+/* TODO: Lazy load comment images? */
+
+.lightbox-background {
+	bottom: 0;
+	left: 0;
+	position: fixed;
+	right: 0;
+	top: 0;
+	z-index: 1;
+
+	background: var(--lightbox);
+	display: flex;
+	margin: 0;
+	overflow: auto;
+
+	opacity: 0%;
+	scale: 105%;
+	visibility: hidden;
+	transition-property: opacity, scale;
+	transition-duration: 200ms;
+}
+
+.lightbox-background:target:not(.inactive),
+.lightbox-background.active {
+	scale: 100%;
+	opacity: 100%;
+	visibility: visible;
+}
+
+.lightbox-background.active img {
+	margin: auto;
+
+	/* TODO: Avoid the need for important */
+	max-width: none;
+	height: fit-content;
 }
 
 /* ---------------------------------------------------------------------------------------------- */

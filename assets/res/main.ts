@@ -108,15 +108,70 @@ function CycleTheme()
 
 function InitImages()
 {
-	// Fade images in
-	const images = document.getElementsByTagName("img")
-	for (const image of images)
+	const imageContainers = document.querySelectorAll(".container.image")
+	for (const container of imageContainers)
 	{
+		const image = container.querySelector("img") as HTMLImageElement
+		const lbBg  = container.querySelector(".lightbox-background") as HTMLElement
+		const lbImg = lbBg.querySelector("img") as HTMLImageElement
+
 		function OnLoad()
 		{
-			image.style.opacity = "100%"
-			if (image.naturalWidth || image.naturalHeight)
-				image.classList.add("fade-in")
+			// Fade images in
+			for (const img of [image])
+			{
+				img.style.opacity = "100%"
+				if (img.naturalWidth || img.naturalHeight)
+					img.classList.add("fade-in")
+			}
+
+			// Hook up lightboxes
+			if (image.clientWidth != image.naturalWidth || image.clientHeight != image.naturalHeight)
+			{
+				function OpenLightbox()
+				{
+					const currLocation = new URL(location.href)
+					currLocation.hash = `#${lbBg.id}`
+					history.replaceState(history.state, "", currLocation)
+
+					lbBg.classList.toggle("active", true)
+					lbBg.classList.toggle("inactive", false)
+					lbBg.addEventListener("keydown", CloseLightbox, { passive: true })
+					lbBg.focus()
+
+					document.body.style.height = "100%"
+					document.body.style.overflow = "hidden"
+					document.body.style.userSelect = "none"
+				}
+
+				function CloseLightbox()
+				{
+					const currLocation = new URL(location.href)
+					currLocation.hash = ""
+					history.replaceState(history.state, "", currLocation)
+
+					lbBg.classList.toggle("active", false)
+					lbBg.classList.toggle("inactive", true)
+					lbBg.removeEventListener("keydown", CloseLightbox)
+
+					document.body.style.height = ""
+					document.body.style.overflow = ""
+					document.body.style.userSelect = ""
+				}
+
+				function OnKeyDown_Open(e: KeyboardEvent)
+				{
+					if (e.key == "Enter")
+						OpenLightbox()
+				}
+
+				image.addEventListener("keydown", OnKeyDown_Open, { passive: true })
+				image.addEventListener("click", OpenLightbox, { passive: true })
+				lbBg.addEventListener("click", CloseLightbox, { passive: true })
+				image.style.cursor = "zoom-in"
+				image.tabIndex = 0
+				lbBg.tabIndex = 0
+			}
 		}
 
 		if (image.complete)

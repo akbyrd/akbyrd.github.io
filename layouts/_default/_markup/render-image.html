@@ -21,17 +21,23 @@
 	{{ errorf "Failed to find image \"%s\"\n\t%s" .Destination .Page.Path }}
 {{ end }}
 
-{{- /* */ -}}
+{{ $address := cond $remote .Destination $resource.RelPermalink }}
+{{ $lightboxId := path.BaseName $resource.RelPermalink | anchorize }}
+
 <div class="container image{{ with (index .Attributes "class") }} {{ . }}{{ end }}">
-	{{ if $remote }}
-	<img src="{{ .Destination | safeURL }}"
-	{{ else }}
-	<img src="{{ $resource.RelPermalink | safeURL }}"
-	{{ end  }}
+	<img src="{{ $address | safeURL }}"
 		{{ with .Text }}alt="{{ . }}"{{ end }}
 		{{ with .Title }}title="{{ . }}"{{ end }}
 		{{ with $resource.Width }}width="{{ . }}"{{ end }}
 		{{ with $resource.Height }}height="{{ . }}"{{ end }}
 		decoding="async" loading="lazy" />
+
+	<div id="{{ $lightboxId }}" class="lightbox-background" aria-modal="true">
+		<img src="{{ $address | safeURL }}"
+			{{ with .Text }}alt="{{ . }}"{{ end }}
+			{{ with .Title }}title="{{ . }}"{{ end }}
+			{{ with $resource.Width }}width="{{ . }}"{{ end }}
+			{{ with $resource.Height }}height="{{ . }}"{{ end }}
+			decoding="async" loading="lazy" />
+	</div>
 </div>
-{{- /* */ -}}
