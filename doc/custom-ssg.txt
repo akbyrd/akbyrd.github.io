@@ -23,3 +23,4 @@ Motivation
 * Render dynamic content like math in comments (WASM)
 * Render different graph types
 * Tooltips for :emoji:
+* Style transparent images differently

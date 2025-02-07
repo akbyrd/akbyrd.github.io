@@ -154,8 +154,10 @@ function InitImages()
 		const lbBg  = container.querySelector(".lightbox-background") as HTMLElement
 		const lbImg = lbBg.querySelector("img") as HTMLImageElement
 
-		function OnLoad()
+		function OnLoad(success: boolean)
 		{
+			container.classList.toggle("error", !success)
+
 			// Fade images in
 			for (const img of [image])
 			{
@@ -167,7 +169,7 @@ function InitImages()
 			// Hook up lightboxes
 			const scaled = image.clientWidth != image.naturalWidth || image.clientHeight != image.naturalHeight
 			const original = image.src == lbImg.src
-			if (scaled || !original)
+			if (success && (scaled || !original))
 			{
 				function OnKeyDown_Open(e: KeyboardEvent)
 				{
@@ -192,13 +194,13 @@ function InitImages()
 
 		if (image.complete)
 		{
-			OnLoad()
+			OnLoad(true)
 		}
 		else
 		{
 			image.style.opacity = "0%"
-			image.onload = OnLoad
-			image.onerror = OnLoad
+			image.onload = () => OnLoad(true)
+			image.onerror = () => OnLoad(false)
 		}
 	}
 

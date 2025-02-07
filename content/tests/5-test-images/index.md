@@ -4,9 +4,10 @@ title = 'Test Images'
 
 ## Local
 ![Title](doom.png "Alt Text")
-{ resize="256x" rename="true" }
+{ resize="256x" rename="true" .transparent }
 
 ![Title](doom.png "Alt Text")
+{ .transparent }
 
 ## Global
 ![Title](res/favicon-og.png "Alt Text")

@@ -53,9 +53,9 @@ TODO: Input on Windows
 TODO: Blog roll
 
 Images
-TODO: (Launch) Maybe fit lightbox to page and zoom manually?
 TODO: Add lightbox to images in comments
 TODO: Ideally F5, Ctrl+L, etc don't close image
+TODO: (SSG) Disable border when image has transparency
 
 Math
 TODO: (SSG) Math is a little squished together on Chrome
