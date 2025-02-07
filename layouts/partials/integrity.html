@@ -1,0 +1,3 @@
+{{ $fingerprint := .Data.Integrity | htmlEscape }}
+{{ $integrity := printf ` integrity=%q crossorigin="anonymous"` $fingerprint | safeHTMLAttr }}
+{{ return $integrity }}

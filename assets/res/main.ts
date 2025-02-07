@@ -126,7 +126,9 @@ function InitImages()
 			}
 
 			// Hook up lightboxes
-			if (image.clientWidth != image.naturalWidth || image.clientHeight != image.naturalHeight)
+			const scaled = image.clientWidth != image.naturalWidth || image.clientHeight != image.naturalHeight
+			const original = image.src == lbImg.src
+			if (scaled || !original)
 			{
 				function OpenLightbox()
 				{

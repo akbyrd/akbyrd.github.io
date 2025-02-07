@@ -44,9 +44,9 @@
 	{{- $svg := partial "resource" "res/favicon.svg" }}
 	<link rel="icon" href="{{ $svg.RelPermalink }}" sizes="any" type="image/svg+xml">
 	{{- $css := partial "resource" "res/main.css" }}
-	<link rel="stylesheet" href="{{ $css.RelPermalink }}"{{ $css.Integrity }}>
+	<link rel="stylesheet" href="{{ $css.RelPermalink }}"{{ partial "integrity" $css }}>
 	{{- $ts := partial "resource" "res/main.ts" }}
-	<script src="{{ $ts.RelPermalink }}" async{{ $ts.Integrity }}></script>
+	<script src="{{ $ts.RelPermalink }}" async{{ partial "integrity" $ts }}></script>
 
 	{{- $woff2 := partial "resource" "res/code.woff2" }}
 	{{- $woff := partial "resource" "res/code.woff" }}
@@ -55,7 +55,7 @@
 	{{- $hasSymbols = or $hasSymbols .Params.comments }}
 	{{- $hasCode := strings.Contains .Content "<code>" }}
 	{{- if or $hasSymbols $hasCode }}
-	<link rel="preload" as="font" href="{{ $woff2.RelPermalink }}" type="font/woff2"{{ $woff2.Integrity }}>
+	<link rel="preload" as="font" href="{{ $woff2.RelPermalink }}" type="font/woff2"{{ partial "integrity" $woff2 }}>
 	<style>
 		@font-face {
 			font-display: swap;
@@ -71,7 +71,7 @@
 	{{- $woff2 := partial "resource" "res/math.woff2" }}
 	{{- $woff := partial "resource" "res/math.woff" }}
 
-	<link rel="preload" as="font" href="{{ $woff2.RelPermalink }}" type="font/woff2"{{ $woff2.Integrity }}>
+	<link rel="preload" as="font" href="{{ $woff2.RelPermalink }}" type="font/woff2"{{ partial "integrity" $woff2 }}>
 	<style>
 		@font-face {
 			font-display: swap;

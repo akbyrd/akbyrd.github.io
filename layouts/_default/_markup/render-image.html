@@ -1,43 +1,68 @@
-{{ $resource := false }}
+{{- $resource := false }}
+{{- $fullSize := false }}
 
-{{ $remote := findRE `^https?://` .Destination }}
-{{ if $remote }}
-	{{ $resource = resources.GetRemote .Destination }}
+{{- $remote := findRE `^https?://` .Destination }}
+{{- if $remote }}
+	{{- $resource = resources.GetRemote .Destination }}
+	{{- $resource = dict
+		"RelPermalink" .Destination
+		"Width"        $resource.Width
+		"Height"       $resource.Height
+	}}
+	{{- $fullSize = $resource }}
 
-	{{ $resize := index .Attributes "resize" }}
-	{{ if $resize }}
-	 	{{/* TODO: Don't resize image. Parse resize args and do the math. */}}
-		{{ $resource = $resource.Resize (printf "%s photo" $resize) }}
-	{{ end }}
-{{ else }}
-	{{ $resource = partial "resource" (dict
+	{{- $resize := index .Attributes "resize" }}
+	{{- $match := findRESubmatch `^(\d*)x(\d*)$` $resize }}
+	{{- if $match }}
+		{{- $rx := float (or (index (index $match 0) 1) 0) }}
+		{{- $ry := float (or (index (index $match 0) 2) 0) }}
+		{{- $xScale := div $rx $resource.Width }}
+		{{- $yScale := div $ry $resource.Height }}
+		{{- $scale := math.Max $xScale $yScale }}
+
+		{{- if and (and $xScale $yScale) (ne $xScale $yScale) }}
+			{{- errorf "X (%f) and Y (%f) scales do not match, image will be stretched\n\t%s\n\t%s" $xScale $yScale .Page.Path .Destination }}
+		{{- end }}
+
+		{{- $resource = dict
+			"RelPermalink" .Destination
+			"Width"        (int (mul $scale $resource.Width))
+			"Height"       (int (mul $scale $resource.Height))
+		}}
+	{{- end }}
+{{- else }}
+	{{- $resource = partial "resource" (dict
 		"Name" .Destination
 		"Page" .Page
-		"Resize" (index .Attributes "resize")
+		"Resize" .Attributes.resize
 	) }}
-{{ end }}
 
-{{ if not $resource }}
-	{{ errorf "Failed to find image \"%s\"\n\t%s" .Destination .Page.Path }}
-{{ end }}
+	{{- $fullSize = partial "resource" (dict
+		"Name" .Destination
+		"Page" .Page
+	) }}
+{{- end }}
 
-{{ $address := cond $remote .Destination $resource.RelPermalink }}
-{{ $lightboxId := path.BaseName $resource.RelPermalink | anchorize }}
+{{- if not $resource }}
+	{{- errorf "Failed to find image \"%s\"\n\t%s" .Destination .Page.Path }}
+{{- end }}
 
-<div class="container image{{ with (index .Attributes "class") }} {{ . }}{{ end }}">
-	<img src="{{ $address | safeURL }}"
-		{{ with .Text }}alt="{{ . }}"{{ end }}
-		{{ with .Title }}title="{{ . }}"{{ end }}
-		{{ with $resource.Width }}width="{{ . }}"{{ end }}
-		{{ with $resource.Height }}height="{{ . }}"{{ end }}
-		decoding="async" loading="lazy" />
+{{- /* */}}
+		<div class="container image{{ with (index .Attributes "class") }} {{ . }}{{ end }}">
+			<img src="{{ $resource.RelPermalink }}"
+				{{ with .Text }}alt="{{ . }}"{{ end }}
+				{{ with .Title }}title="{{ . }}"{{ end }}
+				width="{{ $resource.Width }}"
+				height="{{ $resource.Height }}"
+				decoding="async" loading="lazy" />
 
-	<div id="{{ $lightboxId }}" class="lightbox-background" aria-modal="true">
-		<img src="{{ $address | safeURL }}"
-			{{ with .Text }}alt="{{ . }}"{{ end }}
-			{{ with .Title }}title="{{ . }}"{{ end }}
-			{{ with $resource.Width }}width="{{ . }}"{{ end }}
-			{{ with $resource.Height }}height="{{ . }}"{{ end }}
-			decoding="async" loading="lazy" />
-	</div>
-</div>
+			<div id="{{ path.BaseName .Destination | anchorize }}" class="lightbox-background" aria-modal="true">
+				<img src="{{ $fullSize.RelPermalink }}"
+					{{ with .Text }}alt="{{ . }}"{{ end }}
+					{{ with .Title }}title="{{ . }}"{{ end }}
+					width="{{ $fullSize.Width }}"
+					height="{{ $fullSize.Height }}"
+					decoding="async" loading="lazy" />
+			</div>
+		</div>
+{{- /* */ -}}
