@@ -42,7 +42,6 @@ TODO: Code line anchors
 		touch, mouse
 
 Comments
-TODO: (Launch) Rename "discussion" api to "comments" or "load"
 TODO: (Launch) Reactions don't look great on mobile
 TODO: Use Vercel storage to cache app token locally
 TODO: Refresh when restoring from bfcache

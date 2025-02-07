@@ -166,7 +166,7 @@ export default async function handler(_request: Request): Promise<Response>
 				return response.send(ctx, 204)
 			}
 
-			case "/discussion":
+			case "/load":
 			{
 				const params = {
 					owner:    Validate(400, request.bodyEx, "owner"),

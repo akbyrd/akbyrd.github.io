@@ -4,7 +4,7 @@
 		{ "source": "/", "destination": "/api" },
 		{ "source": "/login", "destination": "/api" },
 		{ "source": "/logout", "destination": "/api" },
-		{ "source": "/discussion", "destination": "/api" },
+		{ "source": "/load", "destination": "/api" },
 		{ "source": "/comment", "destination": "/api" },
 		{ "source": "/react", "destination": "/api" }
 	]

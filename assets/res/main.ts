@@ -1196,7 +1196,7 @@ async function LoadComments()
 {
 	SetCommentsState(CommentsState.Loading)
 
-	const url = `${commentState.apiUrl}/discussion`
+	const url = `${commentState.apiUrl}/load`
 	const body = {
 		page:     location.pathname,
 		owner:    "akbyrd",
