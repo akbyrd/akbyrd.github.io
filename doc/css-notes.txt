@@ -74,6 +74,24 @@ Atomic/Utility-First CSS
 
 
 
+iframe background color
+-----------------------
+browser:    light  light  light  dark   dark   dark
+parent:     light  dark   ld-l   light  dark   ld-d
+----------------------------------------------------
+---- firefox
+unset/i:    trans  white  trans  trans  white  white  |  follows parent: transparent/light or white/dark
+light:      trans  trans  trans  trans  trans  trans  |  always transparent
+dark:       white  white  white  white  white  white  |  always white
+light dark: trans  trans  trans  white  white  white  |  follows browser: transparent/light or white/dark
+---- chrome
+unset/i:    trans  trans  trans  trans  trans  trans
+light:      trans  trans  trans  trans  trans  trans
+dark:       trans  trans  trans  trans  trans  trans
+light dark: trans  trans  trans  trans  trans  trans
+
+
+
 Resources
 ---------
 Firefox (Gecko) Style Sheets

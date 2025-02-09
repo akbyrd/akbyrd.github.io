@@ -12,23 +12,12 @@
 	{{- $fullSize = $resource }}
 
 	{{- $resize := index .Attributes "resize" }}
-	{{- $match := findRESubmatch `^(\d*)x(\d*)$` $resize }}
-	{{- if $match }}
-		{{- $rx := float (or (index (index $match 0) 1) 0) }}
-		{{- $ry := float (or (index (index $match 0) 2) 0) }}
-		{{- $xScale := div $rx $resource.Width }}
-		{{- $yScale := div $ry $resource.Height }}
-		{{- $scale := math.Max $xScale $yScale }}
-
-		{{- if and (and $xScale $yScale) (ne $xScale $yScale) }}
-			{{- errorf "X (%f) and Y (%f) scales do not match, image will be stretched\n\t%s\n\t%s" $xScale $yScale .Page.Path .Destination }}
-		{{- end }}
-
-		{{- $resource = dict
-			"RelPermalink" .Destination
-			"Width"        (int (mul $scale $resource.Width))
-			"Height"       (int (mul $scale $resource.Height))
-		}}
+	{{- if $resize }}
+		{{- $resource = partial "resource" (dict
+			"Name" .Destination
+			"Page" .Page
+			"Resize" .Attributes.resize
+		) }}
 	{{- end }}
 {{- else }}
 	{{- $resource = partial "resource" (dict
@@ -47,22 +36,26 @@
 	{{- errorf "Failed to find image \"%s\"\n\t%s" .Destination .Page.Path }}
 {{- end }}
 
+{{- $id := path.BaseName .Destination }}
+{{- $images := .Page.Store.Get "images" }}
+{{- $index := or (index $images $id) 0 }}
+{{- .Page.Store.SetInMap "images" $id (add $index 1) }}
+{{- $suffix := cond $index (printf "-%d" (add $index 1)) "" }}
+{{- $id = (printf "%s%s" $id $suffix) | anchorize }}
+
 {{- /* */}}
 		<div class="container image{{ with (index .Attributes "class") }} {{ . }}{{ end }}">
-			<img src="{{ $resource.RelPermalink }}"
+			<img id="{{ $id }}"
+				src="{{ $resource.RelPermalink }}"
 				{{ with .Text }}alt="{{ . }}"{{ end }}
 				{{ with .Title }}title="{{ . }}"{{ end }}
 				width="{{ $resource.Width }}"
 				height="{{ $resource.Height }}"
-				decoding="async" loading="lazy" />
-
-			<div id="{{ path.BaseName .Destination | anchorize }}" class="lightbox-background" aria-modal="true">
-				<img src="{{ $fullSize.RelPermalink }}"
-					{{ with .Text }}alt="{{ . }}"{{ end }}
-					{{ with .Title }}title="{{ . }}"{{ end }}
-					width="{{ $fullSize.Width }}"
-					height="{{ $fullSize.Height }}"
-					decoding="async" loading="lazy" />
-			</div>
+				decoding="async" loading="lazy"
+				{{- with $fullSize }}
+				data-full-size-src="{{ .RelPermalink }}"
+				data-full-size-width="{{ .Width }}"
+				data-full-size-height="{{ .Height }}"
+				{{- end }} />
 		</div>
 {{- /* */ -}}

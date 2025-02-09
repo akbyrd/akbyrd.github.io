@@ -106,89 +106,137 @@ function CycleTheme()
 // -------------------------------------------------------------------------------------------------
 // Images
 
-function OpenLightbox(lbBg: HTMLElement)
+function OpenLightbox(lightbox: HTMLElement, image: HTMLImageElement, navigate: boolean)
 {
-	const currLocation = new URL(location.href)
-	currLocation.hash = `#${lbBg.id}`
-	history.replaceState(history.state, "", currLocation)
+	const loc = new URL(location.href)
+	loc.hash = `#${image.id}`
+	if (navigate)
+	{
+		const state = history.state || {}
+		state.navigated = navigate
+		history.pushState(state, "", loc)
+	}
+	else
+	{
+		history.replaceState(history.state, "", loc)
+	}
 
-	OpenLightboxStyles(lbBg)
+	const src    = image.dataset.fullSizeSrc || image.src
+	const width  = parseInt(image.dataset.fullSizeWidth  || "0") || image.width
+	const height = parseInt(image.dataset.fullSizeHeight || "0") || image.height
+
+	const lbImg = lightbox.querySelector("img") as HTMLImageElement
+	lbImg.title = image.title
+	if (src)    lbImg.src    = src
+	if (width)  lbImg.width  = width
+	if (height) lbImg.height = height
+
+	function OnLoad(success: boolean)
+	{
+		lbImg.alt = image.alt
+		lbImg.classList.toggle("error", !success)
+	}
+
+	if (image.complete)
+	{
+		OnLoad(true)
+	}
+	else
+	{
+		lbImg.onload =  () => OnLoad(true)
+		lbImg.onerror = () => OnLoad(false)
+	}
+
+	document.body.classList.add("inactive")
+	lightbox.dataset.prevFocusId = image.id
+	lightbox.dataset.prevActiveId = document.activeElement?.id
+	lightbox.classList.add("active")
+	lightbox.classList.remove("inactive")
+	lightbox.focus()
 }
 
-function OpenLightboxStyles(lbBg: HTMLElement)
+function CloseLightbox(lightbox: HTMLElement, navigate: boolean)
 {
-	lbBg.classList.toggle("active", true)
-	lbBg.classList.toggle("inactive", false)
-	lbBg.focus()
+	if (navigate && history.state?.navigated)
+	{
+		// Let the OnHashChange handle it
+		history.back()
+		return
+	}
+	else
+	{
+		const state = history.state || {}
+		const loc = new URL(location.href)
+		loc.hash = ""
+		history.replaceState(state, "", loc)
 
-	document.body.style.height = "100%"
-	document.body.style.overflow = "hidden"
-	document.body.style.userSelect = "none"
-}
+		const focusId  = lightbox.dataset.prevFocusId
+		const activeId = lightbox.dataset.prevActiveId
+		if (focusId)
+		{
+			const focus = document.getElementById(focusId)
+			if (focus)
+			{
+				focus.focus()
+				if (activeId != focusId)
+					focus.blur()
+			}
+		}
+		delete lightbox.dataset.prevFocusId
+		delete lightbox.dataset.prevActiveId
+	}
 
-function CloseLightbox(lbBg: HTMLElement)
-{
-	const currLocation = new URL(location.href)
-	currLocation.hash = ""
-	history.replaceState(history.state, "", currLocation)
+	const lbImg = lightbox.querySelector("img") as HTMLImageElement
+	lbImg.removeAttribute("title")
+	lbImg.removeAttribute("alt")
+	lbImg.removeAttribute("src")
+	lbImg.removeAttribute("width")
+	lbImg.removeAttribute("height")
+	lbImg.classList.toggle("error", false)
 
-	CloseLightboxStyles(lbBg)
-}
-
-function CloseLightboxStyles(lbBg: HTMLElement)
-{
-	lbBg.classList.toggle("active", false)
-	lbBg.classList.toggle("inactive", true)
-
-	document.body.style.height = ""
-	document.body.style.overflow = ""
-	document.body.style.userSelect = ""
+	document.body.classList.remove("inactive")
+	lightbox.classList.remove("active")
+	lightbox.classList.add("inactive")
 }
 
 function InitImages()
 {
+	const lightbox = document.getElementById("lightbox") as HTMLElement
+	lightbox.addEventListener("keydown", () => CloseLightbox(lightbox, true), { passive: true })
+	lightbox.addEventListener("click",   () => CloseLightbox(lightbox, true), { passive: true })
+
 	const imageContainers = document.querySelectorAll(".container.image")
 	for (const container of imageContainers)
 	{
 		const image = container.querySelector("img") as HTMLImageElement
-		const lbBg  = container.querySelector(".lightbox-background") as HTMLElement
-		const lbImg = lbBg.querySelector("img") as HTMLImageElement
 
 		function OnLoad(success: boolean)
 		{
+			// Fade images in
+			image.classList.add("fade-in")
+			image.style.opacity = "100%"
 			container.classList.toggle("error", !success)
 
-			// Fade images in
-			for (const img of [image])
-			{
-				img.style.opacity = "100%"
-				if (img.naturalWidth || img.naturalHeight)
-					img.classList.add("fade-in")
-			}
-
-			// Hook up lightboxes
+			// Hook up lightbox
 			const scaled = image.clientWidth != image.naturalWidth || image.clientHeight != image.naturalHeight
-			const original = image.src == lbImg.src
-			if (success && (scaled || !original))
+			const fullSizeSrc = new URL(image.dataset.fullSizeSrc || image.src, location.origin).toString()
+			const original = fullSizeSrc == image.src
+			if (scaled || !original)
 			{
 				function OnKeyDown_Open(e: KeyboardEvent)
 				{
 					if (e.key == "Enter")
-						OpenLightbox(lbBg)
-				}
-
-				function OnKeyDown_Close(e: KeyboardEvent)
-				{
-					CloseLightbox(lbBg)
+					{
+						const state = history.state || {}
+						state.prevFocusId = document.activeElement?.id
+						OpenLightbox(lightbox, image, true)
+					}
 				}
 
 				image.addEventListener("keydown", OnKeyDown_Open, { passive: true })
-				lbBg.addEventListener("keydown", OnKeyDown_Close, { passive: true })
-				image.addEventListener("click", () => OpenLightbox(lbBg), { passive: true })
-				lbBg.addEventListener("click", () => CloseLightbox(lbBg), { passive: true })
-				image.style.cursor = "zoom-in"
+				image.addEventListener("click", () => OpenLightbox(lightbox, image, true), { passive: true })
 				image.tabIndex = 0
-				lbBg.tabIndex = 0
+				image.classList.add("use-lightbox")
 			}
 		}
 
@@ -199,18 +247,23 @@ function InitImages()
 		else
 		{
 			image.style.opacity = "0%"
-			image.onload = () => OnLoad(true)
-			image.onerror = () => OnLoad(false)
+			image.addEventListener("load",  () => OnLoad(true),  { passive: true })
+			image.addEventListener("error", () => OnLoad(false), { passive: true })
 		}
 	}
 
-	if (location.hash)
+	function OnHashChange()
 	{
 		const id = location.hash.substring(1)
-		const lbBg = document.getElementById(id)
-		if (lbBg)
-			OpenLightboxStyles(lbBg)
+		const element = id ? document.getElementById(id) : null
+		const isImage = element instanceof HTMLImageElement
+
+		isImage
+			? OpenLightbox(lightbox, element, false)
+			: CloseLightbox(lightbox, false)
 	}
+	if (location.hash) OnHashChange()
+	window.addEventListener("hashchange", OnHashChange, { passive: true })
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -765,9 +818,9 @@ function EndSelection()
 
 		if (location.hash != code.hash)
 		{
-			const currLocation = new URL(location.href)
-			currLocation.hash = code.hash
-			history.pushState({ previouslyVisited: true }, "", currLocation)
+			const loc = new URL(location.href)
+			loc.hash = code.hash
+			history.pushState({ previouslyVisited: true }, "", loc)
 		}
 	}
 

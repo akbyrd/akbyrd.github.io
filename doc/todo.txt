@@ -1,7 +1,11 @@
 General
+TODO: (Launch)
+	:root.theme-dark { color-scheme: dark }
+	:root.theme-light { color-scheme: light }
 TODO: Choose a diagram method: goat, mermaid (jerky layout), graphviz, other
 TODO: Search engine optimization
 TODO: Add search support
+TODO: Tab focus sets current hash
 TODO: (SSG) Add tooltips for :emoji:
 
 Atom / RSS
@@ -51,10 +55,15 @@ TODO: (Launch) Improve about page content
 TODO: Add my rss list
 TODO: Input on Windows
 TODO: Blog roll
+	http://blog.s-schoener.com/2024-06-03-simplicity/
 
 Images
+TODO: Caption (use title?)
+TODO: Icon for broken images?
 TODO: Add lightbox to images in comments
+TODO: Manual pinch-to-zoom (don't zoom the page)
 TODO: Ideally F5, Ctrl+L, etc don't close image
+TODO: Loading spinner
 TODO: (SSG) Disable border when image has transparency
 
 Math

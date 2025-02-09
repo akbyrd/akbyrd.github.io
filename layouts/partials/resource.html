@@ -10,11 +10,15 @@
 {{ $ctx = merge $defaults $ctx }}
 
 {{ with $ctx }}
-	{{ $local := true }}
-	{{ $resource := .Page.Resources.Get .Name }}
+	{{ $location := "local" }}
+	{{ $resource := ( try (.Page.Resources.Get .Name)).Value }}
 	{{ if not $resource }}
-		{{ $local = false }}
-		{{ $resource = resources.Get .Name }}
+		{{ $location = "global" }}
+		{{ $resource = (try (resources.Get .Name)).Value }}
+	{{ end }}
+	{{ if not $resource }}
+		{{ $location = "remote" }}
+		{{ $resource = (try (resources.GetRemote .Name)).Value }}
 	{{ end }}
 
 	{{ if $resource }}
@@ -61,7 +65,8 @@
 			{{ $name = replaceRE `\.([^.]*\z)` (printf "-%s.$1" $hash) $name }}
 		{{ end }}
 
-		{{ $dir := cond $local (path.Split .Page.RelPermalink).Dir "" }}
+		{{ $dir := cond (ne $location "global") (path.Split .Page.RelPermalink).Dir "" }}
+		{{ $name = cond (eq $location "remote") (path.Split $name).File $name }}
 		{{ $path := printf `%s%s` $dir $name }}
 		{{ $resource = resources.Copy $path $resource }}
 

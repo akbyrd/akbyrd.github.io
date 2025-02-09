@@ -40,7 +40,7 @@ button, textarea {
 	--dark-text-shadow:   #000000a0;
 	--dark-outline:       #404040;
 	--dark-scrollbar:     #767676;
-	--dark-lightbox:      #212121dd;
+	--dark-lightbox:      #212121ee;
 
 	--light-background:    #bdbdbd;
 	--light-background-2:  #b8b8b8;
@@ -54,7 +54,7 @@ button, textarea {
 	--light-text-shadow:   #00000020;
 	--light-outline:       #404040;
 	--light-scrollbar:     #808080;
-	--light-lightbox:      #bdbdbddd;
+	--light-lightbox:      #bdbdbdee;
 
 	--code-background:           #101010;
 	--code-line-numbers:         #424242;
@@ -205,6 +205,12 @@ body {
 	overflow-wrap: break-word;
 	text-align: justify;
 	text-shadow: 1px 1px 6px var(--text-shadow);
+}
+
+body.inactive {
+	height: 100%;
+	overflow: hidden;
+	user-select: none;
 }
 
 body > footer {
@@ -740,6 +746,7 @@ code, annotation {
 	border-width: 1px;
 	display: flex;
 	font-size: 20px;
+	hyphens: none;
 	margin: 0;
 	text-align: center;
 }
@@ -1201,6 +1208,10 @@ img {
 	justify-content: space-evenly;
 }
 
+img.use-lightbox {
+	cursor: zoom-in;
+}
+
 img::before {
 	color: var(--error);
 }
@@ -1210,6 +1221,7 @@ img::before {
 	display: block;
 	margin: 20px auto;
 	max-width: 100%;
+	overflow: hidden;
 	width: fit-content;
 }
 
@@ -1227,7 +1239,7 @@ img::before {
 	height: auto;
 }
 
-.lightbox-background {
+#lightbox {
 	bottom: 0;
 	left: 0;
 	position: fixed;
@@ -1235,7 +1247,8 @@ img::before {
 	top: 0;
 	z-index: 10;
 
-	background: var(--lightbox);
+	background-color: var(--lightbox);
+	cursor: zoom-out;
 	display: flex;
 	margin: 0;
 	overflow: auto;
@@ -1247,14 +1260,14 @@ img::before {
 	transition-duration: 200ms;
 }
 
-.lightbox-background:target:not(.inactive),
-.lightbox-background.active {
+#lightbox:target:not(.inactive),
+#lightbox.active {
 	scale: 100%;
 	opacity: 100%;
 	visibility: visible;
 }
 
-.lightbox-background.active img {
+#lightbox img {
 	margin: auto;
 	height: auto;
 	width: auto;

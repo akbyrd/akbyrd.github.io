@@ -130,6 +130,10 @@
 	<main>
 		{{- block "main" . }}{{ end }}
 
+		<div id="lightbox" tabIndex="0" aria-modal="true">
+			<img decoding="async" loading="lazy" />
+		</div>
+
 		{{- if .Params.comments }}
 		<div class="end-mark symbol require-js">&#xe22e;</div>
 		<section id="comments" class="require-js no-mathml">
@@ -275,3 +279,5 @@
 </body>
 
 </html>
+
+{{- .Page.Store.Set "images" dict }}
