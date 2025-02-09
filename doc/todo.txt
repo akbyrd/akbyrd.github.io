@@ -41,7 +41,6 @@ TODO: Code line anchors
 		touch, mouse
 
 Comments
-TODO: (Launch) Reactions don't look great on mobile
 TODO: Use Vercel storage to cache app token locally
 TODO: Refresh when restoring from bfcache
 TODO: Add refresh button (updatedAt and reconcile)
@@ -52,7 +51,6 @@ TODO: (Launch) Improve about page content
 TODO: Add my rss list
 TODO: Input on Windows
 TODO: Blog roll
-	http://blog.s-schoener.com/2024-06-03-simplicity/
 
 Images
 TODO: Caption (use title?)

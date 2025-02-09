@@ -834,7 +834,6 @@ code, annotation {
 }
 
 .comment footer {
-	align-items: center;
 	display: grid;
 	grid-template-columns: auto 1fr;
 	margin: 16px;
@@ -856,7 +855,6 @@ code, annotation {
 }
 
 .comment-reactions {
-	align-items: center;
 	display: inline-flex;
 	flex-wrap: wrap;
 	flex-shrink: 0;
@@ -883,13 +881,25 @@ code, annotation {
 	right: 0px;
 	transition-duration: 85ms;
 	transition-property: border-width, width, margin, right;
-	transition-timing-function: ease-out;
-	white-space: pre;
+	transition-timing-function: ease-in-out;
+}
+
+.comment-reaction:not([data-visible]) {
+	pointer-events: none;
+
+	border-width: 0;
+	margin: 0;
+	right: 16px;
+	width: 0px;
 }
 
 .comment-reaction[name="HEART"] span:nth-child(1) {
 	position: relative;
 	top: 0.5px;
+}
+
+.comment-reactions > span {
+	display: flex;
 }
 
 .comment-toggle-reactions      { z-index: 8; }
@@ -901,15 +911,6 @@ code, annotation {
 .comment-reaction:nth-child(6) { z-index: 2; transition-delay: 75ms; }
 .comment-reaction:nth-child(7) { z-index: 1; transition-delay: 100ms; }
 .comment-reaction:nth-child(8) { z-index: 0; transition-delay: 115ms; }
-
-.comment-reaction:not([data-visible]) {
-	border-width: 0;
-	margin: 0;
-	pointer-events: none;
-	right: 16px;
-	transition-timing-function: ease-in;
-	width: 0px;
-}
 
 .comment-reaction[data-pressed] {
 	background-color: var(--accent-3);
