@@ -1,7 +1,4 @@
 General
-TODO: (Launch)
-	:root.theme-dark { color-scheme: dark }
-	:root.theme-light { color-scheme: light }
 TODO: Choose a diagram method: goat, mermaid (jerky layout), graphviz, other
 TODO: Search engine optimization
 TODO: Add search support

@@ -6,7 +6,7 @@ button, textarea {
 }
 
 /* ---------------------------------------------------------------------------------------------- */
-/* Colors */
+/* Colors / Theme Support */
 
 :root {
 	--max-width: 800px;
@@ -75,10 +75,9 @@ button, textarea {
 	--code-highlight-border:     #007fd4;
 }
 
-/* ---------------------------------------------------------------------------------------------- */
-/* Theme Support */
-
 .theme-system, .theme-dark {
+	color-scheme: dark;
+
 	--background:    var(--dark-background);
 	--background-2:  var(--dark-background-2);
 	--background-3:  var(--dark-background-3);
@@ -95,6 +94,8 @@ button, textarea {
 }
 
 .theme-light {
+	color-scheme: light;
+
 	--background:    var(--light-background);
 	--background-2:  var(--light-background-2);
 	--background-3:  var(--light-background-3);
@@ -112,6 +113,8 @@ button, textarea {
 
 @media (prefers-color-scheme: light) {
 	.theme-system {
+		color-scheme: light;
+
 		--background:    var(--light-background);
 		--background-2:  var(--light-background-2);
 		--background-3:  var(--light-background-3);
