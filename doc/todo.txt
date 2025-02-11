@@ -53,6 +53,7 @@ TODO: Input on Windows
 TODO: Blog roll
 
 Images
+TODO: Fix overflow (outline and fade-in want opposite settings)
 TODO: Caption (use title?)
 TODO: Icon for broken images?
 TODO: Add lightbox to images in comments
