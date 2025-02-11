@@ -1,5 +1,5 @@
 +++
-title = 'Test Basics'
+title = 'Review Me'
 +++
 
 ## Basics
@@ -25,14 +25,8 @@ http://example.com/#example_example_example_example_example_example_example_exam
 ##### H5
 ###### H6
 
-### Horizontal Rules
-Underscores
-___
-Hyphens
-
+### Horizontal Rule
 ---
-Asterisks
-***
 
 ### Typographic replacements
 "double quotes" \
@@ -118,3 +112,66 @@ Footnote [^footnote]
 ### Definitions
 Term
 :   Definition
+
+## Code
+### Inline
+Some `code` embedded in a line of normal text: `{ "label": "hugo build" }` \
+Some `code` embedded in a line of normal text: {{< hl json >}}{ "label": "hugo build" }{{< /hl >}}
+
+### Standard
+```json {id=CodeStandard}
+{
+	"label": "hugo build",
+	"type": "shell",
+	"command": "hugo",
+}
+```
+
+### Highlighted
+```cpp {lineNoStart=999, hl_lines="1-2", #CodeHighlighted}
+// long long long long long long long long long long long long long long long long long long long long
+inline u32 IndexToHandle(u32 index, u8 generation)
+{
+	Assert(index <= MaxIndex);
+	u32 handle = ((index + 1) << IndexShift) | generation;
+	return handle;
+}
+```
+
+### Single Line
+```cpp {#CodeSingleLine}
+// hello
+```
+
+### Characters
+`01 airlg \/|&$@*- {} [] <> () __ -- << >> || '' ""`
+
+```txt {#CodeCharacters}
+01 airlg \/|&$@*- {} [] <> () __ -- << >> || '' ""
+```
+
+## Math
+### Inline
+$\sqrt{3x-1}+(1+x)^2$ \
+`\sqrt{3x-1}+(1+x)^2`
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. \
+Aenean sagittis porttitor nisl, $a^*=x-b^*$ at congue sem rutrum lobortis. \
+Aenean sagittis porttitor nisl, `a^*=x-b^*` at congue sem rutrum lobortis. \
+Phasellus suscipit libero odio, sed vulputate nisi euismod eu.
+
+### Block
+$$
+\begin{aligned}
+KL(\hat{y} || y) &= \sum_{c=1}^{M}\hat{y}_c \log{\frac{\hat{y}_c}{y_c}} \\
+JS(\hat{y} || y) &= \frac{1}{2}(KL(y||\frac{y+\hat{y}}{2}) + KL(\hat{y}||\frac{y+\hat{y}}{2}))
+\end{aligned}
+$$
+{#MathBlock}
+
+```txt {#MathTextCompare}
+\begin{aligned}
+KL(\hat{y} || y) &= \sum_{c=1}^{M}\hat{y}_c \log{\frac{\hat{y}_c}{y_c}} \\
+JS(\hat{y} || y) &= \frac{1}{2}(KL(y||\frac{y+\hat{y}}{2}) + KL(\hat{y}||\frac{y+\hat{y}}{2}))
+\end{aligned}
+```

@@ -1,4 +1,5 @@
 General
+TODO: Implement definition lists (dl, dt, dd)
 TODO: Choose a diagram method: goat, mermaid (jerky layout), graphviz, other
 TODO: Search engine optimization
 TODO: Add search support
@@ -47,7 +48,6 @@ TODO: Add refresh button (updatedAt and reconcile)
 TODO: Add entrance animation
 
 Content
-TODO: (Launch) Improve about page content
 TODO: Add my rss list
 TODO: Input on Windows
 TODO: Blog roll
@@ -71,6 +71,12 @@ TODO: Improve rendering perf of code (grid? (has border-collapse) less html?)
 
 Theme
 TODO: (Launch) Pay a UI designer for a review and recommendations
+	https://www.fiverr.com/guyman20/free-pro-web-design-consultation-from-a-top-seller?pckg_id=1&pos=15&context_type=auto&imp_id=7f795b9f-cd70-48e5-9986-c980c5db3aff#
+	https://www.fiverr.com/kementari/evaluate-your-website-or-blog-and-provide-a-detailed-report-on-grammar-aesthetic-value-and-content?pckg_id=1&pos=20&context_type=auto&imp_id=a3b8117a-944a-407b-b80e-f5efff8a8df3#
+	https://www.fiverr.com/marki0315/draw-a-colourful-digital-paint?pckg_id=1&pos=7&context_type=auto&imp_id=99e2544c-51d0-4ce6-80c0-fbc28a374aa0#
+	https://www.fiverr.com/rabiaadreesbt17/review-your-website-and-give-design-improvement-advice?pckg_id=1&pos=3&ad_key=7d8c18c6-332c-46c5-aada-8ac743bb9b6a&context_type=auto&imp_id=190ab25a-5622-4039-8fe0-72f67382eb50#
+	https://www.fiverr.com/rmorrisdesign/do-a-ux-and-visual-design-audit-of-your-website?pckg_id=1&pos=34&context_type=rating&imp_id=648ba59c-5509-4e0d-866b-c95b71c0e19e#
+
 TODO: Fix colors in print preview
 TODO: Read about meterial design https://m3.material.io/
 TODO: Light theme for code
