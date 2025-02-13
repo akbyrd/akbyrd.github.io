@@ -1068,7 +1068,7 @@ interface v2
 
 function InitComments()
 {
-	const parent = document.getElementById("comments")
+	const parent = document.getElementById("comments-section")
 	if (!parent)
 		return
 

@@ -2,6 +2,9 @@
 		<ul class="post-list">
 			{{- $posts := (.GetPage "posts").RegularPagesRecursive }}
 			{{- range $posts }}
+			{{- if .Params.hidden }}
+			{{- $dummy := .RelPermalink }}
+			{{- else }}
 			{{- $devOnly := .Draft }}
 			{{- with .Date        }}{{ $devOnly = or $devOnly (ge . time.Now) }}{{ end }}
 			{{- with .PublishDate }}{{ $devOnly = or $devOnly (ge . time.Now) }}{{ end }}
@@ -16,6 +19,7 @@
 					{{- end }}
 				</a>
 			</li>
+			{{- end }}
 			{{- end }}
 		</ul>
 {{- end }}

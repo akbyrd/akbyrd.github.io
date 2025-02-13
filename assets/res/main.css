@@ -214,6 +214,8 @@ body.inactive {
 	height: 100%;
 	overflow: hidden;
 	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
 }
 
 body > footer {
@@ -552,6 +554,12 @@ code, annotation {
 	white-space: pre;
 }
 
+pre.wrap, pre.wrap code {
+	text-align: left;
+	white-space: normal;
+	word-break: break-all;
+}
+
 :not(pre) > code, .container.code {
 	background-color: var(--code-background);
 	border-color: var(--outline);
@@ -570,7 +578,7 @@ code, annotation {
 	}
 }
 
-#comments :not(pre) > code {
+#comments-section :not(pre) > code {
 	bottom: unset;
 	position: unset;
 }
@@ -707,7 +715,7 @@ code, annotation {
 	width: 33%;
 }
 
-#comments {
+#comments-section {
 	font-size: 12pt;
 	line-height: 1.35;
 	display: grid;
@@ -1306,7 +1314,7 @@ math[display="inline"] annotation {
 	border-width: 1px;
 }
 
-#comments math[display="inline"] annotation {
+#comments-section math[display="inline"] annotation {
 	bottom: unset;
 	position: unset;
 }
@@ -1418,9 +1426,8 @@ p:has(math[display="inline"]) {
 /* ---------------------------------------------------------------------------------------------- */
 /* Post Title */
 
-.post-title {
-	display: flex;
-	align-items: center;
+.post-time {
+	font-weight: normal;
 }
 
 .post-edit-link {
@@ -1430,6 +1437,9 @@ p:has(math[display="inline"]) {
 	opacity: 0%;
 	transition-duration: 50ms;
 	transition-timing-function: ease-out;
+	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
 
 	margin-top: .15em;
 	padding: 0 16px;

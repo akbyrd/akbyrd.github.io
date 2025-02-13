@@ -34,8 +34,11 @@
 	{{- $result := (transform.HighlightCodeBlock .).Wrapped }}
 
 	{{- /* Set classes */}}
+	{{- $classes := slice "chroma" "code" "scroll" .Attributes.class }}
+	{{- $classes = delimit $classes " " }}
+
 	{{- $result = replaceRE `class="highlight` `class="container code` $result }}
-	{{- $result = replaceRE `class="chroma` `class="chroma code scroll` $result }}
+	{{- $result = replaceRE `class="chroma` (printf `class="%s` $classes) $result }}
 
 	{{- /* Add some newlines */}}
 	{{- $result = replaceRE `^(<div [^>]*>)` "$1\n" $result }}
