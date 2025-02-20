@@ -12,8 +12,6 @@ button, textarea {
 	--max-width: 800px;
 
 	--accent:      #007fd4;
-	--accent-2:    #14547f;
-	--accent-3:    #223a4a;
 	--accent-fade: #007fd4a0;
 	--error:       #b71c1c;
 
@@ -28,6 +26,8 @@ button, textarea {
 	--callout-caution:      #da3633;
 	--callout-caution-bg:   #da363320;
 
+	--dark-accent-2:      #14547f;
+	--dark-accent-3:      #223a4a;
 	--dark-background:    #212121;
 	--dark-background-2:  #2a2a2a;
 	--dark-background-3:  #313131;
@@ -41,43 +41,69 @@ button, textarea {
 	--dark-outline:       #404040;
 	--dark-scrollbar:     #767676;
 	--dark-lightbox:      #212121ee;
+	--dark-theme-fill:     var(--dark-text);
 
-	--light-background:    #bdbdbd;
-	--light-background-2:  #b8b8b8;
-	--light-background-3:  #b3b3b3;
-	--light-background-4:  #aeaeae;
-	--light-background-5:  #a9a9a9;
-	--light-draft-stripe:  #a0a0a0;
+	--light-accent-2:      #007fd4;
+	--light-accent-3:      #007fd4b0;
+	--light-background:    #e0e0e0;
+	--light-background-2:  #d0d0d0;
+	--light-background-3:  #c0c0c0;
+	--light-background-4:  #b0b0b0;
+	--light-background-5:  #a0a0a0;
+	--light-draft-stripe:  #b0b0b0;
 	--light-text:          #212121;
 	--light-text-detail:   #404040;
 	--light-text-detail-2: #484848;
 	--light-text-shadow:   #00000020;
-	--light-outline:       #404040;
+	--light-outline:       #808080;
 	--light-scrollbar:     #808080;
 	--light-lightbox:      #bdbdbdee;
+	--light-theme-fill:     var(--light-background);
 
-	--code-background:           #101010;
-	--code-line-numbers:         #424242;
-	--code-macros:               #7e57c2;
-	--code-control-flow:         #e91e63;
-	--code-labels:               #607d8b;
-	--code-keywords:             #2196f3;
-	--code-types:                #00897b;
-	--code-functions:            #64dd17;
-	--code-variables:            #00bcd4;
-	--code-literals:             #ffc107;
-	--code-escape-seq:           #ff9800;
-	--code-format-specs:         #f44336;
-	--code-comments:             #33691e;
-	--code-default:              #9e9e9e;
-	--code-invalid:              #ff0000;
-	--code-highlight-background: #191919;
-	--code-highlight-border:     #007fd4;
+	--dark-code-background:           #101010;
+	--dark-code-background-2:         #101010;
+	--dark-code-line-numbers:         #424242;
+	--dark-code-macros:               #7e57c2;
+	--dark-code-control-flow:         #e91e63;
+	--dark-code-labels:               #607d8b;
+	--dark-code-keywords:             #2196f3;
+	--dark-code-types:                #00897b;
+	--dark-code-functions:            #64dd17;
+	--dark-code-variables:            #00bcd4;
+	--dark-code-literals:             #ffc107;
+	--dark-code-escape-seq:           #ff9800;
+	--dark-code-format-specs:         #f44336;
+	--dark-code-comments:             #33691e;
+	--dark-code-default:              #9e9e9e;
+	--dark-code-invalid:              #ff0000;
+	--dark-code-highlight-background: #191919;
+	--dark-code-highlight-border:     #007fd4;
+
+	--light-code-background:           var(--light-background-2);
+	--light-code-background-2:         var(--light-background-3);
+	--light-code-line-numbers:         #424242;
+	--light-code-macros:               #7c4dff;
+	--light-code-control-flow:         #a52727;
+	--light-code-labels:               #607d8b;
+	--light-code-keywords:             #2222ff;
+	--light-code-types:                #005b52;
+	--light-code-functions:            #a52727;
+	--light-code-variables:            #1e86af;
+	--light-code-literals:             #b46409;
+	--light-code-escape-seq:           #f44336;
+	--light-code-format-specs:         #ff6d12;
+	--light-code-comments:             #33691e;
+	--light-code-default:              var(--light-text);
+	--light-code-invalid:              #ff0000;
+	--light-code-highlight-background: var(--light-background-3);
+	--light-code-highlight-border:     #007fd4;
 }
 
 .theme-system, .theme-dark {
 	color-scheme: dark;
 
+	--accent-2:      var(--dark-accent-2);
+	--accent-3:      var(--dark-accent-3);
 	--background:    var(--dark-background);
 	--background-2:  var(--dark-background-2);
 	--background-3:  var(--dark-background-3);
@@ -91,11 +117,33 @@ button, textarea {
 	--outline:       var(--dark-outline);
 	--scrollbar:     var(--dark-scrollbar);
 	--lightbox:      var(--dark-lightbox);
+	--theme-fill:    var(--dark-theme-fill);
+
+	--code-background:           var(--dark-code-background);
+	--code-background-2:         var(--dark-code-background);
+	--code-line-numbers:         var(--dark-code-line-numbers);
+	--code-macros:               var(--dark-code-macros);
+	--code-control-flow:         var(--dark-code-control-flow);
+	--code-labels:               var(--dark-code-labels);
+	--code-keywords:             var(--dark-code-keywords);
+	--code-types:                var(--dark-code-types);
+	--code-functions:            var(--dark-code-functions);
+	--code-variables:            var(--dark-code-variables);
+	--code-literals:             var(--dark-code-literals);
+	--code-escape-seq:           var(--dark-code-escape-seq);
+	--code-format-specs:         var(--dark-code-format-specs);
+	--code-comments:             var(--dark-code-comments);
+	--code-default:              var(--dark-code-default);
+	--code-invalid:              var(--dark-code-invalid);
+	--code-highlight-background: var(--dark-code-highlight-background);
+	--code-highlight-border:     var(--dark-code-highlight-border);
 }
 
 .theme-light {
 	color-scheme: light;
 
+	--accent-2:      var(--light-accent-2);
+	--accent-3:      var(--light-accent-3);
 	--background:    var(--light-background);
 	--background-2:  var(--light-background-2);
 	--background-3:  var(--light-background-3);
@@ -109,12 +157,34 @@ button, textarea {
 	--outline:       var(--light-outline);
 	--scrollbar:     var(--light-scrollbar);
 	--lightbox:      var(--light-lightbox);
+	--theme-fill:    var(--light-theme-fill);
+
+	--code-background:           var(--light-code-background);
+	--code-background-2:         var(--light-code-background-2);
+	--code-line-numbers:         var(--light-code-line-numbers);
+	--code-macros:               var(--light-code-macros);
+	--code-control-flow:         var(--light-code-control-flow);
+	--code-labels:               var(--light-code-labels);
+	--code-keywords:             var(--light-code-keywords);
+	--code-types:                var(--light-code-types);
+	--code-functions:            var(--light-code-functions);
+	--code-variables:            var(--light-code-variables);
+	--code-literals:             var(--light-code-literals);
+	--code-escape-seq:           var(--light-code-escape-seq);
+	--code-format-specs:         var(--light-code-format-specs);
+	--code-comments:             var(--light-code-comments);
+	--code-default:              var(--light-code-default);
+	--code-invalid:              var(--light-code-invalid);
+	--code-highlight-background: var(--light-code-highlight-background);
+	--code-highlight-border:     var(--light-code-highlight-border);
 }
 
 @media (prefers-color-scheme: light) {
 	.theme-system {
 		color-scheme: light;
 
+		--accent-2:      var(--light-accent-2);
+		--accent-3:      var(--light-accent-3);
 		--background:    var(--light-background);
 		--background-2:  var(--light-background-2);
 		--background-3:  var(--light-background-3);
@@ -128,10 +198,30 @@ button, textarea {
 		--outline:       var(--light-outline);
 		--scrollbar:     var(--light-scrollbar);
 		--lightbox:      var(--light-lightbox);
+		--theme-fill:    var(--light-theme-fill);
+
+		--code-background:           var(--light-code-background);
+		--code-background-2:         var(--light-code-background-2);
+		--code-line-numbers:         var(--light-code-line-numbers);
+		--code-macros:               var(--light-code-macros);
+		--code-control-flow:         var(--light-code-control-flow);
+		--code-labels:               var(--light-code-labels);
+		--code-keywords:             var(--light-code-keywords);
+		--code-types:                var(--light-code-types);
+		--code-functions:            var(--light-code-functions);
+		--code-variables:            var(--light-code-variables);
+		--code-literals:             var(--light-code-literals);
+		--code-escape-seq:           var(--light-code-escape-seq);
+		--code-format-specs:         var(--light-code-format-specs);
+		--code-comments:             var(--light-code-comments);
+		--code-default:              var(--light-code-default);
+		--code-invalid:              var(--light-code-invalid);
+		--code-highlight-background: var(--light-code-highlight-background);
+		--code-highlight-border:     var(--light-code-highlight-border);
 	}
 }
 
-body, svg, time {
+body, svg, time, a, thead, .comment, .comment-replies, button {
 	transition-duration: 200ms;
 	transition-property:
 		color,
@@ -202,12 +292,12 @@ body {
 	max-width: var(--max-width);
 
 	color: var(--text);
-	font-family: serif;
+	font-family: sans-serif;
+	font-size: 16px;
 	hyphens: auto;
 	line-height: 1.3;
 	overflow-wrap: break-word;
 	text-align: justify;
-	text-shadow: 1px 1px 6px var(--text-shadow);
 }
 
 body.inactive {
@@ -283,8 +373,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
-	color: var(--text);
-	text-decoration: none;
+	color: unset;
+	text-decoration: unset;
 }
 
 h1 a:hover, h2 a:hover, h3 a:hover, h4 a:hover, h5 a:hover, h6 a:hover {
@@ -293,10 +383,15 @@ h1 a:hover, h2 a:hover, h3 a:hover, h4 a:hover, h5 a:hover, h6 a:hover {
 
 h1 { font-size: 30pt; }
 h2 { font-size: 26pt; }
-h3 { font-size: 22pt; }
-h4 { font-size: 18pt; }
-h5 { font-size: 16pt; }
-h6 { font-size: 14pt; }
+h3 { font-size: 18pt; }
+h4 { font-size: 14pt; }
+h5 { font-size: 12pt; }
+h6 { font-size: 12pt; font-style: italic; }
+
+h1, h2, h3, h4, h5, h6, header,
+a, blockquote, button, thead, dt {
+	text-shadow: 1px 1px 6px var(--text-shadow);
+}
 
 header {
 	margin-bottom: 20px;
@@ -313,7 +408,6 @@ html {
 }
 
 main {
-	font-size: 14pt;
 	padding: 0 20px;
 }
 
@@ -370,6 +464,10 @@ table {
 
 thead, tfoot {
 	background-color: var(--background-2);
+}
+
+.comment thead, .comment tfoot {
+	background-color: var(--background-3);
 }
 
 th, td {
@@ -517,7 +615,7 @@ th, td {
 }
 
 .callout-icon {
-	font-size: 1.5em;
+	font-size: 1.85em;
 	line-height: 0;
 	padding-right: 8px;
 	user-select: none;
@@ -526,7 +624,7 @@ th, td {
 }
 
 .callout-tip .callout-icon {
-	font-size: 1.2em;
+	font-size: 1.45em;
 }
 
 .callout-text {
@@ -565,6 +663,10 @@ pre.wrap, pre.wrap code {
 	border-color: var(--outline);
 	border-style: solid;
 	border-width: 1px;
+}
+
+#comments-section :not(pre) > code, #comments-section .container.code {
+	background-color: var(--code-background-2);
 }
 
 :not(pre) > code, math[display="inline"] annotation {
@@ -654,6 +756,7 @@ pre.wrap, pre.wrap code {
 .copy-block {
 	background-color: var(--code-highlight-background);
 	box-shadow: 0px 0px 0px 1px var(--outline);
+	color: var(--code-default);
 	display: block;
 	float: right;
 	font-size: 24px;
@@ -1199,7 +1302,7 @@ body.error footer {
 }
 
 .header-theme-icon-fill {
-	fill: var(--dark-text);
+	fill: var(--theme-fill);
 }
 
 .header-about {
@@ -1291,12 +1394,12 @@ img::before {
 /* Math */
 
 math {
-	font-family: math2, math;
 	cursor: text;
+	font-family: math2, math;
+	font-size: 18px;
 }
 
 annotation {
-	color: var(--code-default);
 	text-align: left;
 }
 
@@ -1325,6 +1428,10 @@ math[display="inline"] annotation {
 	display: inline;
 }
 
+math[display="block"] {
+	font-size: 20px;
+}
+
 math[display="block"] semantics {
 	min-width: fit-content;
 	padding: 6px 8px;
@@ -1345,7 +1452,7 @@ math[display="block"] mtr mtd:not([class]) + mtd:not([class]) {
 }
 
 .container.math .scroll {
-	margin-bottom: 0;
+	margin: 0;
 }
 
 .no-mathml math[display="block"],

@@ -23,40 +23,7 @@ function lerp(a: number, b: number, t: number)
 }
 
 // -------------------------------------------------------------------------------------------------
-// Feature Detection
-
-function InitMath()
-{
-	document.body.insertAdjacentHTML("afterbegin",
-		"<div style=' \
-			border: 0; \
-			clip: rect(0 0 0 0); \
-			height: 1px; \
-			margin: -1px; \
-			overflow: hidden; \
-			padding: 0; \
-			position: absolute; \
-			width: 1px; \
-		'> \
-			<math xmlns='http://www.w3.org/1998/Math/MathML'> \
-				<mspace height='23px' width='77px'></mspace> \
-			</math> \
-		</div>")
-
-	const div = document.body.firstElementChild!
-	const mspace = div.firstElementChild!.firstElementChild!
-	const rect = mspace.getBoundingClientRect()
-	document.body.removeChild(div)
-
-	if (Math.abs(rect.height - 23) > 1 || Math.abs(rect.width - 77) > 1)
-	{
-		const html = document.getElementsByTagName("html")[0]
-		html.classList.add("no-mathml")
-	}
-}
-
-// -------------------------------------------------------------------------------------------------
-// Theme Toggle
+// Theme
 
 const theme = {
 	current: 0,
@@ -267,7 +234,7 @@ function InitImages()
 }
 
 // -------------------------------------------------------------------------------------------------
-// Code Blocks
+// Code
 
 type CodeHighlight =
 {
@@ -938,6 +905,39 @@ function SelectionFromHash()
 }
 
 // -------------------------------------------------------------------------------------------------
+// Math
+
+function InitMath()
+{
+	document.body.insertAdjacentHTML("afterbegin",
+		"<div style=' \
+			border: 0; \
+			clip: rect(0 0 0 0); \
+			height: 1px; \
+			margin: -1px; \
+			overflow: hidden; \
+			padding: 0; \
+			position: absolute; \
+			width: 1px; \
+		'> \
+			<math xmlns='http://www.w3.org/1998/Math/MathML'> \
+				<mspace height='23px' width='77px'></mspace> \
+			</math> \
+		</div>")
+
+	const div = document.body.firstElementChild!
+	const mspace = div.firstElementChild!.firstElementChild!
+	const rect = mspace.getBoundingClientRect()
+	document.body.removeChild(div)
+
+	if (Math.abs(rect.height - 23) > 1 || Math.abs(rect.width - 77) > 1)
+	{
+		const html = document.getElementsByTagName("html")[0]
+		html.classList.add("no-mathml")
+	}
+}
+
+// -------------------------------------------------------------------------------------------------
 // Comments
 
 enum DeploymentEnv
@@ -1560,7 +1560,7 @@ async function ToggleReaction(e: Event, comment: ICommentBase)
 	reactionButton.disabled = false
 	reactionButton.toggleAttribute("data-pressed")
 
-	const reactionsDiv = reactionButton.parentElement!.parentElement!
+	const reactionsDiv = reactionButton.parentElement!.parentElement!.parentElement!
 	const reactionsButton = reactionsDiv.querySelector(".comment-toggle-reactions") as HTMLButtonElement
 	const showReactions = reactionsButton.hasAttribute("data-pressed")
 	const countOffset = add ? 1 : -1
@@ -1718,7 +1718,7 @@ async function Logout(e: Event, elems: ICommentElements)
 	ClearCurrentError(elems.logoutError)
 
 	const url = `${commentState.apiUrl}/logout`
-	const result = await APIRequest("POST", url)
+	const result = await APIRequest("POST", url, {})
 	if (!result.success)
 	{
 		elems.logoutButton.disabled = false

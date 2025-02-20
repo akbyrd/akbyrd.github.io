@@ -1,10 +1,9 @@
 General
+TODO: (Launch) Make summaries mandatory
 TODO: Color the first row of tables in comments
 TODO: Outline for footnotes
-TODO: Smooth scroll when clicking footnotes?
 TODO: Implement definition lists (dl, dt, dd)
 TODO: Choose a diagram method: goat, mermaid (jerky layout), graphviz, other
-TODO: Search engine optimization
 TODO: Add search support
 TODO: Tab focus sets current hash
 TODO: (SSG) Add tooltips for :emoji:
@@ -58,7 +57,8 @@ TODO: Input on Windows
 TODO: Blog roll
 
 Images
-TODO: Fix overflow (outline and fade-in want opposite settings)
+TODO: (Launch) Fix overflow (outline and fade-in want opposite settings)
+TODO: Consider specifying image type and quality for resizing
 TODO: Caption (use title?)
 TODO: Icon for broken images?
 TODO: Add lightbox to images in comments
@@ -76,6 +76,7 @@ TODO: "css overflow auto causing jitter"?
 TODO: Improve rendering perf of code (grid? (has border-collapse) less html?)
 
 Theme
+TODO: Vertically center callout icon (and make it bigger)
 TODO: Fix colors in print preview
 TODO: Read about material design https://m3.material.io/
 TODO: Light theme for code

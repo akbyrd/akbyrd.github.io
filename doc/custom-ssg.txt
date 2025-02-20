@@ -10,6 +10,7 @@ Ideas & Requirements
 * Hot reload for the generator itself
 * Compiles to WASM and runs in browser
 	* Dependencies must compile to WASM as well
+* Track all glyphs for font subsetting
 
 
 
