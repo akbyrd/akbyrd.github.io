@@ -25,3 +25,25 @@ Motivation
 * Render different graph types
 * Tooltips for :emoji:
 * Style transparent images differently
+
+
+
+Notes
+-----
+* Markup generates an AST, rendering writes the AST
+* Markup language contains
+	* Content
+	* Semantic markup to describe what the content is
+	* High level directives for how it should be rendered.
+	* A generic facility for annotating both block and inline elements.
+		* Including ids, classes, and custom attributes
+	* A generic facility for custom block and inline element types.
+* Markup language does not contain
+	* Implementation details for how to render the content.
+	* Embedded HTML.
+* Rendering is in the target language
+	* HTML - rendering is a tree of "overlays" that are merged together.
+		* Elements can replace matching elements in the parent
+		* Or can be "shadow" - only used to match the structure, not for replacement
+			* TODO: Might be a bad design - changing a parent structure requires changing all children
+				* Named extension points or structural matching?

@@ -86,7 +86,7 @@ export const config = {
 export default async function handler(_request: Request): Promise<Response>
 {
 	// NOTE: Unhandled failure modes:
-	// * Large requests - limited to 4.5 MB or 4 MB, depdending on runtime
+	// * Large requests - limited to 4.5 MB or 4 MB, depending on runtime
 	// * Time outs      - limited to 10s or 25s, depending on runtime
 
 	const response = new ResponseEx()

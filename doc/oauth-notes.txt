@@ -78,7 +78,7 @@ Self auth for creating discussions
 User auth for querying discussions if not signed in
 User auth for querying discussions if signed in (for reaction attribution)
 User auth for making posts
-Install app to account / repository (needed so it can create dicussions)
+Install app to account / repository (needed so it can create discussions)
 TODO: If a user authorizes for a single repo, how does the app detect this and request permissions on a second repo?
 
 

@@ -1,0 +1,13 @@
+General
+-------
+Chrome Lighthouse report
+https://jigsaw.w3.org/css-validator/
+https://validator.w3.org/
+https://roastidio.us/lint
+
+
+
+RSS / Atom
+----------
+https://www.feedvalidator.org/
+https://validator.w3.org/feed/

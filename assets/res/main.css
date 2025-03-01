@@ -344,7 +344,6 @@ details:hover {
 summary {
 	cursor: pointer;
 	display: block;
-	font-family: sans-serif;
 	font-size: 14pt;
 	font-weight: bold;
 	border: 1px solid var(--outline);
@@ -365,7 +364,6 @@ footer {
 }
 
 h1, h2, h3, h4, h5, h6 {
-	font-family: sans-serif;
 	font-weight: bold;
 	margin: 20px 0;
 	line-height: normal;
@@ -459,7 +457,7 @@ textarea::placeholder {
 table {
 	border-collapse: collapse;
 	border-spacing: 0;
-	margin: 20px 0;
+	margin: 20px auto;
 }
 
 thead, tfoot {
@@ -496,12 +494,12 @@ th, td {
 @keyframes fade-in {
 	from {
 		opacity: 0%;
-		scale: 102%;
+		transform: scale(102%);
 	}
 
 	to {
 		opacity: 100%;
-		scale: 100%;
+		transform: scale(100%);
 	}
 }
 
@@ -920,7 +918,6 @@ pre.wrap, pre.wrap code {
 	align-items: center;
 	color: var(--text);
 	display: flex;
-	font-family: sans-serif;
 	font-weight: bold;
 	gap: 8px;
 	line-height: normal;
@@ -935,7 +932,6 @@ pre.wrap, pre.wrap code {
 	color: var(--text-detail);
 	display: flex;
 	flex-direction: column;
-	font-family: sans-serif;
 	font-size: 11pt;
 	justify-content: center;
 }
@@ -1090,7 +1086,6 @@ pre.wrap, pre.wrap code {
 .comment-input textarea {
 	box-sizing: border-box;
 	display: block;
-	font-family: sans-serif;
 	font-size: 14px;
 	overflow: hidden;
 	padding: 16px;
@@ -1236,7 +1231,6 @@ body.error footer {
 .header {
 	align-items: stretch;
 	display: block flex;
-	font-family: sans-serif;
 	font-size: 14pt;
 	font-weight: bold;
 	line-height: 28px;
@@ -1273,10 +1267,10 @@ body.error footer {
 	top: 0;
 
 	opacity: 0%;
-	scale: 0%;
+	transform: scale(0%);
 	transition-duration: 100ms;
 	transition-timing-function: ease-out;
-	transition-property: scale, opacity;
+	transition-property: opacity, transform;
 }
 
 .header-theme-button {
@@ -1288,7 +1282,7 @@ body.error footer {
 
 .header-theme-button:hover .header-theme-label {
 	opacity: 50%;
-	scale: 100%;
+	transform: scale(100%);
 }
 
 .header-theme-icon {
@@ -1369,15 +1363,15 @@ img::before {
 	overflow: auto;
 
 	opacity: 0%;
-	scale: 105%;
+	transform: scale(105%);
 	visibility: hidden;
-	transition-property: opacity, scale;
+	transition-property: opacity, transform;
 	transition-duration: 200ms;
 }
 
 #lightbox:target:not(.inactive),
 #lightbox.active {
-	scale: 100%;
+	transform: scale(100%);
 	opacity: 100%;
 	visibility: visible;
 }
@@ -1525,7 +1519,6 @@ p:has(math[display="inline"]) {
 .post-time {
 	color: var(--text-detail);
 	display: block;
-	font-family: sans-serif;
 	font-size: 11pt;
 	min-height: 1lh;
 }
@@ -1621,7 +1614,7 @@ li.task-list-item.checked::before {
 /* NameBuiltin              */ code .nb              { color: var(--code-keywords); }
 /* NameBuiltinPseudo        */ code .bp              { color: var(--code-invalid); }
 /* NameClass                */ code .nc              { color: var(--code-types); }
-/* NameConstant             */ code .no              { color: var(--code-invalid); }
+/* NameConstant             */ code .no              { color: var(--code-types); }
 /* NameDecorator            */ code .nd              { color: var(--code-invalid); }
 /* NameEntity               */ code .ni              { color: var(--code-invalid); }
 /* NameException            */ code .ne              { color: var(--code-invalid); }
@@ -1683,13 +1676,3 @@ li.task-list-item.checked::before {
 /* GenericTraceback         */ code .gt              { color: var(--code-invalid); }
 /* GenericUnderline         */ code .gl              { color: var(--code-invalid); }
 /* TextWhitespace           */ code .w               { color: var(--code-invalid); }
-
-/* ---------------------------------------------------------------------------------------------- */
-/* Debug */
-
-/*
-* {
-	outline: 1px solid red;
-	outline-offset: -1px;
-}
-*/

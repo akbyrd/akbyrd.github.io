@@ -1,6 +1,5 @@
 General
 TODO: (Launch) Make summaries mandatory
-TODO: Color the first row of tables in comments
 TODO: Outline for footnotes
 TODO: Implement definition lists (dl, dt, dd)
 TODO: Choose a diagram method: goat, mermaid (jerky layout), graphviz, other
@@ -50,11 +49,13 @@ TODO: Use Vercel storage to cache app token locally
 TODO: Refresh when restoring from bfcache
 TODO: Add refresh button (updatedAt and reconcile)
 TODO: Add entrance animation
+TODO: Allow links to comments
 
 Content
 TODO: Add my rss list
 TODO: Input on Windows
 TODO: Blog roll
+TODO: Warnings and errors
 
 Images
 TODO: (Launch) Fix overflow (outline and fade-in want opposite settings)
@@ -62,7 +63,7 @@ TODO: Consider specifying image type and quality for resizing
 TODO: Caption (use title?)
 TODO: Icon for broken images?
 TODO: Add lightbox to images in comments
-TODO: Manual pinch-to-zoom (don't zoom the page)
+TODO: Manual pinch-to-zoom (don't zoom the page, maybe just navigate to image?)
 TODO: Ideally F5, Ctrl+L, etc don't close image
 TODO: Loading spinner
 TODO: (SSG) Disable border when image has transparency
@@ -79,22 +80,14 @@ Theme
 TODO: Vertically center callout icon (and make it bigger)
 TODO: Fix colors in print preview
 TODO: Read about material design https://m3.material.io/
-TODO: Light theme for code
 
 Testing / Compatibility
+TODO: (Launch) Test in safari
 TODO: Theme transition isn't smooth on mobile
-TODO: Test in safari
 TODO: Test apple touch icon
 TODO: Test theme-color on android
 TODO: Test search engine results
-TODO: Add syntax highlighting samples test page
 TODO: Run site audit as part of deployment
-TODO: Chrome Lighthouse report
-TODO: https://jigsaw.w3.org/css-validator/
-TODO: https://validator.w3.org/
-TODO: https://validator.w3.org/feed/
-TODO: https://roastidio.us/lint
-TODO: https://www.feedvalidator.org/
 
 Workflow
 TODO: Run github workflow locally to reduce deployment testing iteration time
