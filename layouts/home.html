@@ -2,13 +2,11 @@
 		<ul class="post-list">
 			{{- $posts := (.GetPage "posts").RegularPagesRecursive }}
 			{{- range $posts }}
-			{{- if .Params.hidden }}
-			{{- $dummy := .RelPermalink }}
-			{{- else }}
-			{{- $devOnly := .Draft }}
+			{{- $devOnly := or .Draft .Params.hidden }}
 			{{- with .Date        }}{{ $devOnly = or $devOnly (ge . time.Now) }}{{ end }}
 			{{- with .PublishDate }}{{ $devOnly = or $devOnly (ge . time.Now) }}{{ end }}
 			{{- with .ExpiryDate  }}{{ $devOnly = or $devOnly (le . time.Now) }}{{ end }}
+			{{- if and $devOnly (not hugo.IsProduction) }}
 			<li class="post-list-item{{if $devOnly }} draft{{ end }}">
 				<a class="post-link" href="{{ .RelPermalink }}">
 					<h1 class="post-title">{{ .LinkTitle }}</h1>
