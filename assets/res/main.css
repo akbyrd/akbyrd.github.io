@@ -266,14 +266,7 @@ html * {
 a {
 	color: var(--accent);
 	cursor: pointer;
-	hyphenate-character: "";
 	text-decoration: underline;
-}
-
-@supports not (hyphenate-character: "") {
-	a {
-		hyphens: manual;
-	}
 }
 
 blockquote {
@@ -294,7 +287,6 @@ body {
 	color: var(--text);
 	font-family: sans-serif;
 	font-size: 16px;
-	hyphens: auto;
 	line-height: 1.3;
 	overflow-wrap: break-word;
 	text-align: justify;
@@ -440,7 +432,6 @@ section {
 }
 
 textarea {
-	hyphens: manual;
 	text-align: left;
 	white-space: pre-wrap;
 }
@@ -672,10 +663,6 @@ pre.wrap, pre.wrap code {
 	position: relative;
 	bottom: 1px;
 	white-space: break-spaces;
-	hyphenate-character: "";
-	@supports not (hyphenate-character: "") {
-		hyphens: manual;
-	}
 }
 
 #comments-section :not(pre) > code {
@@ -858,7 +845,6 @@ pre.wrap, pre.wrap code {
 	border-width: 1px;
 	display: flex;
 	font-size: 20px;
-	hyphens: none;
 	margin: 0;
 	text-align: center;
 }
@@ -1403,6 +1389,14 @@ annotation {
 
 .no-mathml semantics > :not(annotation) {
 	display: none;
+}
+
+math[display="inline"] msup {
+	margin-top: -3px;
+}
+
+math[display="inline"] msub {
+	margin-bottom: -3px;
 }
 
 math[display="inline"] annotation {

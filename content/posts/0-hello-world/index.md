@@ -5,7 +5,7 @@ date = 2025-02-23
 hidden = true
 +++
 
-Hi. Over the last couple of years I've been getting the urge to write. I've been making games for the last decade so it'll mostly be about programming in the context of video games, with a particular interest in general purpose game engines. But, seeing as this is my first post, it'll be about building the blog itself. Trite, maybe, but hopefully at least a little interesting.
+Hi. Over the last couple of years I've been getting the urge to write. I've been making games for the last decade so it'll mostly be about programming in the context of video games, with a particular interest in general purpose game engines. But, seeing as this is my first post, it'll be about building the blog itself. Trite, maybe, but hopefully at least a little interesting. It's structured more like a journal of the process than a nice linear story. Sorry if it's a bit dry in places.
 
 Before this, I had precisely zero experience with anything web related (other than dabbling with WASM, which doesn't count). There's just over a year between my first commit and this post, with the work happening in fits and starts. I take my time when learning and I'm a perfectionist, which can be a lethal combination at times. I also got caught in up the game industry apocalypse and spent 5 months goofing off and building a game engine with a couple of friends in between jobs. Severance is a lovely thing. Now I have a lean website with zero dependencies that I control every aspect of and I'm thrilled with the result.
 
@@ -17,7 +17,7 @@ There are many options for [static site generators](https://jamstack.org/generat
 
 I briefly considered making my own, but that seemed like a bad idea when I don't know much about the thing I'm generating. Hugo and Sphinx were also recommended. Sphinx is written in Python, which I'm not wild about, but at least familiar with. I've used it to slap together reporting for automated tests at work and ripped apart a library to learn how to implement [SPI](https://en.wikipedia.org/wiki/Serial_Peripheral_Interface) but nothing non-trivial. For a markup language it uses reStructured Text (RST) and I figured using a more common format like Markdown made sense. I didn't look at the installation process, but I imagine it's analogous to the situation with Jekyll. I decided against it fairly quickly.
 
-Hugo was up next. The first bullet on the [landing page](https://gohugo.io/) is about speed and that's a good sign. It's written in Go, a language I've dabbled in and have a passing interest in. Naively, the language a tool is built in shouldn't matter, but in practice it often does (as we'll see later). Hugo is distributed as a prebuilt binary available via `winget` and this is a big pro. Poking through the themes, there were a few that stood out to me. At this point I was itching to get started so I decided give it a shot.
+Hugo was up next. The first bullet on the [landing page](https://gohugo.io/) is about speed and that's a good sign. It's written in Go, a language I've dabbled in and have a passing interest in. Naively, the language a tool is built in shouldn't matter, but in practice it often does (as we'll see later). Hugo is distributed as a prebuilt binary available via `winget` and this is a big pro. Poking through the themes, there were a few that stood out to me. At this point I was itching to get started so I decided to give it a shot.
 
 ## Hosting
 
@@ -167,6 +167,8 @@ It gets the job done.
 
 ## Code
 
+[Test page](/tests/test-code/)
+
 Naturally, I had opinions about what how I wanted code snippets to look and behave. In particular I wanted to be able to select lines of code and create a link directly to them. This is common in code review tools like Github and Helix Swarm. I find it useful in a work context, but here it's mostly for fun.
 
 ![](code-selection.gif)
@@ -175,11 +177,11 @@ There are lot of fiddly bits behind this. The page scrolls to keep your selectio
 
 Getting the styles right was a pain. It was the first non-trivial CSS I wrote and I didn't know what I was doing. There's still an off-by-a-pixel issue with the clickable area. I'll try to simplify it at some point. The style precisely matches my text editor, which is cool. I'm using the Inconsolata [Nerd Font](https://www.nerdfonts.com/) so I can also display symbols and logos in a few places. I'm subsetting the font because it's a whopping 2007 KB out of the box. Pulling out just the parts I need brings it down to 12 KB.
 
-Hugo uses [Chroma](https://github.com/alecthomas/chroma) for syntax highlighting. C++ being what it is, it fails miserably at being accurate. It would be cool to be able to write a regular C++ file then run a `libclang` tool over it for accurate highlighting. But since Hugo doesn't allow you to shell out to other tools that's a no-go. Syntax highlighting causes microstutter on Firefox on Android. I've seen the same issue on other sites and I'm not yet sure if there's a way to prevent it. Firefox has a lot of issues with scrolling and selection in general.
-
-[Test page](/tests/test-code/)
+Hugo uses [Chroma](https://github.com/alecthomas/chroma) for syntax highlighting. C++ being what it is, it fails miserably at being accurate. It would be cool to be able to write a regular C++ file then run a `libclang` tool over it for accurate highlighting. But since Hugo doesn't allow you to shell out to other tools that's a no-go. Scrolling over text has microstutter in Firefox on Android. I don't think it handles the large number of spans or styles well. I've seen the same issue on other sites and I'm not yet sure if there's a way to prevent it. Firefox has a lot of issues with scrolling and selection in general.
 
 ## Math
+
+[Test page](/tests/test-math/)
 
 Math support was a fun surprise. I stumbled across [MathML](https://developer.mozilla.org/en-US/docs/Web/MathML) at some point and got excited about it. MathML is a set of HTML elements and styles inspired by LaTeX to allow math equations to be [displayed in browsers](http://eyeasme.com/Joe/MathML/MathML_browser_test.html). Firefox has supported some form of it since 2011 but Chrome-based browsers only got support in 2023. I'm aiming for 5 years of compatibility, so technically this is too new to use. The alternative is using MathJax to dynamically replace a LaTeX equation with either MathML if the browser supports it, HTML+CSS, or an SVG. I tried it, but I wasn't happy with the appearance or the bloat. I'm trying to keep the site lean and currently a basic page is roughly 120 KB and 5 requests to the same server. I don't recall the numbers, but MathJax is substantially higher on both metrics.
 
@@ -187,9 +189,9 @@ Instead, I'm using MathML when it's supported and displaying the raw LaTeX as co
 
 Even when it's supported, MathML is fiddly. Chrome and Firefox have different behavior in quite a few areas and both have bugs. This is another place where getting the style to an acceptable state was frustrating and time consuming. Firefox will handle `min-width: fit-content` as if all content is on a single line inside `<math>` and doesn't support `display: math` which makes support detection a pain. Chrome will ignore `display` in some cases, doesn't support `columnalign`, and spacing is generally incorrect. There were many small issues like these that made it difficult to get math to look correct in all browsers. Between Chrome, Firefox, inline math, block math, body text, comment text, MathML support, and no support I ended up making a matrix of 24 cases to test and looping through it until I couldn't find any more issues. I'm sure there are still issues I haven't discovered yet. MathML is a great idea but the execution is poor.
 
-[Test page](/tests/test-math/)
-
 ## Images
+
+[Test page](/tests/test-images/)
 
 Images were relatively straightforward. The only requirements I had going in were that they 1) loaded lazily and didn't block the rest of the page rendering, and 2) didn't cause a page reflow when they did load. This ends up being easy: set the `height`, `width`, `decoding`, and `lazy` attributes. To get the size of images that aren't hosted on the site itself (I'm just linking / embedding them) I download them as part of the build process to get their size. I also added a little fade-in animation just because.
 
@@ -201,19 +203,19 @@ The lightbox is more manual than I would expect, given how long the web has exis
 
 I want the lightbox to be zoomable independently from the rest of the page, but I wasn't able to find a built-in way to achieve this. When you zoom in on the image it zooms the entire page. When you close the image you're zoomed into some random location and have to find your way back to your place in the article. I can disable zoom for the entire page and manually implement pinch to zoom for images, and I probably will at some point, but this was one of the last things I worked on and I was a little burnt out and needed a break.
 
-[Test page](/tests/test-images/)
-
 ## Comments
+
+[Test page](/tests/test-basics/) (at the bottom)
 
 I wanted a comment system for the blog. The point is to share knowledge and my hope is that it goes in both directions. [As they say](https://meta.wikimedia.org/wiki/Cunningham%27s_Law), the best way to get the right answer is not to ask, but to post the wrong answer. I want people to have a place to point out my mistakes or to offer suggestions. I tend to be a bit of a hermit, burying myself in work and having a mostly passive relationship with online communities. Hopefully this forces me to engage with a broader range of interesting folks than are readily accessible in meatspace. Not that SoCal is at all a bad place to find other game dev nerds, but variety is never a bad thing.
 
-This was the hardest and most time consuming feature. It took about 6 weeks in total and I had to learn about a bunch of new things like serverless functions, GraphQL, OAuth, HTTP headers, browser cookies, and CORS.
+This was the hardest and most time consuming feature just due to the number of pieces I needed to learn about. Things like serverless functions, GraphQL, OAuth, HTTP headers, browser cookies, and CORS. It took about 6 weeks in total.
 
 ### Approach
 
 I remembered reading [this article](https://donw.io/post/github-comments/) at one point and it made me skeptical of using an off-the-shelf solution. It's important to me that this blog minimizes the number of loaded resources, the overall page size, and has no tracking of any sort. I've no interest in contributing to the web obesity epidemic. It's not [Dan Luu lean](https://danluu.com/slow-device/), but it's respectable.
 
-I didn't want to build and entire comment system from scratch. That would require managing a server, a database, user accounts, rendering Markdown, and fighting spam. Don's solution was to use Github Issues as a comment system and dynamically embed them in the page when loaded. I think this is a brilliant solution and apparently there's a long line of people doing this. This is a tech blog, so I think requiring a Github account to comment is reasonable. This naturally provides a level of spam and vitriol protection. I get moderation tools and Markdown support for free. I _think_ Github sanitizes the HTML that it returns so hopefully I don't have to worry about cross site scripting attacks. Github accounts are generally tied to real people and their work so we get more context about who we are talking to, which helps humanize one another. I don't think anonymity is a net positive in most cases.
+I didn't want to build an entire comment system from scratch. That would require managing a server, a database, user accounts, rendering Markdown, and fighting spam. Don's solution was to use Github Issues as a comment system and dynamically embed them in the page when loaded. I think this is a brilliant solution and apparently there's a long line of people doing this. This is a tech blog, so I think requiring a Github account to comment is reasonable. This naturally provides a level of spam and vitriol protection. I get moderation tools and Markdown support for free. I _think_ Github sanitizes the HTML that it returns so hopefully I don't have to worry about cross site scripting attacks. Github accounts are generally tied to real people and their work so we get more context about who we are talking to, which helps humanize one another. I don't think anonymity is a net positive in most cases.
 
 Don credits the idea to a second hand story of someone using Github Pull Requests to do the same. Early [implementations](https://aristath.github.io/blog/static-site-comments-using-github-issues-api) of this idea require users to visit Github to make comments and the blog post acts more like a non-interactive snapshot. Ideally I want people to be able to comment directly on the page for convenience. Eventually open source tools started popping up like [utterances](https://github.com/utterance/utterances). Then Github Discussions were added and lead to [giscus](https://github.com/giscus/giscus) which is effectively a fork of utterances to use Discussions instead of Issues.
 
@@ -282,7 +284,6 @@ Currently comments don't auto refresh if the page is loaded from the [bfcache](h
 
 It was a lot more work than I wanted it to be, but I'm very happy with the result. I think the comments look nice, feel good to interact with, and strike a reasonable balance between minimal and useful. On the server <1% of the time is spent in my code even though it's not in a native language; the rest is spent waiting on Github. I haven't measured on the client but I imagine the HTML restructuring I do isn't cheap, but is dwarfed by the slow and async nature getting the data from Github. I encourage you to try to break the comments on the test page below and provide feedback. I'm sure you'll find some issues I missed.
 
-[Test page](/tests/test-basics/) (at the bottom)
 
 ## Odds & Ends
 
