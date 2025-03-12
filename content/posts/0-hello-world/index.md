@@ -305,7 +305,9 @@ I'm sure there's still a lot I've missed.
 
 It's been a lot more work than I expected to make a site I'm happy with. More because of the amount of reading and learning than the amount of actual work that needed to be done. There are still a couple of features and a lot of polish I want to do. And I have an urge to build a static site generator now that I know exactly what I want. I'd also like to take a closer look at [Zine](https://zine-ssg.io/). But I'm a little burnt out on it for now. I want to practice writing and work on other projects for a while.
 
-If you find any bugs [let me know](https://github.com/akbyrd/akbyrd.github.io/issues). If you want to fix typos yourself there's a hidden link in the title of the post (tap or hover over it). If you have graphic design suggestions to improve colors or spacing, feel free to send them my way. It still feels a little programmer-art-y to me. Here are some stats associated with this page:
+If you find any bugs [let me know](https://github.com/akbyrd/akbyrd.github.io/issues). If you want to fix typos yourself there's a hidden link in the title of the post (tap or hover over it). If you have graphic design suggestions to improve colors or spacing, feel free to send them my way. It still feels a little programmer-art-y to me.
+
+And finally, some stats for this page:
 
 |                      |            |
 |----------------------|-----------:|
