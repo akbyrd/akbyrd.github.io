@@ -1,13 +1,12 @@
 +++
 title = 'Hello World'
 aliases = [ '0' ]
-date = 2025-02-23
-hidden = true
+date = 2025-03-19
 +++
 
 Hi. Over the last couple of years I've been getting the urge to write. I've been making games for the last decade so it'll mostly be about programming in the context of video games, with a particular interest in general purpose game engines. But, seeing as this is my first post, it'll be about building the blog itself. Trite, maybe, but hopefully at least a little interesting. It's structured more like a journal of the process than a nice linear story. Sorry if it's a bit dry in places.
 
-Before this, I had precisely zero experience with anything web related (other than dabbling with WASM, which doesn't count). There's just over a year between my first commit and this post, with the work happening in fits and starts. I take my time when learning and I'm a perfectionist, which can be a lethal combination at times. I also got caught in up the game industry apocalypse and spent 5 months goofing off and building a game engine with a couple of friends in between jobs. Severance is a lovely thing. Now I have a lean website with zero dependencies that I control every aspect of and I'm thrilled with the result.
+Before this, I had precisely zero experience with anything web related (other than dabbling with WASM, which doesn't count). There's just over a year between my first commit and this post, with the work happening in fits and starts. I take my time when learning and I'm a perfectionist, which can be a lethal combination at times. I also got caught up in the game industry apocalypse and spent 5 months goofing off and building a game engine with a couple of friends in between jobs. Severance is a lovely thing. Now I have a lean website with zero dependencies that I control every aspect of and I'm thrilled with the result.
 
 ## How do you make a website?
 
@@ -35,7 +34,7 @@ I spent a couple of weeks reading the Hugo docs top to bottom. With so much of t
 
 ### Picking a Theme
 
-I want a fairly minimal blog. As I mentioned, [Alex Kladov's blog](https://matklad.github.io/) was a source of inspiration. I think it's a relatively common style - a straight list of articles and not much else. There are plenty of themes for Hugo and [PaperMod](https://themes.gohugo.io/themes/hugo-papermod/) stood out as a good starting point, but that didn't last long.
+I want a fairly minimal blog. [Alex Kladov's blog](https://matklad.github.io/) was a source of inspiration. I think it's a relatively common style - a straight list of articles and not much else. There are plenty of themes for Hugo and [PaperMod](https://themes.gohugo.io/themes/hugo-papermod/) stood out as a good starting point, but that didn't last long.
 
 One of the entirely arbitrary things I wanted was switching between light mode and dark mode to happen smoothly. Not for any other reason than I was curious how to do it (answer: CSS transitions). I started looking through the theme to figure out how the color swap worked so I could modify it. Because Go templates and Hugo were still pretty foreign at this point, I found it tedious. So I deleted it to make my own theme instead. With [blackjack and hookers](https://www.youtube.com/watch?v=e35AQK014tI). It's a bit hard to estimate, but maybe 40% of the time making the blog went into the theme. While it looks minimal, there are some nifty features scattered about.
 
@@ -71,9 +70,9 @@ On the other hand, I have quite a few complaints.
 	```
 	And this still leaves out the "baseof" layout templates and doesn't address the order Hugo searches for them.
 
-* Go templates are a bad programming language. I mean, duh, they aren't a programming language. But you're stuck using them like they are. For non-trivial HTML generation you need to perform logic. You're going to be writing a lot of branches, loops, and functions with clumsy syntax and limited semantics. A text templating language is not the right solution. I think an AST-based approach with a real programming language would be far easier to work with.
+* Go templates are a not a good programming language. I mean, duh, they aren't a programming language. But you're stuck using them like they are. For non-trivial HTML generation you need to perform logic. You're going to be writing a lot of branches, loops, and functions with clumsy syntax and limited semantics. A text templating language is not the right solution. I think an AST-based approach with a real programming language would be far easier to work with.
 
-* The error messages are awful. They don't provide a clear context and are run together on a single line. It's not practical to parse the output using something like VS Code's problem matchers.
+* The error messages aren't good. They don't provide a clear context and are run together on a single line. It's not practical to parse the output using something like VS Code's problem matchers.
 	```txt {#ErrorMessages .wrap}
 	ERROR render of "D:/Dev/akbyrd.dev/content/tests/6-test-emoji.md" failed: "D:\Dev\akbyrd.dev\layouts\_default\baseof.html:30:9": execute of template failed: template: _default/single.html:30:9: executing "_default/single.html" at <partial "resource" (dict "Name" "favicon.ico" "Rename" false)>: error calling partial: "D:\Dev\akbyrd.dev\layouts\partials\resource.html:67:24": execute of template failed: template: partials/resource.html:67:24: executing "partials/resource.html" at <$resource.Width>: error calling Width: this method is only available for image resources
 	```
@@ -86,13 +85,13 @@ On the other hand, I have quite a few complaints.
 
 * Lots of bugs and inconsistent behavior. For a while, building your site would fail with an obscure error if you didn't have a `static` folder at the top level, even if it's empty and you don't need to use it.
 
-* There are 3 versions of Hugo: regular, Extended Edition, and Extended/Deploy Edition. I guess this is about binary size? But we're talking about ~25 MB, so the separation seems largely useless to users.
+* There are 3 versions of Hugo: regular, Extended Edition, and Extended/Deploy Edition. I guess this is about binary size? But we're talking about ~25 MB, so the separation seems largely unnecessary.
 
 * It generally takes a "good enough" development approach. Between that and the backwards compatibility goal it has a tendency to end up with unsatisfying solutions. Backwards compatibility in particular is interesting because while I haven't been bitten by it yet, I've seen multiple [complaints](https://commaok.xyz/post/on_hugo/) about how often breaking changes are made. Yet it's also the reason for not improving things like the template lookup order. It seems to be in a middle ground that ends up unsatisfying to both sides.
 
 * Concepts in the docs are sometimes used before they are introduced. Getting Started is currently in the 3rd row of topics on the main page.
 
-* There are weird subtleties like `index.md` being different than `_index.md`.
+* There are subtleties like `index.md` being different than `_index.md` that I find confusing and seem unnecessary.
 
 * At times terminology for different concepts uses synonyms or is ambiguous. Pages have a kind, a type, a format, and a layout and each plays a slightly different role when selecting the layout template that gets used. `Page.IsPage` can return false because while everything is a `Page`, `Page.Kind` may or may not be `page`.
 
@@ -283,7 +282,6 @@ Currently comments don't auto refresh if the page is loaded from the [bfcache](h
 ### Result
 
 It was a lot more work than I wanted it to be, but I'm very happy with the result. I think the comments look nice, feel good to interact with, and strike a reasonable balance between minimal and useful. On the server <1% of the time is spent in my code even though it's not in a native language; the rest is spent waiting on Github. I haven't measured on the client but I imagine the HTML restructuring I do isn't cheap, but is dwarfed by the slow and async nature getting the data from Github. I encourage you to try to break the comments on the test page below and provide feedback. I'm sure you'll find some issues I missed.
-
 
 ## Odds & Ends
 
